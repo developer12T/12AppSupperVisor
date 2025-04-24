@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await axios.post(
           // import.meta.env.VITE_API_URL + '/api/cash/login',
-          'http://localhost:8005/api/cash/login',
+          'https://apps.onetwotrading.co.th/api/cash/login',
           { username: userLogin, password: passwordLogin }
         )
         const result = response.data

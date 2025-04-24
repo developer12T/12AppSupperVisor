@@ -2,6 +2,19 @@
 import { ref, inject, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useRoute } from 'vue-router'
+import { useAuthStore } from '../store/auth';
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
+const store = useAuthStore();
+
+const SignOut = async () => {
+    await store.logout().then(() => {
+        console.log('ออกจากระบบสําเร็จ');
+        router.push("/");
+    });
+
+};
 
 const isSidebarOpen = inject('isSidebarOpen')
 const toggleSidebar = inject('toggleSidebar')
@@ -103,7 +116,7 @@ watch(isSidebarOpen, (newVal) => {
             class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-200"
             :class="{ 'justify-center': !isSidebarOpen }">
             <Icon icon="mdi:logout" class="h-6 w-6"></Icon>
-            <span v-if="showText" class="ml-3 transition-opacity duration-300">ออกจากระบบ</span>
+            <span v-if="showText" @click="SignOut" class="ml-3 transition-opacity duration-300">ออกจากระบบ</span>
         </router-link>
     </aside>
 </template>
