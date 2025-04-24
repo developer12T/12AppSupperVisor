@@ -5,11 +5,11 @@ const adminRoutes = [
     path: '/admin',
     component: Layout,
     children: [
-        {
-          path: 'product',
-          component: () => import('../../views/admin/Product.vue'),
-        //   meta: { breadcrumb: 'รายละเอียด' }
-        },
+        // {
+        //   path: 'product',
+        //   component: () => import('../../views/admin/Product.vue'),
+        // //   meta: { breadcrumb: 'รายละเอียด' }
+        // },
       //   {
       //     path: 'summary',
       //     component: () => import('../../views/orders/orderSummary.vue'),
