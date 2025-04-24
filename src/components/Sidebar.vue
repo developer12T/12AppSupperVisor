@@ -9,11 +9,9 @@ const router = useRouter();
 const store = useAuthStore();
 
 const SignOut = async () => {
-    await store.logout().then(() => {
-        console.log('ออกจากระบบสําเร็จ');
-        router.push("/");
-    });
-
+    store.logout();
+    console.log('ออกจากระบบสําเร็จ');
+    router.push("/");
 };
 
 const isSidebarOpen = inject('isSidebarOpen')

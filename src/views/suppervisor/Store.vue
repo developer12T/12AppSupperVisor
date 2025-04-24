@@ -61,7 +61,7 @@
             </p>
             <p class="text-sm text-gray-600 msb-1">ประเภท: {{ customer.typeName }}</p>
             <p class="text-sm text-gray-600 msb-1">เบอร์โทร: {{ customer.tel }}</p>
-            <p class="text-sm text-gray-600">{{ customer.address }}</p>
+            <p class="text-sm text-gray-600">{{ customer.address }} {{ customer.subDistrict }} {{ customer.district }} {{ customer.province }}{{ customer.postCode }}</p>
             <div class="card-actions justify-end">
                 <button class="btn btn-primary" @click="showConfirmationDialog(customer.storeId, customer.name)">
                     อุนมัติร้านค้า
