@@ -1,119 +1,180 @@
 <template>
-    <div v-for="product in products" class="product-landscape-card card card-side bg-base-100 shadow-xl w-full">
-        <figure class="w-1/4">
-            <!-- <img :src="product.imageUrl || '/api/placeholder/300/200'" :alt="product.name"
-                class="h-full w-full object-cover" /> -->
 
-            <img src="https://jobbkk.com/upload/employer/0D/53D/03153D/images/202045.webp" class="product-image" />
+    <div v-if="showAlert" role="alert" class="alert alert-warning mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 
+        1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 
+        0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span>{{ alertMessage }}</span>
+        <button @click="showAlert = false" class="btn btn-sm ml-auto">Dismiss</button>
+    </div>
+    <div class="flex justify-between">
+        <h1 class="p-3 text-xl font-bold">จัดการสินค้า</h1>
+        <label class="input">
+            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                </g>
+            </svg>
+            <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
+        </label>
+    </div>
+    <div v-for="product in filteredProducts" :key="product.id"
+        class="product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4">
+        <figure class="w-1/5">
+            <img src="https://jobbkk.com/upload/employer/0D/53D/03153D/images/202045.webp" alt="placeholder"
+                :style="{ width: '150px', height: '150px', objectFit: 'cover' }" />
         </figure>
-        <div class="card-body w-3/4">
-            <div class="flex justify-between items-start">
-                <h2 class="card-title text-xl font-bold">{{ product.name }}</h2>
-                <div class="badge badge-secondary">{{ product.category }}</div>
+        <div class="card-body w-1/4">
+            <p class="text-sm text-gray-600 msb-1">รหัสสินค้า: {{ product.id }}
+            </p>
+            <p class="text-sm text-gray-600 msb-1">ชื่อสินค้า: {{ product.name }}
+            </p>
+            <p class="text-sm text-gray-600 msb-1">กลุ่ม: {{ product.group }} รสชาติ: {{ product.flavour }}
+            </p>
+            <p class="text-sm text-gray-600 msb-1">ขนาด: {{ product.size }} ประเภท: {{ product.type }}
+            </p>
+            <p class="text-sm text-gray-600 msb-1">Gross: {{ product.weightGross }} Net: {{ product.weightNet }}
+            </p>
+        </div>
+        <div class="card-body w-1/15">
+            <div class="pt-10 cursor-pointer" @click="toggleSwitch(product, 'sale')">
+                <p class="text-sm text-gray-600 msb-1">เปิดขาย
+                </p>
+
+                <Icon :icon="product.statusSale == 'Y' ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off'" width="50"
+                    height="50" :style="{ color: product.statusSale == 'Y' ? 'green' : 'gray' }" />
             </div>
-            <p class="text-sm text-gray-600 mt-1 mb-2">{{ product.description }}</p>
-            <div class="flex items-center mb-2">
-                <div class="rating rating-sm">
-                    <input type="radio" name="rating" class="mask mask-star-2 bg-orange-400"
-                        :checked="product.rating >= 1" disabled />
-                    <input type="radio" name="rating" class="mask mask-star-2 bg-orange-400"
-                        :checked="product.rating >= 2" disabled />
-                    <input type="radio" name="rating" class="mask mask-star-2 bg-orange-400"
-                        :checked="product.rating >= 3" disabled />
-                    <input type="radio" name="rating" class="mask mask-star-2 bg-orange-400"
-                        :checked="product.rating >= 4" disabled />
-                    <input type="radio" name="rating" class="mask mask-star-2 bg-orange-400"
-                        :checked="product.rating >= 5" disabled />
-                </div>
-                <span class="text-sm ml-2">({{ product.reviewCount }} reviews)</span>
+        </div>
+        <div class="card-body w-1/15">
+            <div class="pt-10 cursor-pointer" @click="toggleSwitch(product, 'refund')">
+                <p class="text-sm text-gray-600 msb-1">เปิดคืน
+                </p>
+                <Icon :icon="product.statusRefund == 'Y' ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off'" width="50"
+                    height="50" :style="{ color: product.statusRefund == 'Y' ? 'green' : 'gray' }" />
             </div>
-            <div class="flex items-center justify-between mb-2">
-                <div class="text-lg font-bold text-primary">
-                    {{ formatPrice(product.price) }}
-                </div>
-                <div v-if="product.inStock" class="badge badge-success gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        class="inline-block w-4 h-4 stroke-current">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    In Stock
-                </div>
-                <div v-else class="badge badge-error gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        class="inline-block w-4 h-4 stroke-current">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                        </path>
-                    </svg>
-                    Out of Stock
-                </div>
-            </div>
-            <div class="card-actions justify-end mt-2">
-                <button class="btn btn-outline btn-sm" @click="addToWishlist">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                </button>
-                <button class="btn btn-primary" :disabled="!product.inStock" @click="addToCart">
-                    Add to cart
-                </button>
+        </div>
+        <div class="card-body w-1/15">
+            <div class="pt-10 cursor-pointer" @click="toggleSwitch(product, 'withdraw')">
+                <p class="text-sm text-gray-600 msb-1">เปิดเบิก
+                </p>
+                <Icon :icon="product.statusWithdraw == 'Y' ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off'" width="50"
+                    height="50" :style="{ color: product.statusWithdraw == 'Y' ? 'green' : 'gray' }" />
             </div>
         </div>
     </div>
+
+
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
-import { useStoresStore } from '../../store/modules/store';
+import { Icon } from '@iconify/vue'
+import { computed, onMounted, ref } from 'vue';
+import { useProductsStore } from '../../store/modules/product';
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import { toast } from 'vue3-toastify';
+import "vue3-toastify/dist/index.css";
 
-const store = useStoresStore();
+const store = useProductsStore()
 const products = ref([])
+const showAlert = ref(false)
+const alertMessage = ref('Warning: Invalid email address!')
+const searchQuery = ref('');
 
-const customerAll = computed(() => {
-    return store.storeAll;
+
+// async function triggerAlert(product, status, onOff) {
+//     await store.onOff(product.id, status, onOff)
+// }
+
+const filteredProducts = computed(() => {
+    return store.product.data.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        product.group.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        product.flavour.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        product.size.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        product.type.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        String(product.id).includes(searchQuery.value)
+    );
 });
 
-onMounted(() => {
-    store.getCustomerAll();
-    products.value = store.storeAll
-});
 
+async function triggerAlert(product, status, onOff) {
+    try {
 
-export default {
-    name: 'ProductLandscapeCard',
-    props: {
-        product: {
-            type: Object,
-            required: true,
-            default: () => ({
-                id: 1,
-                name: 'Product Name',
-                description: 'This is a sample product description. It showcases the product features and benefits.',
-                price: 29.99,
-                imageUrl: '',
-                category: 'Electronics',
-                rating: 4,
-                reviewCount: 42,
-                inStock: true
-            })
-        }
-    },
-    methods: {
-        formatPrice(price) {
-            return `$${price.toFixed(2)}`;
-        },
-        addToCart() {
-            this.$emit('add-to-cart', this.product.id);
-        },
-        addToWishlist() {
-            this.$emit('add-to-wishlist', this.product.id);
-        }
+        // store.onOff(product.id, status, onOff)
+        await store.onOff(product.id, status, onOff)
+        toast(`${store.message}!`, {
+            "theme": toast.THEME.COLORED,
+            "type": toast.TYPE.SUCCESS,
+            "dangerouslyHTMLString": true
+        })
+    } catch (error) {
+        toast(`${error}!`, {
+            "theme": toast.THEME.COLORED,
+            "type": toast.TYPE.ERROR,
+            "dangerouslyHTMLString": true
+        })
     }
 }
+
+function toggleSwitch(product, status) {
+    switch (status) {
+        case 'sale':
+            if (product.statusSale == 'Y') {
+                product.statusSale = 'N'
+                triggerAlert(product, 'sale', 'N')
+            } else {
+                product.statusSale = 'Y'
+                triggerAlert(product, 'sale', 'N')
+            }
+            break;
+        case 'withdraw':
+            if (product.statusWithdraw == 'Y') {
+                product.statusWithdraw = 'N'
+                triggerAlert(product, 'refund', 'N')
+            } else {
+                product.statusWithdraw = 'Y'
+                triggerAlert(product, 'refund', 'Y')
+            }
+            break;
+        case 'refund':
+            if (product.statusRefund == 'Y') {
+                product.statusRefund = 'N'
+                triggerAlert(product, 'withdraw', 'N')
+            } else {
+                product.statusRefund = 'Y'
+                triggerAlert(product, 'withdraw', 'Y')
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+
+onMounted(async () => {
+    await store.getProductionAll()
+    products.value = store.product.data
+})
+
 </script>
 
 <style scoped>
+.toggle-fade-enter-active,
+.toggle-fade-leave-active {
+    transition: all 0.3s ease;
+}
+
+.toggle-fade-enter-from,
+.toggle-fade-leave-to {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
 .product-landscape-card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     width: 100%;
@@ -128,5 +189,13 @@ export default {
     width: 200px;
     height: 200px;
     object-fit: cover;
+}
+
+img {
+    transition: transform 0.2s ease;
+}
+
+img:hover {
+    transform: scale(1.03);
 }
 </style>

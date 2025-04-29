@@ -14,14 +14,20 @@ const SignOut = async () => {
     router.push("/");
 };
 
+const userRole = localStorage.getItem('role')
+
 const isSidebarOpen = inject('isSidebarOpen')
 const toggleSidebar = inject('toggleSidebar')
 
 const showText = ref(isSidebarOpen.value);
 const menuItems = ref([
-    { name: 'อุนมัติร้านค้า', icon: 'mdi:home', link: '/home', submenu: null },
-    // { name: 'รายการขาย', icon: 'mdi:cart', link: '/order', submenu: null },
-    // { name: 'รายการคืน', icon: 'mdi:cart-off', link: '/cn', submenu: null },
+    { name: 'แดชบอร์ด', icon: 'mdi:chart-areaspline', link: '/dashboard', submenu: null, roles: ['sale', 'admin', 'master'], },
+    { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/suppervisor/approve', submenu: null, roles: ['sale', 'admin', 'master'] },
+    // { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/suppervisor/approve', submenu: null, roles: ['sale', 'admin', 'master'] },
+    // { name: 'นำออเดอร์เข้า M3', icon: 'mdi:cart-arrow-down', link: '/insert', submenu: null, roles: ['admin', 'master'] },
+    { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'master'] },
+    // { name: 'รายการคืน', icon: 'mdi:cart-off', link: '/cn', submenu: null, roles: ['admin', 'master'] },
+
     // {
     //     name: 'ร้านค้า',
     //     icon: 'mdi:store',
@@ -72,8 +78,8 @@ watch(isSidebarOpen, (newVal) => {
                 <span v-if="showText" class="ml-2 transition-opacity duration-300">ย่อเมนู</span>
             </button>
             <nav class="flex-1 mt-4">
-                <!-- <ul class="space-y-2">
-                    <li v-for="(item, index) in menuItems" :key="index">
+                <ul class="space-y-2">
+                    <li v-for="(item, index) in menuItems.filter(i => i.roles.includes(userRole))" :key="index">
                         <div v-if="item.submenu">
                             <button @click="toggleSubmenu(index)" type="button"
                                 :class="['flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100', isSubmenuOpen(index) ? 'bg-gray-200' : '', !isSidebarOpen ? 'justify-center' : '']">
@@ -103,11 +109,11 @@ watch(isSidebarOpen, (newVal) => {
                                 :class="['flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-200', { 'justify-center': !isSidebarOpen, 'bg-gray-200': isActive(item.link) }]">
                                 <Icon :icon="item.icon" class="h-6 w-6"></Icon>
                                 <span v-if="showText" class="ml-3 transition-opacity duration-300">{{ item.name
-                                }}</span>
+                                    }}</span>
                             </router-link>
                         </div>
                     </li>
-                </ul> -->
+                </ul>
             </nav>
         </div>
         <router-link to="#"

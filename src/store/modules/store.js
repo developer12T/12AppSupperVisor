@@ -47,6 +47,21 @@ export const useStoresStore = defineStore('stores', {
       } catch (error) {
         console.error(error)
       }
+    },
+    async rejectStore (data) {
+      try {
+        const area = localStorage.getItem('area')
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/cash/store/rejectStore`,
+          {
+            storeId: data.storeId,
+            area: area
+          }
+        )
+        console.log('response', response.data)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 })

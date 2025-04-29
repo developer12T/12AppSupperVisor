@@ -35,11 +35,12 @@ export const useAuthStore = defineStore('auth', {
           localStorage.setItem('area', this.area)
           localStorage.setItem('warehouse', this.warehouse)
           localStorage.setItem('token', JSON.stringify(this.token))
+          localStorage.setItem('role', 'master')
         } else {
           this.validateLogin = user.message
           this.logout()
         }
-        console.log('login',response.data)
+        console.log('login', response.data)
       } catch (error) {
         console.error(error)
       }

@@ -3,6 +3,10 @@ import Layout from '../../Layout.vue'
 const suppervisorRoutes = [
   {
     path: '/suppervisor',
+    meta: {
+      requiresAuth: true,
+      allowedRoles: ['sale', 'admin', 'master'] // ONLY these roles can access
+    },
     component: Layout,
     children: [
       {
