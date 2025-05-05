@@ -12,18 +12,19 @@ const suppervisorRoutes = [
       {
         path: 'approve',
         component: () => import('../../views/suppervisor/Store.vue')
-        //   meta: { breadcrumb: 'รายละเอียด' }
+      },
+      {
+        path: 'checkin',
+        component: () => import('../../views/suppervisor/CheckIn.vue')
+      },
+      {
+        path: 'report',
+        component: () => import('../../views/suppervisor/Report.vue')
+      },
+      {
+        path: 'product',
+        component: () => import('../../views/suppervisor/Product.vue')
       }
-      //   {
-      //     path: 'summary',
-      //     component: () => import('../../views/orders/orderSummary.vue'),
-      //     meta: { breadcrumb: 'ใบสั่งจอง' }
-      //   },
-      //   {
-      //     path: 'summaryAll',
-      //     component: () => import('../../views/orders/orderSummaryAll.vue'),
-      //     meta: { breadcrumb: 'ใบรวมสินค้า' }
-      //   }
     ]
   }
 ]

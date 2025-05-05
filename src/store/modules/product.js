@@ -10,15 +10,8 @@ export const useProductsStore = defineStore('products', {
   actions: {
     async getProductionAll () {
       try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/cash/product/get`,
-          {
-            type: 'sale',
-            group: [],
-            brand: [],
-            size: [],
-            flavour: []
-          }
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/cash/product/getProductSwitch`
         )
         const result = response.data
         this.product = result
@@ -38,7 +31,7 @@ export const useProductsStore = defineStore('products', {
           }
         )
         this.message = response.data.message
-        console.log('message',response.data.message)
+        console.log('message', response.data.message)
       } catch (error) {
         console.error(error)
       }

@@ -13,7 +13,7 @@
         class="product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4">
         <figure class="w-1/7">
             <div class="flex flex-col items-center pt-10">
-                <div v-if="customer.imageList[0]?.pathยังไม่ได้อนุมัติ">
+                <div v-if="customer.imageList[0]?.path">
                     <img :src="'https://apps.onetwotrading.co.th/' + relativePath(customer.imageList[0]?.path)"
                         alt="placeholder" :style="{ width: '150px', height: '150px', objectFit: 'cover' }"
                         @click="openModal(customer.imageList[0]?.path)" />
@@ -89,6 +89,8 @@
             </div>
         </div>
     </div>
+
+
     <div v-if="showModal" class="fixed inset-0 bg-black  flex items-center justify-center z-50">
         <div @click="showModal = false" class="absolute inset-0"></div>
         <img :src="modalImageSrc" class="max-w-full max-h-full z-10" />
@@ -117,6 +119,7 @@
             </div>
         </div>
     </div>
+
 </template>
 
 <script setup>

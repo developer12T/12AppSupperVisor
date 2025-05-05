@@ -221,28 +221,6 @@ export default {
                 console.log("Fetching API Data...");
                 const response = await axios.get<ApiResponse>(`${import.meta.env.VITE_API_URL}/api/cash/order/getSummaryItem?area=BE215&period=202504`);
                 const apiData = response.data.data;
-
-                // const response2 = await axios.get<ApiResponse>(`${import.meta.env.VITE_API_URL}/api/cash/order/getAllOrder?period=202504`);
-                // const areaData = [];
-
-                // for (const data of response2) {
-                //     areaData.push({
-
-                //     });
-                // }
-
-                // this.barData = {
-                //     datasets
-                // }
-
-
-                // console.log("apiData", apiData);
-                // this.barData.labels = apiData.map(item => item.item);
-                // this.barData.datasets[0].data = apiData.map(item => item.count);
-                // this.lineData.labels = apiData.map(item => item.item);
-                // console.log("apiData", this.lineData.labels);
-                // this.lineData.datasets[0].data = apiData.map(item => item.summary);
-
                 this.lineData = {
                     labels: apiData.map(item => item.item),
                     datasets: [{

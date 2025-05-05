@@ -47,12 +47,13 @@ const passwordLogin = ref('');
 const loginValidation = ref('');
 const router = useRouter();
 
+
 const SignIn = async () => {
     await store.login(userLogin.value, passwordLogin.value);
     if (store.isLoggedIn) {
         loginValidation.value = false;
         console.log('เข้าสู่ระบบสำเร็จ');
-        router.push("suppervisor/approve");
+        router.push("/");
     } else {
         console.log('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
         loginValidation.value = true;

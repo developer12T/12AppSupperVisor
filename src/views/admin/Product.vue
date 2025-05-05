@@ -90,15 +90,24 @@ const searchQuery = ref('');
 //     await store.onOff(product.id, status, onOff)
 // }
 
+// const filteredProducts = computed(() => []);
+
 const filteredProducts = computed(() => {
-    return store.product.data.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        product.group.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        product.flavour.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        product.size.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        product.type.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        String(product.id).includes(searchQuery.value)
-    );
+    const query = searchQuery.value.toLowerCase();
+    if (query != '') {
+        return store.product.data.filter(product =>
+            product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            product.id.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            product.group.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            product.flavour.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            product.size.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            product.type.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            product.name.includes(searchQuery.value)
+        );
+    } else {
+        return store.product.data
+    }
+
 });
 
 
@@ -107,7 +116,7 @@ async function triggerAlert(product, status, onOff) {
 
         // store.onOff(product.id, status, onOff)
         await store.onOff(product.id, status, onOff)
-        toast(`${store.message}!`, {
+        toast(`${store.message} ${product.id}!`, {
             "theme": toast.THEME.COLORED,
             "type": toast.TYPE.SUCCESS,
             "dangerouslyHTMLString": true
@@ -129,7 +138,7 @@ function toggleSwitch(product, status) {
                 triggerAlert(product, 'sale', 'N')
             } else {
                 product.statusSale = 'Y'
-                triggerAlert(product, 'sale', 'N')
+                triggerAlert(product, 'sale', 'Y')
             }
             break;
         case 'withdraw':

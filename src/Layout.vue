@@ -19,7 +19,7 @@ provide('toggleSidebar', toggleSidebar)
         <Sidebar />
         <div :class="[isSidebarOpen ? 'ml-64' : 'ml-20', 'flex-1 transition-margin duration-300']">
             <Navbar />
-            <main class="mt-1 p-4">
+            <main class="mt-1 p-4 ">
                 <router-view></router-view>
             </main>
         </div>
