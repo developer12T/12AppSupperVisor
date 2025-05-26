@@ -1,5 +1,15 @@
 <template>
     <div class="flex justify-start gap-6 mb-3">
+        <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
+            <select class="select select-info ms-3 text-center mb-3" v-model="selectedZone">
+                <option disabled value="">Select Zone</option>
+                <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+            </select>
+            <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                <option disabled value="">Select Area</option>
+                <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+            </select>
+        </div>
         <div class="card bg-base-100 shadow-xl p-4 w-full max-w-sm">
             <div class="flex items-center justify-between mb-2">
                 <h2 class="font-bold text-lg">{{ title }} Visit</h2>
@@ -21,9 +31,6 @@
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 ร้านทั้งหมด: <span class="text-gray-700 font-medium">{{ total | currency }}</span>
             </div>
-            <!-- <progress class="progress w-full"
-                :class="percentageUsed >= 90 ? 'progress-error' : percentageUsed >= 70 ? 'progress-warning' : 'progress-success'"
-                :value="percentageUsed" max="100"></progress> -->
         </div>
 
         <div class="card bg-base-100 shadow-xl p-4 w-full max-w-sm">
@@ -65,7 +72,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in checkins" :key="index"
+                <tr v-for="(item, index) in routeStore.checkIn" :key="index"
                     class="text-left p-2 hover:bg-blue-100 cursor-pointer" @click="showDetail(item, item.route)">
                     <td>{{ item.route }}</td>
                     <td class="text-center p-2">
@@ -98,41 +105,26 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouteStore } from '../../store/modules/route'
+import { useFilter } from '../../store/modules/filter'
 
+const today = new Date();
+const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 const router = useRouter()
-
-const store = useRouteStore()
+const routeStore = useRouteStore()
+const filter = useFilter()
 const routes = ref([])
+const checkins = ref([])
+const selectedZone = ref('')
+const selectedArea = ref('')
 
-const checkins = [
-    { route: 'R01', count: 12, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R02', count: 8, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R03', count: 5, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R04', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R05', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R06', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R07', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R08', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R09', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R10', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R11', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R12', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R13', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R14', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R15', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R16', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R17', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R18', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R19', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R20', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R21', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R22', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R23', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R24', count: 10, visit: '10%', effective: '10%', summary: 100 },
-    { route: 'R25', count: 10, visit: '10%', effective: '10%', summary: 100 }
-]
+// const checkins = [
+//     { route: 'R01', count: 12, visit: '10%', effective: '10%', summary: 100 },
+//     { route: 'R02', count: 8, visit: '10%', effective: '10%', summary: 100 },
+//     { route: 'R03', count: 5, visit: '10%', effective: '10%', summary: 100 },
+
+// ]
 
 const selectedRoute = ref(null)
 
@@ -142,8 +134,27 @@ function showDetail(item, routeCode) {
 }
 
 onMounted(async () => {
-    await store.getCheckin()
-    routes.value = store.checkIn.data
+    await filter.getZone(period);
+    selectedZone.value = ''
+    selectedArea.value = ''
+    checkins = [];
 })
+
+watch(selectedZone, (newVal) => {
+    if (newVal) {
+        filter.getArea(period, newVal);
+
+
+    }
+});
+
+watch(selectedArea, (newVal) => {
+    if (newVal) {
+        routeStore.getCheckin(period, newVal);
+
+    }
+});
+
+
 
 </script>
