@@ -12,9 +12,15 @@ export const useAuthStore = defineStore('auth', {
     async login (userLogin, passwordLogin) {
       try {
         const response = await axios.post(
-          // import.meta.env.VITE_API_URL + '/api/cash/login',
-          'https://apps.onetwotrading.co.th/api/cash/login',
-          { username: userLogin, password: passwordLogin }
+          import.meta.env.VITE_API_URL + '/api/cash/login',
+          // 'https://apps.onetwotrading.co.th/api/cash/login',
+          { username: userLogin, password: passwordLogin },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-channel': 'cash'
+            }
+          }
         )
         const result = response.data
         if (result) {

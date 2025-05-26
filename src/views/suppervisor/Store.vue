@@ -2,15 +2,9 @@
     <div class="flex justify-between">
         <h1 class="p-3 text-xl font-bold">อนุมัติร้านค้าใหม่</h1>
         <input type="date" class="input" />
-        <!-- <select class="select select-info ms-3">
-            <option disabled selected>Pick a Framework</option>
-            <option>React</option>
-            <option>Vue</option>
-            <option>Angular</option>
-        </select> -->
     </div>
     <div v-for="customer in customers" :key="customer.id"
-        class="product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4">
+        class="product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4 ">
         <figure class="w-1/7">
             <div class="flex flex-col items-center pt-10">
                 <div v-if="customer.imageList[0]?.path">
@@ -80,7 +74,7 @@
                 <button class="btn btn-success" @click="openGoogleMap(customer.latitude, customer.longtitude)">
                     Google Map
                 </button>
-                <button class="btn btn-error" @click="showConfirmationDialog(customer.storeId, customer.name)">
+                <button class="btn btn-error" @click="showRejectionDialog(customer.storeId, customer.name)">
                     ไม่อนุมัติ
                 </button>
                 <button class="btn btn-primary" @click="showConfirmationDialog(customer.storeId, customer.name)">
@@ -89,13 +83,10 @@
             </div>
         </div>
     </div>
-
-
     <div v-if="showModal" class="fixed inset-0 bg-black  flex items-center justify-center z-50">
         <div @click="showModal = false" class="absolute inset-0"></div>
         <img :src="modalImageSrc" class="max-w-full max-h-full z-10" />
     </div>
-
     <div v-if="showModalConfirm" class="fixed inset-0  bg-black flex items-center justify-center z-50">
         <!-- Overlay -->
         <div class="bg-white p-6 rounded opacity-100 shadow-lg w-1/3 max-w-md">
@@ -107,7 +98,7 @@
             </div>
         </div>
     </div>
-    <div v-if="showModalConfirm" class="fixed inset-0  bg-black flex items-center justify-center z-50">
+    <div v-if="showModalReject" class="fixed inset-0  bg-black flex items-center justify-center z-50">
         <!-- Overlay -->
         <div class="bg-white p-6 rounded opacity-100 shadow-lg w-1/3 max-w-md">
             <h3 class="text-lg font-semibold mb-4">ไม่อนุมัติร้านค้า {{ storeName }}</h3>
@@ -119,7 +110,6 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup>
@@ -138,6 +128,7 @@ dayjs.extend(timezone)
 
 const showModal = ref(false);
 const showModalConfirm = ref(false);
+const showModalReject = ref(false);
 const modalImageSrc = ref('');
 const storeId = ref('');
 const storeName = ref('');
@@ -153,6 +144,12 @@ const openGoogleMap = (latitude, longitude) => {
     window.open(url, '_blank');
 };
 
+const showRejectionDialog = (id, name) => {
+    showModalReject.value = true;
+    storeId.value = id;
+    storeName.value = name;
+};
+
 const showConfirmationDialog = (id, name) => {
     showModalConfirm.value = true;
     storeId.value = id;
@@ -165,7 +162,7 @@ const confirmAction = async () => {
     try {
         await store.updateStoreStatus({ storeId: storeId.value })
         showModalConfirm.value = false;
-        window.location.reload();
+        // window.location.reload();
     } catch (error) {
         console.log('Error confirming:', error);
         showModalConfirm.value = false;
@@ -176,7 +173,7 @@ const rejectAction = async () => {
     try {
         await store.rejectStore({ storeId: storeId.value })
         showModalConfirm.value = false;
-        window.location.reload();
+        // window.location.reload();
     } catch (error) {
         console.log('Error confirming:', error);
         showModalConfirm.value = false;
@@ -186,6 +183,7 @@ const rejectAction = async () => {
 
 const cancelAction = () => {
     showModalConfirm.value = false;
+    showModalReject.value = false;
 };
 
 onMounted(async () => {

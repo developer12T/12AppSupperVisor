@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import api from '../../utils/axios'
 
 export const useProductsStore = defineStore('products', {
   state: () => ({
@@ -10,9 +10,7 @@ export const useProductsStore = defineStore('products', {
   actions: {
     async getProductionAll () {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/cash/product/getProductSwitch`
-        )
+        const response = await api.get(`/api/cash/product/getProductSwitch`)
         const result = response.data
         this.product = result
         console.log('products', this.product)

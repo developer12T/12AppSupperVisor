@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import api from '../../utils/axios'
 
 export const useStoresStore = defineStore('stores', {
   state: () => ({
@@ -21,10 +21,8 @@ export const useStoresStore = defineStore('stores', {
       try {
         //   const token = JSON.parse(localStorage.getItem('token'));
         const area = localStorage.getItem('area')
-        const response = await axios.get(
-          `${
-            import.meta.env.VITE_API_URL
-          }/api/cash/store/getStore?type=new&area=${area}`
+        const response = await api.get(
+          `/api/cash/store/getStore?type=new&area=${area}`
         )
         const result = response.data
         this.storeNew = result
@@ -36,13 +34,17 @@ export const useStoresStore = defineStore('stores', {
     async updateStoreStatus (data) {
       try {
         const area = localStorage.getItem('area')
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/cash/store/updateStoreStatus`,
-          {
-            storeId: data.storeId,
-            area: area
-          }
-        )
+        const response = await api.post(`/api/cash/store/updateStoreStatus`, {
+          storeId: data.storeId,
+          area: area
+        })
+        // const response = await axios.post(
+        //   `${import.meta.env.VITE_API_URL}/api/cash/store/updateStoreStatus`,
+        //   {
+        //     storeId: data.storeId,
+        //     area: area
+        //   }
+        // )
         console.log('response', response.data)
       } catch (error) {
         console.error(error)
@@ -51,13 +53,23 @@ export const useStoresStore = defineStore('stores', {
     async rejectStore (data) {
       try {
         const area = localStorage.getItem('area')
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/cash/store/rejectStore`,
-          {
-            storeId: data.storeId,
-            area: area
-          }
-        )
+        const response = await api.post(`/api/cash/store/rejectStore`, {
+          storeId: data.storeId,
+          area: area
+        })
+        // const response = await axios.post(
+        //   `${import.meta.env.VITE_API_URL}/api/cash/store/rejectStore`,
+        //   {
+        //     storeId: data.storeId,
+        //     area: area
+        //   },
+        //   {
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //       'x-channel': 'cash'
+        //     }
+        //   }
+        // )
         console.log('response', response.data)
       } catch (error) {
         console.error(error)

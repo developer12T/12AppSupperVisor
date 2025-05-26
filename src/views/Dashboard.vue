@@ -105,7 +105,6 @@ import {
     LinearScale
 } from 'chart.js';
 import { Bar, Line, Scatter } from 'vue-chartjs';
-import { ref } from 'vue';
 import axios from 'axios'; // You forgot to import axios also!
 
 // Define interface
