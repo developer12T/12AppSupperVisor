@@ -12,6 +12,7 @@
     "@iconify/vue": "^4.3.0",
     "@tailwindcss/vite": "^4.1.4",
     "axios": "^1.8.4",
+    "chart.js": "^4.4.9",
     "daisyui": "^5.0.25",
     "dayjs": "^1.11.13",
     "flowbite": "^3.1.2",

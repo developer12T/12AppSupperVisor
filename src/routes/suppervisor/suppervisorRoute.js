@@ -18,12 +18,11 @@ const suppervisorRoutes = [
         component: () => import('../../views/suppervisor/CheckIn.vue')
       },
       {
-        path: 'checkin/:route',
+        path: 'checkin/:route/:routeId',
         name: 'RouteDetail',
         component: () => import('../../views/suppervisor/RouteDetail.vue'),
         props: true // allows useRoute().params.route OR `props: true` to bind as prop
       },
-
       {
         path: 'checkin/:route/orderDetail/:orderId',
         name: 'OrderDetail',

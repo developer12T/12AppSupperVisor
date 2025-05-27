@@ -7,9 +7,30 @@ export const useRouteStore = defineStore('checkin', {
     checkIn: [],
     visit: '',
     effective: '',
+    totalStoreAll: 0,
+    totalStorePending: 0,
+    totalStoreSell: 0,
+    totalStoreNotSell: 0,
+    totalStoreCheckInNotSell: 0,
     message: ''
   }),
   actions: {
+    async getRoutes (routeId) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/order/getSaleSummaryByStore`,
+          {
+            routeId: routeId
+          }
+        )
+        console.log('response', response.data)
+        this.routes = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
     async getCheckin (period, area) {
       try {
         const response = await api.post(
@@ -20,7 +41,7 @@ export const useRouteStore = defineStore('checkin', {
           }
         )
         console.log('response', response.data)
-        this.checkIn = response.data
+        this.checkIn = response.data.data
       } catch (error) {
         console.error(error)
       }
@@ -35,6 +56,11 @@ export const useRouteStore = defineStore('checkin', {
         console.log('response', response.data)
         this.visit = response.data.visit
         this.effective = response.data.effective
+        this.totalStoreAll = response.data.totalStoreAll
+        this.totalStoreSell = response.data.totalStoreSell
+        this.totalStorePending = response.data.totalStorePending
+        this.totalStoreNotSell = response.data.totalStoreNotSell
+        this.totalStoreCheckInNotSell = response.data.totalStoreCheckInNotSell
       } catch (error) {
         console.error(error)
       }

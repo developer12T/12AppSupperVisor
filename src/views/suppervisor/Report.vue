@@ -1,77 +1,85 @@
 <template>
-    <div class="p-4">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold">📊 SUMMARY Daily Report</h2>
-        </div>
+    <div class="overflow-auto max-h-[calc(100vh-150px)] max-w-[calc(100vw-100px)]  rounded-box">
+        <table class="table border-separate border-spacing-0 min-w-[1800px] border border-black">
+            <!-- Main Header -->
+            <thead>
+                <tr>
+                    <th rowspan="2"
+                        class="sticky top-0 left-0 z-50 bg-primary text-white text-center p-2 min-w-[120px] border border-black shadow-md">
+                        AREA
+                    </th>
+                    <th v-for="(product, pIndex) in headers" :key="pIndex"
+                        class="sticky top-0 z-40 bg-primary text-white text-center p-2 border border-black"
+                        :colspan="subHeaders.length">
+                        {{ product }}
+                    </th>
+                </tr>
 
-        <div class="overflow-x-auto">
-            <table class="table table-zebra w-full text-sm">
-                <thead>
-                    <tr>
-                        <th>Area</th>
-                        <th>75g หมู</th>
-                        <th>75g ไก่</th>
-                        <th>75g เห็ดหอม</th>
-                        <th>75g รวม</th>
-                        <th>165g หมู</th>
-                        <th>165g ไก่</th>
-                        <th>165g เห็ดหอม</th>
-                        <th>165g รวม</th>
-                        <th>รวมทั้งหมด</th>
-                        <th>เป้าหมาย</th>
-                        <th>% ที่ได้</th>
-                        <th>% ที่ได้</th>
-                        <th>% ที่ได้</th>
-                        <th>% ที่ได้</th>
-                        <th>% ที่ได้</th>
-                        <th>% ที่ได้</th>
-                        <th>% ที่ได้</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(row, i) in reportData" :key="i">
-                        <td>{{ row.area }}</td>
-                        <td>{{ row["75g"].pork }}</td>
-                        <td>{{ row["75g"].chicken }}</td>
-                        <td>{{ row["75g"].mushroom }}</td>
-                        <td>{{ row["75g"].total }}</td>
-                        <td>{{ row["165g"].pork }}</td>
-                        <td>{{ row["165g"].chicken }}</td>
-                        <td>{{ row["165g"].mushroom }}</td>
-                        <td>{{ row["165g"].total }}</td>
-                        <td>{{ row.total }}</td>
-                        <td>{{ row.target }}</td>
-                        <td>{{ row.percentage.toFixed(2) }}%</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                <!-- Sub Header -->
+                <tr>
+                    <template v-for="(product, pIndex) in headers" :key="'group-' + pIndex">
+                        <th v-for="(sub, sIndex) in subHeaders" :key="`sub-${pIndex}-${sIndex}`"
+                            class="sticky top-[35px] z-30 bg-primary text-white text-center p-2 border border-black">
+                            {{ sub }}
+                        </th>
+                    </template>
+                </tr>
+            </thead>
+
+            <!-- Body -->
+            <tbody>
+                <tr v-for="(row, rIndex) in rows" :key="rIndex">
+                    <td class="sticky left-0 z-30 bg-white text-center p-2 border border-black shadow-md">
+                        {{ row.area }}
+                    </td>
+                    <td v-for="(value, dIndex) in row.data" :key="dIndex" class="text-center p-2 border border-black"
+                        :class="value.includes('%') ? 'text-red-500 font-semibold' : ''">
+                        {{ value }}
+                    </td>
+                </tr>
+            </tbody>
+            <!-- Summary Row (tfoot) -->
+            <tfoot>
+                <tr>
+                    <td
+                        class="sticky left-0 bottom-0 z-40 bg-base-200 font-bold text-center p-2 border border-black shadow-md">
+                        Summary
+                    </td>
+                    <td v-for="(value, index) in summaryRow" :key="'summary-' + index"
+                        class="sticky bottom-0 z-30 bg-base-200 text-center p-2 border border-black font-semibold text-blue-800">
+                        {{ value }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </template>
 
 <script setup>
-const reportData = [
-    {
-        area: "BE101",
-        "75g": { pork: 718, chicken: 183, mushroom: 338, total: 2072 },
-        "150g": { veg: 0, total: 0 },
-        "165g": {
-            pork: 3941, chicken: 417, mushroom: 718, light: 3997, oil: 1399, total: 10472
-        },
-        total: 12544,
-        target: 1000,
-        percentage: 1254.40
-    },
-    {
-        area: "BE111",
-        "75g": { pork: 211, chicken: 66, mushroom: 275, total: 919 },
-        "150g": { veg: 0, total: 0 },
-        "165g": {
-            pork: 1445, chicken: 368, mushroom: 693, light: 1857, oil: 794, total: 5157
-        },
-        total: 6076,
-        target: 190,
-        percentage: 3197.89
-    }
-];
+const headers = [
+    '01. ผงปรุงฟ้าไทย 75 G',
+    '02. ผงปรุงฟ้าไทย 165 G',
+    '03. ผงปรุงฟ้าไทย 400 G',
+    '04. ผงปรุงฟ้าไทย 1000 G',
+    '05. ผงปรุงฟ้าไทย แพ็ค'
+]
+
+const subHeaders = [
+    'เป้าหมาย จำนวน(หีบ)',
+    'ยอดขาย ที่ทำได้(หีบ)',
+    'คิดเป็น % (หีบ)',
+    'เป้าหมาย จำนวนร้านค้า',
+    'จำนวนร้านค้า ที่ทำได้',
+    'คิดเป็น % (ร้าน)'
+]
+
+const rows = Array.from({ length: 20 }, (_, i) => ({
+    area: `CT${100 + i}`,
+    data: Array(headers.length * subHeaders.length).fill('0.00 %')
+}))
+
+// Summary row (mocked for now)
+const summaryRow = Array(headers.length * subHeaders.length).fill('0')
+summaryRow[2] = '100.00 %' // example % column
+summaryRow[5] = '8.33 %'
 </script>
