@@ -17,12 +17,12 @@
                     <p><strong>สถานะ: </strong>
                         <span
                             :class="orderStore.orderDetail.status === 'approved' ? 'text-green-600' : 'text-yellow-600'">
-                            {{ orderStore.orderDetail.status.toUpperCase() }}
+                            {{ orderStore.orderDetail.status?.toUpperCase() }}
                         </span>
                     </p>
-                    <p><strong>เซลล์:</strong> {{ orderStore.orderDetail.sale.name }}</p>
-                    <p><strong>คลัง:</strong> {{ orderStore.orderDetail.sale.warehouse }}</p>
-                    <p><strong>รูปแบบการจ่ายเงิน:</strong> {{ orderStore.orderDetail.paymentMethod }}</p>
+                    <p><strong>เซลล์:</strong> {{ orderStore.orderDetail.sale?.name || '-' }}</p>
+                    <p><strong>คลัง:</strong> {{ orderStore.orderDetail.sale?.warehouse || '-' }}</p>
+                    <p><strong>รูปแบบการจ่ายเงิน:</strong> {{ orderStore.orderDetail?.paymentMethod || '-' }}</p>
                 </div>
                 <div>
                     <p><strong>ชื่อร้าน:</strong> {{ orderStore.orderDetail.store?.name || '-' }}</p>

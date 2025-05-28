@@ -13,7 +13,8 @@
         <div class="card bg-base-100 shadow-xl p-4 w-full max-w-sm">
             <div class="flex items-center justify-between mb-2">
                 <h2 class="font-bold text-lg">Visit</h2>
-                <span :class="[
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else :class="[
                     routeStore.visit <= 80 ? 'text-red-500' :
                         routeStore.visit <= 50 ? 'text-yellow-500' :
                             'text-green-600',
@@ -23,39 +24,49 @@
                 </span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                เยี่ยมแล้ว: <span class="text-gray-700 font-medium">{{ routeStore.totalStoreCheckInNotSell }}</span>
+                เยี่ยมแล้ว:
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreCheckInNotSell }}</span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                รอเยี่ยม: <span class="text-gray-700 font-medium">{{ routeStore.totalStorePending }}</span>
+                รอเยี่ยม:
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStorePending }}</span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                ร้านทั้งหมด: <span class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
+                ร้านทั้งหมด:
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
             </div>
         </div>
 
         <div class="card bg-base-100 shadow-xl p-4 w-full max-w-sm">
             <div class="flex items-center justify-between mb-2">
                 <h2 class="font-bold text-lg">Effective</h2>
-                <span :class="[
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else :class="[
                     routeStore.effective <= 80 ? 'text-red-500' :
                         routeStore.effective <= 50 ? 'text-yellow-500' :
                             'text-green-600',
                     'font-semibold'
                 ]">
-                   {{ Number(routeStore.effective || 0).toFixed(2) }}%
+                    {{ Number(routeStore.effective || 0).toFixed(2) }}%
                 </span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 ซื้อ:
-                <span class="text-gray-700 font-medium">{{ routeStore.totalStoreSell }}</span>
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreSell }}</span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 ไม่ซื้อ:
-                <span class="text-gray-700 font-medium">{{ routeStore.totalStoreNotSell }}</span>
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreNotSell }}</span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 ร้านทั้งหมด:
-                <span class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
             </div>
 
             <!-- <progress class="progress w-full"

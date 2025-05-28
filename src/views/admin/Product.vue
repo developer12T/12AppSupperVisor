@@ -10,7 +10,13 @@
         <button @click="showAlert = false" class="btn btn-sm ml-auto">Dismiss</button>
     </div>
     <div class="flex justify-between">
-        <h1 class="p-3 text-xl font-bold">จัดการสินค้า</h1>
+        <div class="flex flex-row">
+            <h1 class="p-3 text-xl font-bold  w-/5">จัดการสินค้า</h1>
+            <select class="select select-info ms-3">
+                <option disabled value="">Select Area</option>
+            </select>
+        </div>
+
         <label class="input">
             <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
@@ -20,6 +26,7 @@
             </svg>
             <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
         </label>
+
     </div>
     <div v-for="product in filteredProducts" :key="product.id"
         class="product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4">
@@ -116,7 +123,7 @@ async function triggerAlert(product, status, onOff) {
 
         // store.onOff(product.id, status, onOff)
         await store.onOff(product.id, status, onOff)
-        toast(`${store.message} ${product.id}!`, {
+        toast(`อัพเดทสถานะ "${status}" สินค้า  ID ${product.id} สำเร็จ!`, {
             "theme": toast.THEME.COLORED,
             "type": toast.TYPE.SUCCESS,
             "dangerouslyHTMLString": true
@@ -144,19 +151,19 @@ function toggleSwitch(product, status) {
         case 'withdraw':
             if (product.statusWithdraw == 'Y') {
                 product.statusWithdraw = 'N'
-                triggerAlert(product, 'refund', 'N')
+                triggerAlert(product, 'withdraw', 'N')
             } else {
                 product.statusWithdraw = 'Y'
-                triggerAlert(product, 'refund', 'Y')
+                triggerAlert(product, 'withdraw', 'Y')
             }
             break;
         case 'refund':
             if (product.statusRefund == 'Y') {
                 product.statusRefund = 'N'
-                triggerAlert(product, 'withdraw', 'N')
+                triggerAlert(product, 'refund', 'N')
             } else {
                 product.statusRefund = 'Y'
-                triggerAlert(product, 'withdraw', 'Y')
+                triggerAlert(product, 'refund', 'Y')
             }
             break;
         default:
