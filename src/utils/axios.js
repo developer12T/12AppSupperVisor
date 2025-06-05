@@ -8,4 +8,8 @@ const api = axios.create({
   }
 })
 
+export function setChannel (channel) {
+  api.defaults.headers['x-channel'] = channel
+}
+
 export default api

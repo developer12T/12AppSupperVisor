@@ -9,16 +9,18 @@
         <span>{{ alertMessage }}</span>
         <button @click="showAlert = false" class="btn btn-sm ml-auto">Dismiss</button>
     </div>
-    <div class="flex justify-between">
-        <div class="flex flex-row">
-            <h1 class="p-3 text-xl font-bold  w-/5">จัดการสินค้า</h1>
-            <select class="select select-info ms-3">
-                <option disabled value="">Select Area</option>
+    <div class="flex justify-between items-center p-3">
+        <div class="flex items-center gap-3  w-2/6">
+            <h1 class="text-xl font-bold">จัดการสินค้า</h1>
+            <select class="select select-info w-2/6" v-model="selectedChannel">
+                <option disabled value="">Select Channel</option>
+                <option value="cash">Cash</option>
+                <option value="credit">Credit</option>
             </select>
         </div>
 
-        <label class="input">
-            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <label class="input input-bordered flex items-center gap-2 w-64">
+            <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.3-4.3"></path>
@@ -26,8 +28,8 @@
             </svg>
             <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
         </label>
-
     </div>
+
     <div v-for="product in filteredProducts" :key="product.id"
         class="product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4">
         <figure class="w-1/5">
@@ -78,7 +80,7 @@
 
 <script setup>
 import { Icon } from '@iconify/vue'
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useProductsStore } from '../../store/modules/product';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -86,23 +88,19 @@ import timezone from 'dayjs/plugin/timezone'
 import { toast } from 'vue3-toastify';
 import "vue3-toastify/dist/index.css";
 
-const store = useProductsStore()
+const productStore = useProductsStore()
 const products = ref([])
 const showAlert = ref(false)
 const alertMessage = ref('Warning: Invalid email address!')
 const searchQuery = ref('');
+const selectedChannel = ref('cash');
 
 
-// async function triggerAlert(product, status, onOff) {
-//     await store.onOff(product.id, status, onOff)
-// }
-
-// const filteredProducts = computed(() => []);
 
 const filteredProducts = computed(() => {
     const query = searchQuery.value.toLowerCase();
     if (query != '') {
-        return store.product.data.filter(product =>
+        return productStore.product.data.filter(product =>
             product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
             product.id.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
             product.group.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -112,22 +110,30 @@ const filteredProducts = computed(() => {
             product.name.includes(searchQuery.value)
         );
     } else {
-        return store.product.data
+        return productStore.product.data
     }
-
 });
-
 
 async function triggerAlert(product, status, onOff) {
     try {
 
         // store.onOff(product.id, status, onOff)
-        await store.onOff(product.id, status, onOff)
-        toast(`อัพเดทสถานะ "${status}" สินค้า  ID ${product.id} สำเร็จ!`, {
-            "theme": toast.THEME.COLORED,
-            "type": toast.TYPE.SUCCESS,
-            "dangerouslyHTMLString": true
-        })
+        await productStore.onOff(product.id, status, onOff, selectedChannel.value)
+        console.log('statusCode', productStore.statusCode)
+        if (productStore.statusCode == 200) {
+            toast(`อัพเดทสถานะ "${status}" สินค้า  ID ${product.id} สำเร็จ!`, {
+                "theme": toast.THEME.COLORED,
+                "type": toast.TYPE.SUCCESS,
+                "dangerouslyHTMLString": true
+            })
+        } else {
+            toast(`${productStore.message}!`, {
+                "theme": toast.THEME.COLORED,
+                "type": toast.TYPE.ERROR,
+                "dangerouslyHTMLString": true
+            })
+        }
+
     } catch (error) {
         toast(`${error}!`, {
             "theme": toast.THEME.COLORED,
@@ -136,7 +142,6 @@ async function triggerAlert(product, status, onOff) {
         })
     }
 }
-
 function toggleSwitch(product, status) {
     switch (status) {
         case 'sale':
@@ -171,10 +176,17 @@ function toggleSwitch(product, status) {
     }
 }
 
+watch(selectedChannel, async (newVal) => {
+    if (newVal) {
+        productStore.getProductionAll(selectedChannel.value)
+        products.value = productStore.product.data
+    }
+});
+
 
 onMounted(async () => {
-    await store.getProductionAll()
-    products.value = store.product.data
+    await productStore.getProductionAll('cash')
+    products.value = productStore.product.data
 })
 
 </script>

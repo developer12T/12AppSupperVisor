@@ -56,7 +56,7 @@ watch(isSidebarOpen, (newVal) => {
 
 <template>
     <aside
-        :class="[isSidebarOpen ? 'w-64' : 'w-20', 'fixed top-0 left-0 z-40 h-screen transition-all duration-300 bg-base-200 p-4 font-kanit flex flex-col justify-between']">
+        :class="[isSidebarOpen ? 'w-64' : 'w-20', 'fixed top-0 left-0 z-60 h-screen transition-all duration-300 bg-base-200 p-4 font-kanit flex flex-col justify-between']">
         <div>
             <button @click="toggleSidebar"
                 class="flex items-center p-2 mb-4 text-gray-500 rounded-lg hover:bg-base-300">

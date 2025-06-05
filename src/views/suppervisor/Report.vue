@@ -1,5 +1,5 @@
 <template>
-    <div class="overflow-auto max-h-[calc(100vh-150px)] max-w-[calc(100vw-100px)]  rounded-box">
+    <div class="overflow-auto max-h-[calc(100vh-150px)] max-w-[calc(100vw-100px)] rounded-box">
         <table class="table border-separate border-spacing-0 min-w-[1800px] border border-black">
             <!-- Main Header -->
             <thead>
@@ -26,7 +26,7 @@
                 </tr>
             </thead>
 
-            <!-- Body -->
+            <!-- Table Body -->
             <tbody>
                 <tr v-for="(row, rIndex) in rows" :key="rIndex">
                     <td class="sticky left-0 z-30 bg-white text-center p-2 border border-black shadow-md">
@@ -38,7 +38,8 @@
                     </td>
                 </tr>
             </tbody>
-            <!-- Summary Row (tfoot) -->
+
+            <!-- Summary Footer -->
             <tfoot>
                 <tr>
                     <td
@@ -56,30 +57,67 @@
 </template>
 
 <script setup>
-const headers = [
-    '01. ผงปรุงฟ้าไทย 75 G',
-    '02. ผงปรุงฟ้าไทย 165 G',
-    '03. ผงปรุงฟ้าไทย 400 G',
-    '04. ผงปรุงฟ้าไทย 1000 G',
-    '05. ผงปรุงฟ้าไทย แพ็ค'
-]
+import { ref, computed, onMounted } from 'vue'
+import { useReport } from '../../store/modules/report'
 
-const subHeaders = [
-    'เป้าหมาย จำนวน(หีบ)',
-    'ยอดขาย ที่ทำได้(หีบ)',
-    'คิดเป็น % (หีบ)',
-    'เป้าหมาย จำนวนร้านค้า',
-    'จำนวนร้านค้า ที่ทำได้',
-    'คิดเป็น % (ร้าน)'
-]
+const isLoading = ref(false)
+const reportStore = useReport()
 
-const rows = Array.from({ length: 20 }, (_, i) => ({
-    area: `CT${100 + i}`,
-    data: Array(headers.length * subHeaders.length).fill('0.00 %')
-}))
+onMounted(async () => {
+    isLoading.value = true
+    await reportStore.getSummaryProduct('BE') // fetch from API
+    isLoading.value = false
+})
 
-// Summary row (mocked for now)
-const summaryRow = Array(headers.length * subHeaders.length).fill('0')
-summaryRow[2] = '100.00 %' // example % column
-summaryRow[5] = '8.33 %'
+const summaryProduct = computed(() => reportStore.summaryProduct || [])
+
+const extractProductsAndSubs = (data) => {
+    if (!data.length) return { headers: [], subHeaders: [], productsMap: {} }
+
+    const sample = data[0]
+    const fields = Object.keys(sample).filter(k => k !== 'area')
+
+    const productsMap = {}
+
+    fields.forEach(key => {
+        const match = key.match(/^(TRAGET|SELL|PERCENT|TRAGET STORE|STORE|PERCENT STORE) (.+)$/)
+        if (match) {
+            const subKey = match[1]
+            const productName = match[2]
+            if (!productsMap[productName]) productsMap[productName] = {}
+            productsMap[productName][subKey] = key
+        }
+    })
+
+    const sortedProducts = Object.keys(productsMap).sort()
+    const subHeaders = [
+        'TRAGET', 'SELL', 'PERCENT',
+        'TRAGET STORE', 'STORE', 'PERCENT STORE'
+    ]
+
+    return { headers: sortedProducts, subHeaders, productsMap }
+}
+
+// extract headers/subHeaders reactively
+const structure = computed(() => extractProductsAndSubs(summaryProduct.value))
+const headers = computed(() => structure.value.headers)
+const subHeaders = computed(() => structure.value.subHeaders)
+const productsMap = computed(() => structure.value.productsMap)
+
+const rows = computed(() =>
+    summaryProduct.value.map(item => {
+        const data = headers.value.flatMap(product =>
+            subHeaders.value.map(sub => {
+                const key = productsMap.value[product]?.[sub]
+                const value = key ? item[key] : ''
+                return typeof value === 'number' ? (sub.includes('PERCENT') ? value.toFixed(2) + ' %' : value.toFixed(2)) : value
+            })
+        )
+        return { area: item.area, data }
+    })
+)
+
+const summaryRow = computed(() =>
+    new Array(headers.value.length * subHeaders.value.length).fill('0')
+)
 </script>

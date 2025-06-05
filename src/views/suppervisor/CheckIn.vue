@@ -180,9 +180,7 @@ onMounted(async () => {
     if (selectedArea.value) {
         await routeStore.getCheckin(period, selectedArea.value);
     }
-
     await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
-
     await new Promise(resolve => setTimeout(resolve, 2000))
     isLoading.value = false;
 })
