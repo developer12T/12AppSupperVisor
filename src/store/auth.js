@@ -13,7 +13,6 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await axios.post(
           import.meta.env.VITE_API_URL + '/api/cash/login',
-          // 'https://apps.onetwotrading.co.th/api/cash/login',
           { username: userLogin, password: passwordLogin },
           {
             headers: {
@@ -34,6 +33,7 @@ export const useAuthStore = defineStore('auth', {
           this.warehouse = result.data[0].warehouse
           this.token = result.data[0].token
           localStorage.setItem('saleCode', this.saleCode)
+          localStorage.setItem('username', this.username)
           localStorage.setItem('salePayer', JSON.stringify(this.salePayer))
           localStorage.setItem('name', JSON.stringify(this.user))
           localStorage.setItem('tel', this.tel)

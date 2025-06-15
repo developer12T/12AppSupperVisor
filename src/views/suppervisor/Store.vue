@@ -53,9 +53,9 @@
                     <h2 class="card-title text-xl me-2">{{ customer.name }} </h2>
 
                     <div
-                        :class="customer.status == '20' ? 'badge badge-success' : customer.status == '15' ? 'badge badge-error' : 'badge badge-warning'">
+                        :class="customer.status == '20' ? 'badge badge-success' : customer.status == '90' ? 'badge badge-error' : 'badge badge-warning'">
                         {{
-                            customer.status == '20' ? 'อนุมัติ' : customer.status == '15' ? 'ไม่อนุมัติ' :
+                            customer.status == '20' ? 'อนุมัติ' : customer.status == '90' ? 'ไม่อนุมัติ' :
                                 'ยังไม่ได้อนุมัติ'
                         }} </div>
                 </div>
@@ -74,10 +74,12 @@
                 <button class="btn btn-success" @click="openGoogleMap(customer.latitude, customer.longtitude)">
                     Google Map
                 </button>
-                <button class="btn btn-error" @click="showRejectionDialog(customer.storeId, customer.name)">
+                <button :disabled="customer.status === '20' || customer.status === '90'" class="btn btn-error"
+                    @click="showRejectionDialog(customer.storeId, customer.name)">
                     ไม่อนุมัติ
                 </button>
-                <button class="btn btn-primary" @click="showConfirmationDialog(customer.storeId, customer.name)">
+                <button :disabled="customer.status === '20' || customer.status === '90'" class="btn btn-primary"
+                    @click="showConfirmationDialog(customer.storeId, customer.name)">
                     อุนมัติร้านค้า
                 </button>
             </div>
@@ -94,7 +96,7 @@
             <p class="mb-4"> รหัสร้านค้า: {{ storeId }}</p>
             <div class="flex justify-between">
                 <button @click="cancelAction" class="btn btn-error">ยกเลิก</button>
-                <button @click="confirmAction" class="btn btn-primary">อุนมัติร้านค้า</button>
+                <button @click="confirmAction" class="btn btn-primary">อนุมัติร้านค้า</button>
             </div>
         </div>
     </div>
@@ -160,9 +162,9 @@ const confirmAction = async () => {
     console.log('storeId', storeId.value);
     console.log('area', area);
     try {
-        await store.updateStoreStatus({ storeId: storeId.value })
+        await store.updateStoreStatus({ storeId: storeId.value, status: '20' })
         showModalConfirm.value = false;
-        // window.location.reload();
+        window.location.reload();
     } catch (error) {
         console.log('Error confirming:', error);
         showModalConfirm.value = false;
@@ -171,9 +173,9 @@ const confirmAction = async () => {
 
 const rejectAction = async () => {
     try {
-        await store.rejectStore({ storeId: storeId.value })
+        await store.updateStoreStatus({ storeId: storeId.value, status: '90' })
         showModalConfirm.value = false;
-        // window.location.reload();
+        window.location.reload();
     } catch (error) {
         console.log('Error confirming:', error);
         showModalConfirm.value = false;

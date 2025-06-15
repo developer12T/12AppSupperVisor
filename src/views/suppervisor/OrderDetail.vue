@@ -43,6 +43,7 @@
                             <th class="text-left">Product ID</th>
                             <th class="text-left">Product Name</th>
                             <th class="text-center">Qty</th>
+                            <th class="text-center">Unit</th>
                             <th class="text-right">Price</th>
                             <th class="text-right">Subtotal</th>
                         </tr>
@@ -53,6 +54,7 @@
                             <td>{{ item.id }}</td>
                             <td>{{ item.name }}</td>
                             <td class="text-center">{{ item.qty }}</td>
+                            <td class="text-center">{{ item.unitName }}</td>
                             <td class="text-right">{{ formatCurrency(item.price) }}</td>
                             <td class="text-right">{{ formatCurrency(item.qty * item.price) }}</td>
                         </tr>

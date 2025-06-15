@@ -36,6 +36,7 @@ const menuItems = ref([
 
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/suppervisor/approve', submenu: null, roles: ['sale', 'admin', 'master'] },
     { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'master'] },
+    { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'master'] },
     // { name: 'เช็คอิน', icon: 'mdi:shop-location', link: '/suppervisor/checkin', submenu: null, roles: ['sale', 'master'] },
 
 ])
@@ -72,7 +73,7 @@ watch(isSidebarOpen, (newVal) => {
                                 :class="['flex items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-base-300', isSubmenuOpen(index) ? 'bg-base-300' : '', !isSidebarOpen ? 'justify-center' : '']">
                                 <Icon :icon="item.icon" class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                 <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{ item.name
-                                    }}</span>
+                                }}</span>
                                 <Icon v-if="showText" class="w-3 h-3" icon="mdi:chevron-down" />
                             </button>
                             <ul v-show="isSidebarOpen && isSubmenuOpen(index)" class="py-2 space-y-2">
@@ -84,7 +85,7 @@ watch(isSidebarOpen, (newVal) => {
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                        }}</span>
+                                            }}</span>
                                     </router-link>
                                 </li>
                             </ul>
