@@ -27,17 +27,18 @@ const menuItems = ref([
         icon: 'mdi:chart-areaspline',
         link: '#',
         submenu: [
-            { icon: 'mdi:chart-areaspline', name: 'รายงานยอดขาย', link: '/suppervisor/report' },
-            { icon: 'mdi:shop-location', name: 'รายงานการเช็คอิน', link: '/suppervisor/checkin' },
-            { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/suppervisor/product' },
+            { icon: 'mdi:chart-areaspline', name: 'รายงานยอดขาย', link: '/supervisor/report' },
+            { icon: 'mdi:shop-location', name: 'รายงานการเช็คอิน', link: '/supervisor/checkin' },
+            { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product' },
         ],
         roles: ['sale', 'master']
     },
-
-    { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/suppervisor/approve', submenu: null, roles: ['sale', 'admin', 'master'] },
+    { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['sale', 'admin', 'master'] },
     { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'master'] },
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'master'] },
-    // { name: 'เช็คอิน', icon: 'mdi:shop-location', link: '/suppervisor/checkin', submenu: null, roles: ['sale', 'master'] },
+    { name: 'รายการส่งเงิน', icon: 'mdi:money-100', link: '/supervisor/sendmoney', submenu: null, roles: ['admin', 'master'] },
+    { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/supervisor/giveaway', submenu: null, roles: ['admin', 'master'] },
+    // { name: 'เช็คอิน', icon: 'mdi:shop-location', link: '/supervisor/checkin', submenu: null, roles: ['sale', 'master'] },
 
 ])
 

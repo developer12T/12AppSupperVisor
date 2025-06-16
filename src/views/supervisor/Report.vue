@@ -65,7 +65,7 @@ const reportStore = useReport()
 
 onMounted(async () => {
     isLoading.value = true
-    await reportStore.getSummaryProduct('BE') // fetch from API
+    await reportStore.getSummaryProduct('SH') // fetch from API
     isLoading.value = false
 })
 
