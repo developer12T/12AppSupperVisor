@@ -6,7 +6,7 @@
             <table class="table table-zebra w-full border border-gray-300">
                 <thead class="bg-gray-200">
                     <tr>
-                        <th>#</th>
+                        <th>No.</th>
                         <th>Route</th>
                         <th>Amount</th>
                         <th>Date</th>

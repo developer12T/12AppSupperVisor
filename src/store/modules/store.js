@@ -21,8 +21,9 @@ export const useStoresStore = defineStore('stores', {
       try {
         //   const token = JSON.parse(localStorage.getItem('token'));
         const area = localStorage.getItem('area')
+        const zone = localStorage.getItem('zone')
         const response = await api.get(
-          `/api/cash/store/getStore?type=new&area=${area}`
+          `/api/cash/store/getStore?type=new&area=${zone}`
         )
         const result = response.data
         this.storeNew = result

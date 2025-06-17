@@ -80,6 +80,7 @@
                     <th class="text-right p-2">Summary</th>
                     <th class="text-center p-2">Status</th>
                     <th class="text-center p-2">Google Map</th>
+                    <th class="text-center p-2">Image</th>
                     <th class="text-center p-2">Datetime</th>
                 </tr>
             </thead>
@@ -87,6 +88,9 @@
                 <!-- Skeleton loading -->
                 <template v-if="isLoading">
                     <tr v-for="n in 5" :key="'skeleton-' + n">
+                        <td>
+                            <div class="h-4 bg-gray-300 rounded "></div>
+                        </td>
                         <td>
                             <div class="h-4 bg-gray-300 rounded "></div>
                         </td>
@@ -127,6 +131,15 @@
                         </td>
                         <td class="text-center p-2">
                             <a :href="store.mapLink" target="_blank" class="text-blue-600 underline">View</a>
+                        </td>
+                        <td v-if="store.imageLink" class="text-center p-2">
+                            <a :href="store.imageLink" target="_blank" rel="noopener noreferrer"
+                                class="text-blue-600 underline">
+                                ดูภาพ
+                            </a>
+                        </td>
+                        <td v-else class="text-center p-2 text-gray-400">
+                            ไม่มีภาพ
                         </td>
                         <td class="text-center p-2">{{ store.datetime }}</td>
                     </tr>
