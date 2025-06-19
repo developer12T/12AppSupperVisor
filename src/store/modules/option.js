@@ -5,9 +5,13 @@ export const useOption = defineStore('options', {
   state: () => ({
     area: [],
     zone: [],
+    brandFilter: [],
     brand: [],
+    flavourFilter: [],
     flavour: [],
+    sizeFilter: [],
     size: [],
+    groupFilter: [],
     group: [],
     message: '',
     statusCode: null
@@ -27,9 +31,7 @@ export const useOption = defineStore('options', {
     },
     async getGroup () {
       try {
-        const response = await api.get(
-          `/api/cash/order/getGroup`
-        )
+        const response = await api.get(`/api/cash/order/getGroup`)
         const result = response.data.data
         this.group = result
         console.log('getGroup', this.group)
@@ -39,9 +41,7 @@ export const useOption = defineStore('options', {
     },
     async getBrand () {
       try {
-        const response = await api.get(
-          `/api/cash/product/groupBrandId`
-        )
+        const response = await api.get(`/api/cash/product/groupBrandId`)
         const result = response.data.data
         this.brand = result
         console.log('getBrand', this.brand)
@@ -71,12 +71,74 @@ export const useOption = defineStore('options', {
     },
     async getArea () {
       try {
-        const response = await api.get(
-          `/api/cash/user/getAreaAll`
-        )
+        const response = await api.get(`/api/cash/user/getAreaAll`)
         const result = response.data.data
         this.area = result
         console.log('getArea', this.area)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getGroupFilter (size, brand, flavour, unit) {
+      try {
+        const response = await api.post(`/api/cash/product/groupByFilter`, {
+          size: size,
+          brand: brand,
+          flavour: flavour,
+          unit: unit
+        })
+
+        const result = response.data.data
+        this.groupFilter = result
+        console.log('c', this.groupFilter)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getFlavourFilter (size, brand, group, unit) {
+      try {
+        const response = await api.post(`/api/cash/product/flavourByFilter`, {
+          size: size,
+          brand: brand,
+          group: group,
+          unit: unit
+        })
+
+        const result = response.data.data
+        this.flavourFilter = result
+        console.log('getFlavourFilter', this.flavourFilter)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getBrandFilter (size, group, flavour, unit) {
+      try {
+        const response = await api.post(`/api/cash/product/brandByFilter`, {
+          size: size,
+          group: group,
+          flavour: flavour,
+          unit: unit
+        })
+
+        const result = response.data.data
+        this.brandFilter = result
+        console.log('getBrandFilter', this.brandFilter)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getSizeFilter (group, brand, flavour, unit) {
+      try {
+        const response = await api.post(`/api/cash/product/sizeByFilter`, {
+          group: group,
+          brand: brand,
+          flavour: flavour,
+          unit: unit
+        })
+
+        const result = response.data.data
+        this.sizeFilter = result
+        console.log('getSizeFilter', this.sizeFilter)
       } catch (error) {
         console.error(error)
       }
