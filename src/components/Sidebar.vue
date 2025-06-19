@@ -34,10 +34,11 @@ const menuItems = ref([
         roles: ['sale', 'master']
     },
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['sale', 'admin', 'master'] },
+    { name: 'จัดการผู้ใช้งาน', icon: 'mdi:person-card-details', link: '/admin/manageuser', submenu: null, roles: ['sale', 'admin', 'master'] },
     { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'master'] },
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'master'] },
     { name: 'รายการส่งเงิน', icon: 'mdi:money-100', link: '/supervisor/sendmoney', submenu: null, roles: ['admin', 'master'] },
-    { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/supervisor/giveaway', submenu: null, roles: ['admin', 'master'] },
+    { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveaway', submenu: null, roles: ['admin', 'master'] },
     // { name: 'เช็คอิน', icon: 'mdi:shop-location', link: '/supervisor/checkin', submenu: null, roles: ['sale', 'master'] },
 
 ])
@@ -74,7 +75,7 @@ watch(isSidebarOpen, (newVal) => {
                                 :class="['flex items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-base-300', isSubmenuOpen(index) ? 'bg-base-300' : '', !isSidebarOpen ? 'justify-center' : '']">
                                 <Icon :icon="item.icon" class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                 <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{ item.name
-                                }}</span>
+                                    }}</span>
                                 <Icon v-if="showText" class="w-3 h-3" icon="mdi:chevron-down" />
                             </button>
                             <ul v-show="isSidebarOpen && isSubmenuOpen(index)" class="py-2 space-y-2">
@@ -86,7 +87,7 @@ watch(isSidebarOpen, (newVal) => {
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                            }}</span>
+                                        }}</span>
                                     </router-link>
                                 </li>
                             </ul>
@@ -103,11 +104,11 @@ watch(isSidebarOpen, (newVal) => {
             </nav>
         </div>
 
-        <router-link to="#" class="flex items-center p-2 rounded-lg hover:bg-base-300"
+        <!-- <router-link to="#" class="flex items-center p-2 rounded-lg hover:bg-base-300"
             :class="{ 'justify-center': !isSidebarOpen }">
             <Icon icon="mdi:logout" class="h-6 w-6" />
             <span v-if="showText" @click="SignOut" class="ml-3 cursor-pointer">ออกจากระบบ</span>
-        </router-link>
+        </router-link> -->
     </aside>
 </template>
 

@@ -50,10 +50,12 @@ const router = useRouter();
 
 const SignIn = async () => {
     await store.login(userLogin.value, passwordLogin.value);
-    if (store.isLoggedIn) {
+    console.log(store.statusCode)
+    if (store.statusCode == 201) {
         loginValidation.value = false;
         console.log('เข้าสู่ระบบสำเร็จ');
         router.push("/");
+        window.location.reload();
     } else {
         console.log('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
         loginValidation.value = true;

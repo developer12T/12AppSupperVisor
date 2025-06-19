@@ -3,7 +3,8 @@ import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    validateLogin: null
+    validateLogin: null,
+    statusCode: 0
   }),
   getters: {
     isLoggedIn: state => state.user
@@ -23,16 +24,17 @@ export const useAuthStore = defineStore('auth', {
         )
         const result = response.data
         if (result) {
-          this.userName = result.data[0].username
+          this.username = result.data[0].username
           this.saleCode = result.data[0].saleCode
           this.salePayer = result.data[0].salePayer
-          this.user = result.data[0].fullName
+          this.fullName = result.data[0].fullName
           this.tel = result.data[0].tel
           this.area = result.data[0].area
           this.zone = result.data[0].zone
           this.warehouse = result.data[0].warehouse
           this.token = result.data[0].token
           localStorage.setItem('saleCode', this.saleCode)
+          localStorage.setItem('fullName', this.fullName)
           localStorage.setItem('username', this.username)
           localStorage.setItem('salePayer', JSON.stringify(this.salePayer))
           localStorage.setItem('name', JSON.stringify(this.user))
@@ -42,6 +44,7 @@ export const useAuthStore = defineStore('auth', {
           localStorage.setItem('warehouse', this.warehouse)
           localStorage.setItem('token', JSON.stringify(this.token))
           localStorage.setItem('role', 'master')
+          this.statusCode = response.data.status
         } else {
           this.validateLogin = user.message
           this.logout()
@@ -51,6 +54,7 @@ export const useAuthStore = defineStore('auth', {
         console.error(error)
       }
     },
+
     logout () {
       this.saleCode = null
       this.salePayer = null

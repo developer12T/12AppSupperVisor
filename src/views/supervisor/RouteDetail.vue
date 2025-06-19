@@ -43,8 +43,8 @@
                 <div v-if="isLoading" class="skeleton h-8 w-24 rounded"></div>
                 <span v-else :class="[
                     routeStore.effective <= 80 ? 'text-red-500' :
-                        routeStore.effective > 50 ? 'text-yellow-500' :
-                            'text-green-600',
+                        routeStore.effective > 80 ? 'text-green-600' :
+                            'text-yellow-600',
                     'font-semibold'
                 ]">
                     {{ routeStore.effective }}%

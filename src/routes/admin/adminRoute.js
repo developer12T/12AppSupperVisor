@@ -28,6 +28,21 @@ const adminRoutes = [
         path: 'promotiondetails/:proId',
         component: () => import('../../views/admin/PromotionDetails.vue')
         // meta: { breadcrumb: 'ใบรวมสินค้า' }
+      },
+      {
+        path: 'user/:username',
+        component: () => import('../../views/admin/UserProfile.vue')
+        // meta: { breadcrumb: 'ใบรวมสินค้า' }
+      },
+      {
+        path: 'manageuser',
+        component: () => import('../../views/admin/ManageUser.vue')
+        // meta: { breadcrumb: 'ใบรวมสินค้า' }
+      },
+      {
+        path: 'giveaway',
+        component: () => import('../../views/admin/Giveaways.vue')
+        // meta: { breadcrumb: 'ใบรวมสินค้า' }
       }
     ]
   }
