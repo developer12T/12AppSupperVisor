@@ -43,6 +43,11 @@ const adminRoutes = [
         path: 'giveaway',
         component: () => import('../../views/admin/Giveaways.vue')
         // meta: { breadcrumb: 'ใบรวมสินค้า' }
+      },
+      {
+        path: 'checklist',
+        component: () => import('../../views/admin/ChecklistFlow.vue')
+        // meta: { breadcrumb: 'ใบรวมสินค้า' }
       }
     ]
   }

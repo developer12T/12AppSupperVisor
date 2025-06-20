@@ -40,6 +40,10 @@ const supervisorRoutes = [
       {
         path: 'sendmoney',
         component: () => import('../../views/supervisor/Sendmoney.vue')
+      },
+      {
+        path: 'withdraw',
+        component: () => import('../../views/supervisor/Withdraw.vue')
       }
     ]
   }

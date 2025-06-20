@@ -2,7 +2,12 @@
     <div class="p-6 max-full mx-auto">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">จัดการผู้ใช้</h1>
-            <button class="btn btn-primary" @click="openAddUserModal">+ เพิ่มผู้ใช้</button>
+            <div class="flex justify-between items-center mb-4">
+                <button class="btn btn-primary me-5" @click="openAddUserModal">+ เพิ่มผู้ใช้</button>
+                <router-link to="/admin/checklist" class="flex items-center ml-3">
+                    <button class="btn btn-success text-white" @click="">Report Check List</button>
+                </router-link>
+            </div>
         </div>
 
         <table class="table w-full table-zebra">

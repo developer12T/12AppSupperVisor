@@ -22,8 +22,12 @@
                 </div>
 
                 <div>
-                    <label class="label">อีเมล</label>
+                    <label class="label">เขต</label>
                     <input v-model="user.email" class="input input-bordered w-full" disabled />
+                </div>
+                <div>
+                    <label class="label">โซน</label>
+                    <input v-model="user.zone" class="input input-bordered w-full" disabled />
                 </div>
 
                 <div>
@@ -49,6 +53,7 @@
                 <form @submit.prevent="updateProfile">
                     <input v-model="editForm.name" class="input input-bordered w-full mb-2" placeholder="ชื่อผู้ใช้" />
                     <input v-model="editForm.email" class="input input-bordered w-full mb-2" placeholder="อีเมล" />
+                    <input v-model="editForm.zone" class="input input-bordered w-full mb-2" placeholder="อีเมล" />
                     <input v-model="editForm.role" class="input input-bordered w-full mb-2" placeholder="ตำแหน่ง" />
                     <input v-model="editForm.employeeId" class="input input-bordered w-full mb-4"
                         placeholder="รหัสพนักงาน" />
@@ -73,12 +78,19 @@ const username = computed(() => route.params.username)
 
 const defaultAvatar = `https://ui-avatars.com/api/?name=${route.params.username}&background=random`
 
+
+const fullName = localStorage.getItem('fullName')
+const area = localStorage.getItem('area')
+const zone = localStorage.getItem('zone')
+const saleCode = localStorage.getItem('saleCode')
+// const username = localStorage.getItem('zone')
 // mock user data
 const user = ref({
-    name: 'นที ทดสอบ',
-    email: 'natee@example.com',
-    role: 'ผู้ดูแลระบบ',
-    employeeId: 'EMP00123',
+    name: `${fullName}`,
+    email: `${area}`,
+    zone: `${zone}`,
+    role: 'master',
+    employeeId: `${saleCode}`,
     avatar: '',
 })
 

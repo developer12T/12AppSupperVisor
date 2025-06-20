@@ -34,12 +34,13 @@ const menuItems = ref([
         roles: ['sale', 'master']
     },
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['sale', 'admin', 'master'] },
+    { name: 'อนุมัติเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['sale', 'master'] },
     { name: 'จัดการผู้ใช้งาน', icon: 'mdi:person-card-details', link: '/admin/manageuser', submenu: null, roles: ['sale', 'admin', 'master'] },
     { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'master'] },
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'master'] },
     { name: 'รายการส่งเงิน', icon: 'mdi:money-100', link: '/supervisor/sendmoney', submenu: null, roles: ['admin', 'master'] },
     { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveaway', submenu: null, roles: ['admin', 'master'] },
-    // { name: 'เช็คอิน', icon: 'mdi:shop-location', link: '/supervisor/checkin', submenu: null, roles: ['sale', 'master'] },
+
 
 ])
 
@@ -55,6 +56,7 @@ const isActive = (link) => route.path === link
 watch(isSidebarOpen, (newVal) => {
     showText.value = newVal
 })
+
 </script>
 
 <template>

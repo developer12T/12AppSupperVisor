@@ -1,44 +1,69 @@
 <template>
     <div class="p-4">
-        <h2 class="text-xl font-bold mb-4">Send Money Table</h2>
+        <h2 class="text-xl font-bold mb-4">Send Money</h2>
 
         <div class="overflow-x-auto">
             <table class="table table-zebra w-full border border-gray-300">
                 <thead class="bg-gray-200">
                     <tr>
                         <th>No.</th>
-                        <th>Route</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Status</th>
+                        <th>รูท</th>
+                        <th>ยอดส่ง</th>
+                        <th>ยออดรวม</th>
+                        <th>รูปภาพ</th>
+                        <th>วันที่</th>
+                        <th>สถานะ</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) in sendMoneyList" :key="item.id">
                         <td>{{ index + 1 }}</td>
-                        <td>{{ item.route }}</td>
-                        <td>{{ formatCurrency(item.amount) }}</td>
-                        <td>{{ formatDate(item.date) }}</td>
+                        <td>{{ item.area }}</td>
+                        <td>{{ formatCurrency(item.sendmoney) }}</td>
+                        <td>{{ formatCurrency(item.sendmoney) }}</td>
                         <td>
+                            <img @click="openPreview(filePathToUrl(item.imageList[0].path))"
+                                :src="filePathToUrl(item.imageList[0].path)" alt="placeholder"
+                                :style="{ width: '75px', height: '75px', objectFit: 'cover' }" />
+                        </td>
+                        <td>{{ formatDate(item.createdAt) }}</td>
+                        <!-- <td>
                             <span :class="statusColor(item.status)">
                                 {{ item.status }}
                             </span>
-                        </td>
+                        </td> -->
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+    <div v-if="previewImg" @click.self="closePreview"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000">
+        <img :src="previewImg" style="max-width:90vw;max-height:90vh;border-radius:16px;background:#fff" />
+    </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useSendmoney } from '../../store/modules/sendmoney'
 
-const sendMoneyList = ref([
-    { id: 1, route: 'SH224', amount: 1200, date: '2025-06-16', status: 'pending' },
-    { id: 2, route: 'SH225', amount: 900, date: '2025-06-15', status: 'sent' },
-    { id: 3, route: 'SH226', amount: 750, date: '2025-06-14', status: 'failed' },
-])
+
+function filePathToUrl(filePath) {
+    return filePath.replace('/var/www/12AppAPI/public', 'https://apps.onetwotrading.co.th')
+}
+
+
+const previewImg = ref(null)
+function openPreview(src) {
+    previewImg.value = src
+}
+function closePreview() {
+    previewImg.value = null
+}
+
+const sendmoneyStore = useSendmoney()
+
+const sendMoneyList = ref([])
 
 function formatCurrency(value) {
     return new Intl.NumberFormat('en-US', {
@@ -48,8 +73,8 @@ function formatCurrency(value) {
 }
 
 function formatDate(dateStr) {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' }
-    return new Date(dateStr).toLocaleDateString('en-GB', options)
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
+    return new Date(dateStr).toLocaleDateString('th-TH', options)
 }
 
 function statusColor(status) {
@@ -64,6 +89,11 @@ function statusColor(status) {
             return ''
     }
 }
+
+onMounted(async () => {
+    await sendmoneyStore.getSendmoney();
+    sendMoneyList.value = sendmoneyStore.sendmoney
+})
 </script>
 
 <style scoped>
