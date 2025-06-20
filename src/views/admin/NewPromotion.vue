@@ -87,6 +87,7 @@ import { useOption } from '../../store/modules/option'
 import { usePromotionsStore } from '../../store/modules/promotion'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
+import { toast } from 'vue3-toastify';
 
 const router = useRouter()
 const optionStore = useOption()
@@ -283,18 +284,109 @@ function setupRewardWatch(index) {
 }
 
 const submitForm = async () => {
+    // --- เช็ค required fields ก่อน submit ---
+    if (!form.value.name) {
+        toast('กรุณากรอกชื่อโปรโมทชั่น', {
+            theme: toast.THEME.COLORED,
+            type: toast.TYPE.ERROR,
+            dangerouslyHTMLString: true
+        })
+        return
+    }
+    if (!selectedBrand.value.length) {
+        toast('กรุณาเลือกแบรนด์ในเงื่อนไขสินค้า', {
+            theme: toast.THEME.COLORED,
+            type: toast.TYPE.ERROR,
+            dangerouslyHTMLString: true
+        })
+        return
+    }
+    if (!form.value.validFrom || !form.value.validTo) {
+        toast('กรุณาระบุวันเริ่มต้นและวันสิ้นสุด', {
+            theme: toast.THEME.COLORED,
+            type: toast.TYPE.ERROR,
+            dangerouslyHTMLString: true
+        })
+        return
+    }
+    // (สามารถเพิ่ม validation field ที่ต้องการได้อีก)
+
+    // --- เตรียมข้อมูลให้พร้อมก่อนส่ง ---
     form.value.conditions[0].productBrand = selectedBrand.value.map(item => item.brandName)
     form.value.conditions[0].productGroup = selectedGroup.value.map(item => item.group)
     form.value.conditions[0].productFlavour = selectedFlavour.value.map(item => item.flavourName)
     form.value.conditions[0].productSize = selectedSize.value.map(item => item.size)
+    form.value.applicableTo.area = selectedArea.value.map(item => item.area)
     console.log(form.value)
-    // try {
-    //  await promotionStore.addPromotion('https://apps.onetwotrading.co.th/api/cash/promotion/add', form.value)
-    //  router.push('/admin/promotion')
-    // } catch (err) {
-    //     console.error(err)
-    // }
+
+    try {
+        // await promotionStore.addPromotion('https://apps.onetwotrading.co.th/api/cash/promotion/add', form.value)
+        await promotionStore.addPromotion(form.value)
+        if (promotionStore.statusCode == 201) {
+            toast('เพิ่มโปรโมทชั่นใหม่สำเร็จ', {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.SUCCESS,
+                dangerouslyHTMLString: true
+            })
+            // --- delay 1.5 วินาที ก่อน push ---
+            setTimeout(() => {
+                router.push('/admin/promotion')
+            }, 1500)
+        } else {
+            toast(`เพิ่มโปรโมทชั่นใหม่ไม่สำเร็จ (${promotionStore.statusCode})`, {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.ERROR,
+                dangerouslyHTMLString: true
+            })
+        }
+    } catch (err) {
+        toast(`${err}`, {
+            theme: toast.THEME.COLORED,
+            type: toast.TYPE.ERROR,
+            dangerouslyHTMLString: true
+        })
+        console.error(err)
+    }
 }
+
+
+// const submitForm = async () => {
+//     form.value.conditions[0].productBrand = selectedBrand.value.map(item => item.brandName)
+//     form.value.conditions[0].productGroup = selectedGroup.value.map(item => item.group)
+//     form.value.conditions[0].productFlavour = selectedFlavour.value.map(item => item.flavourName)
+//     form.value.conditions[0].productSize = selectedSize.value.map(item => item.size)
+//     form.value.applicableTo.area = selectedArea.value.map(item => item.area)
+//     console.log(form.value)
+//     try {
+//         // await promotionStore.addPromotion('https://apps.onetwotrading.co.th/api/cash/promotion/add', form.value)
+//         await promotionStore.addPromotion(form.value)
+//         // console.log(promotionStore.statusCode)
+//         if (promotionStore.statusCode == 201) {
+//             toast(`เพิ่มโปรโมทชั่นใหม่สำเร็จ`, {
+//                 "theme": toast.THEME.COLORED,
+//                 "type": toast.TYPE.SUCCESS,
+//                 "dangerouslyHTMLString": true
+//             })
+//             router.push('/admin/promotion')
+//         } else {
+//             toast(`เพิ่มโปรโมทชั่นใหม่ไม่สำเร็จ ${promotionStore.statusCode}`, {
+//                 "theme": toast.THEME.COLORED,
+//                 "type": toast.TYPE.ERROR,
+//                 "dangerouslyHTMLString": true
+//             })
+//         }
+
+
+//         // 
+//     } catch (err) {
+//         toast(`${err}`, {
+//             "theme": toast.THEME.COLORED,
+//             "type": toast.TYPE.ERROR,
+//             "dangerouslyHTMLString": true
+//         })
+//         console.error(err)
+//     }
+// }
 
 onMounted(async () => {
     await optionStore.getFlavour()

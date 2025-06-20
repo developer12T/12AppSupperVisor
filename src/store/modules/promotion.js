@@ -21,13 +21,13 @@ export const usePromotionsStore = defineStore('promotions', {
         console.error(error)
       }
     },
-    async addPromotion (channel, data) {
+    async addPromotion (data) {
       try {
-        setChannel(channel)
+        // setChannel(channel)
         const response = await api.post(`/api/cash/promotion/add`, data)
         this.statusCode = response.status
         // console.log('getPromotionAll', this.promotions)
-        console.log('response', response)
+        console.log('addPromotion', response)
       } catch (error) {
         console.error(error)
       }
