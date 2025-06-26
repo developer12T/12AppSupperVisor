@@ -55,9 +55,11 @@ onMounted(() => {
                     <details>
                         <summary>ตั้งค่า</summary>
                         <ul class="p-2 w-35 text-black">
-                            <li><a>
-                                    <Icon icon="mdi:person-card-details" class="h-6 w-6" />โปรไฟล์
-                                </a></li>
+                            <router-link :to="`/admin/user/${userProfile.username}`">
+                                <li><a>
+                                        <Icon icon="mdi:person-card-details" class="h-6 w-6" />โปรไฟล์
+                                    </a></li>
+                            </router-link>
                             <li class="bg-red-500 hover:bg-red-600 text-white rounded">
                                 <a @click="SignOut">
                                     <Icon icon="mdi:logout" class="h-6 w-6" />

@@ -21,7 +21,7 @@ const toggleSidebar = inject('toggleSidebar')
 const showText = ref(isSidebarOpen.value)
 
 const menuItems = ref([
-    { name: 'แดชบอร์ด', icon: 'mdi:monitor-dashboard', link: '/', submenu: null, roles: ['sale', 'admin', 'master'] },
+    { name: 'แดชบอร์ด', icon: 'mdi:monitor-dashboard', link: '/', submenu: null, roles: ['Developer', 'Supervisor', 'master'] },
     {
         name: 'รายงานยอดขาย',
         icon: 'mdi:chart-areaspline',
@@ -31,15 +31,16 @@ const menuItems = ref([
             { icon: 'mdi:shop-location', name: 'รายงานการเช็คอิน', link: '/supervisor/checkin' },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product' },
         ],
-        roles: ['sale', 'master']
+        roles: ['Developer', 'Supervisor', 'master']
     },
-    { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['sale', 'admin', 'master'] },
-    { name: 'อนุมัติเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['sale', 'master'] },
-    { name: 'จัดการผู้ใช้งาน', icon: 'mdi:person-card-details', link: '/admin/manageuser', submenu: null, roles: ['sale', 'admin', 'master'] },
-    { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'master'] },
-    { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'master'] },
-    { name: 'รายการส่งเงิน', icon: 'mdi:money-100', link: '/supervisor/sendmoney', submenu: null, roles: ['admin', 'master'] },
-    { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveaway', submenu: null, roles: ['admin', 'master'] },
+    { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['Developer', 'Supervisor', 'master'] },
+    { name: 'สต๊อกสินค้า', icon: 'mdi:warehouse', link: '/supervisor/stock', submenu: null, roles: ['Developer', 'Supervisor', 'master'] },
+    { name: 'อนุมัติเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['Developer', 'Supervisor', 'master']},
+    { name: 'จัดการผู้ใช้งาน', icon: 'mdi:person-card-details', link: '/admin/manageuser', submenu: null, roles: ['Developer', 'Supervisor', 'master'] },
+    { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['Developer', 'Supervisor', 'master'] },
+    { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['Developer', 'Supervisor', 'master'] },
+    { name: 'รายการส่งเงิน', icon: 'mdi:money-100', link: '/supervisor/sendmoney', submenu: null, roles: ['Developer', 'Supervisor', 'master'] },
+    { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveaway', submenu: null, roles: ['Developer', 'Supervisor', 'master'] },
 
 
 ])

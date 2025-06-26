@@ -37,15 +37,18 @@
 
     <div v-for="promotion in filteredPromotions" :key="promotion.id"
         class="product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4">
+
         <div class="card-body w-1/4">
+            <router-link :to="`/admin/promotiondetails/${promotion.proId}`">
             <h2 class="text-xl text-gray-800 msb-1">โปรโมชั่น: {{ promotion.proId }}
             </h2>
             <p class="text-sm text-gray-600 msb-1">ชื่อ: {{ promotion.name }}
             </p>
             <p class="text-sm text-gray-600 msb-1">รายละเอียด: {{ promotion.description }}
             </p>
-
+            </router-link>
         </div>
+
     </div>
 
 

@@ -5,7 +5,7 @@ const supervisorRoutes = [
     path: '/supervisor',
     meta: {
       requiresAuth: true,
-      allowedRoles: ['sale', 'admin', 'master'] // ONLY these roles can access
+      allowedRoles: ['Supervisor', 'Developer', 'master'] // ONLY these roles can access
     },
     component: Layout,
     children: [
@@ -44,6 +44,14 @@ const supervisorRoutes = [
       {
         path: 'withdraw',
         component: () => import('../../views/supervisor/Withdraw.vue')
+      },
+      {
+        path: 'withdraw/:id',
+        component: () => import('../../views/supervisor/WithdrawDetail.vue')
+      },
+      {
+        path: 'stock',
+        component: () => import('../../views/supervisor/Stock.vue')
       }
     ]
   }

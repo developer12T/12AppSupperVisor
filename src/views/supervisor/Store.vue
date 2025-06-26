@@ -62,8 +62,9 @@
                 <div class="badge">{{ formatDate(customer.approve.dateAction) }}</div>
             </div>
             <p class="text-sm text-gray-600 msb-1">รหัสร้านค้า: {{ customer.storeId }}
+
             </p>
-            <p class="text-sm text-gray-600 msb-1">รูท: {{ customer.route }}
+            <p class="text-sm text-gray-600 msb-1">รูท: {{ customer.route }} เขต: {{ customer.area }}
             </p>
             <p class="text-sm text-gray-600 msb-1">ประเภท: {{ customer.typeName }}</p>
             <p class="text-sm text-gray-600 msb-1">เบอร์โทร: {{ customer.tel }}</p>

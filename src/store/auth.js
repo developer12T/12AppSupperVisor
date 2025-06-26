@@ -33,6 +33,8 @@ export const useAuthStore = defineStore('auth', {
           this.zone = result.data[0].zone
           this.warehouse = result.data[0].warehouse
           this.token = result.data[0].token
+          this.role = result.data[0].role
+
           localStorage.setItem('saleCode', this.saleCode)
           localStorage.setItem('fullName', this.fullName)
           localStorage.setItem('username', this.username)
@@ -43,7 +45,7 @@ export const useAuthStore = defineStore('auth', {
           localStorage.setItem('area', this.area)
           localStorage.setItem('warehouse', this.warehouse)
           localStorage.setItem('token', JSON.stringify(this.token))
-          localStorage.setItem('role', 'master')
+          localStorage.setItem('role', this.role)
           this.statusCode = response.data.status
         } else {
           this.validateLogin = user.message

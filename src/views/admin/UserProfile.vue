@@ -83,13 +83,13 @@ const fullName = localStorage.getItem('fullName')
 const area = localStorage.getItem('area')
 const zone = localStorage.getItem('zone')
 const saleCode = localStorage.getItem('saleCode')
-// const username = localStorage.getItem('zone')
+const role = localStorage.getItem('role')
 // mock user data
 const user = ref({
     name: `${fullName}`,
     email: `${area}`,
     zone: `${zone}`,
-    role: 'master',
+    role: `${role}`,
     employeeId: `${saleCode}`,
     avatar: '',
 })
