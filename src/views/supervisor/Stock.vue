@@ -109,10 +109,10 @@
                 <tbody>
                     <tr v-for="(prod, i) in stockIn" :key="prod.productId" class="align-top">
                         <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
-                        <td class="border p-2 text-right whitespace-pre">
+                        <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.productId }}</div>
                         </td>
-                        <td class="border p-2 text-right whitespace-pre">
+                        <td class="border p-2 text-left whitespace-pre">
                             <div class="">{{ prod.name }}</div>
                         </td>
                         <td class="border p-2 text-right whitespace-pre">
@@ -173,7 +173,7 @@
                 <tbody>
                     <tr v-for="(prod, i) in stockOut" :key="prod.productId" class="align-top">
                         <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
-                        <td class="border p-2 text-right whitespace-pre">
+                        <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.productId }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
@@ -245,7 +245,7 @@
 
                     <tr v-for="(prod, i) in balance" :key="prod.productId" class="align-top">
                         <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
-                        <td class="border p-2 text-right whitespace-pre">
+                        <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.productId }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
