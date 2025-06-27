@@ -117,7 +117,7 @@
 
 <script setup>
 import { Icon } from '@iconify/vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useStoresStore } from '../../store/modules/store'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'

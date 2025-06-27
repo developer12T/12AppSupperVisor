@@ -1,17 +1,28 @@
 <template>
     <div class="max-w-7xl mx-auto mt-6 bg-white rounded-2xl shadow-lg p-4">
         <div class="flex justify-between flex-wrap gap-3 items-center mb-4">
-            <select v-model="selectedType" class="border rounded px-2 py-1 text-sm">
-                <option disabled value="" class="text-gray-400">เลือกกลุ่ม</option>
-                <option value="Summary">Summary</option>
-                <option value="In">Stock In</option>
-                <option value="Out">Stock Out</option>
-                <option value="Bal">Balance</option>
-                <!-- เพิ่มกลุ่มตามจริง -->
-            </select>
+            <div class="flex gap-3 ">
+                <select v-model="selectedType" class="w-32 border rounded px-2 py-1 text-sm">
+                    <option disabled value="" class="text-gray-400">เลือกกลุ่ม</option>
+                    <option value="Summary">Summary</option>
+                    <option value="In">Stock In</option>
+                    <option value="Out">Stock Out</option>
+                    <option value="Bal">Balance</option>
+                    <!-- เพิ่มกลุ่มตามจริง -->
+                </select>
+                <select class="select select-info ms-3 text-center mb-3" v-model="selectedZone">
+                    <option disabled value="">Select Zone</option>
+                    <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+                </select>
+                <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                    <option disabled value="">Select Area</option>
+                    <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                </select>
+            </div>
             <div>
                 <!-- <button class="ml-auto bg-blue-700 text-white rounded px-4 py-1 font-semibold">ล้างตัวกรอง</button> -->
-                <button class="ms-4 ml-auto bg-blue-700 text-white rounded px-4 py-1 font-semibold">Export
+                <button @click="exportExcel"
+                    class="ms-4 ml-auto bg-blue-700 text-white rounded px-4 py-1 font-semibold">Export
                     Excel</button>
             </div>
 
@@ -28,6 +39,7 @@
                     </tr>
                 </thead>
                 <tbody>
+
                     <tr v-for="(prod, i) in data.data" :key="prod.productId" class="align-top">
                         <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
                         <td class="border p-2 text-left whitespace-pre">
@@ -95,7 +107,36 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    <tr v-for="(prod, i) in stockIn" :key="prod.productId" class="align-top">
+                        <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.productId }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.name }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.stock }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.withdraw }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.good }}</div>
+                        </td>
+                        <td class="border p-2 text-rightwhitespace-pre">
+                            <div class="">{{ prod.damaged }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.credit }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.sumStock }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.summary }}</div>
+                        </td>
+                    </tr>
                 </tbody>
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                     <tr>
@@ -130,7 +171,48 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    <tr v-for="(prod, i) in stockOut" :key="prod.productId" class="align-top">
+                        <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.productId }}</div>
+                        </td>
+                        <td class="border p-2 text-left whitespace-pre">
+                            <div class="">{{ prod.name }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.sale }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.summarySale }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.promotion }}</div>
+                        </td>
+                        <td class="border p-2 text-rightwhitespace-pre">
+                            <div class="">{{ prod.summaryPromotion }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.change }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.summaryChange }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.give }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.summaryGive }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.exchange }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.summaryQtySalePromotionChange }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.summarySalePromotionChange }}</div>
+                        </td>
+                    </tr>
                 </tbody>
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                     <tr>
@@ -161,9 +243,26 @@
                 </thead>
                 <tbody>
 
-                </tbody>
-                <tbody>
+                    <tr v-for="(prod, i) in balance" :key="prod.productId" class="align-top">
+                        <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.productId }}</div>
+                        </td>
+                        <td class="border p-2 text-left whitespace-pre">
+                            <div class="">{{ prod.productName }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.balanceGood }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.balanceDamaged }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.summary }}</div>
+                        </td>
 
+
+                    </tr>
                 </tbody>
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                     <tr>
@@ -187,25 +286,69 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import { useStockStore } from '../../store/modules/stock';
+import { useFilter } from '../../store/modules/filter'
 
+const filter = useFilter()
 const selectedType = ref('Summary') // ค่า default
 const stockStore = useStockStore()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
 // ใช้ data ที่คุณให้มา หรือ fetch ก็ได้
-const data = ref({
-})
+const data = ref({})
+const stockIn = ref({})
+const stockOut = ref({})
+const balance = ref({})
+const selectedZone = ref('')
+const selectedArea = ref('')
 
 function formatNumber(val) {
     if (val === null || val === undefined || isNaN(val)) return '-'
     return Number(val).toLocaleString()
 }
 
+
+watch(selectedZone, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    // router.replace({
+    //     query: {
+    //         ...route.query,
+    //         zone: newVal,
+    //         area: '' // clear old area
+    //     }
+    // });
+    if (newVal) {
+        filter.getArea(period, newVal);
+    }
+});
+
+async function exportExcel() {
+    await stockStore.downloadExcel(selectedArea.value, period)
+}
+
+watch(selectedArea, async (newVal) => {
+    if (newVal) {
+        await stockStore.getStock(newVal, period)
+        await stockStore.stockToExcel(newVal, period)
+        data.value = stockStore.stock
+        stockIn.value = stockStore.stockIn
+        stockOut.value = stockStore.stockOut
+        console.log('stockOut', stockOut.value)
+        balance.value = stockStore.balance
+        await new Promise(resolve => setTimeout(resolve, 2000))
+    }
+});
+
 onMounted(async () => {
     // isLoading.value = true
-    await stockStore.getStock(period) // fetch from API
-    data.value = stockStore.stock
+    await filter.getZone(period);
+    if (selectedZone.value) {
+        await filter.getArea(period, selectedZone.value);
+    }
+    if (selectedArea.value) {
+        await routeStore.getCheckin(period, selectedArea.value);
+    }
+
     // isLoading.value = false
 })
 </script>
