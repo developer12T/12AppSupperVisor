@@ -5,7 +5,13 @@ const supervisorRoutes = [
     path: '/supervisor',
     meta: {
       requiresAuth: true,
-      allowedRoles: ['Supervisor', 'Developer', 'master'] // ONLY these roles can access
+      allowedRoles: [
+        'supervisor',
+        'admin',
+        'dc',
+        'area_manager',
+        'sale_manager'
+      ] // ONLY these roles can access
     },
     component: Layout,
     children: [

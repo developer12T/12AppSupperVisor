@@ -6,7 +6,13 @@ const adminRoutes = [
     component: Layout,
     meta: {
       requiresAuth: true,
-      allowedRoles: ['Supervisor', 'Developer', 'master'] // ONLY these roles can access
+      allowedRoles: [
+        'supervisor',
+        'admin',
+        'dc',
+        'area_manager',
+        'sale_manager'
+      ] // ONLY these roles can access
     },
     children: [
       {
