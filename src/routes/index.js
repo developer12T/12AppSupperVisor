@@ -1,5 +1,6 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import adminRoutes from '../routes/admin/adminRoute'
+import saleRoutes from '../routes/sale'
 import supervisorRoutes from '../routes/supervisor/supervisorRoute'
 import Dashboard from '../views/Dashboard.vue'
 import Layout from '../Layout.vue'
@@ -16,7 +17,8 @@ const routes = [
   { path: '/home', component: () => import('../Layout.vue') },
   { path: '/403', component: () => import('../views/403.vue') },
   ...adminRoutes,
-  ...supervisorRoutes
+  ...supervisorRoutes,
+  ...saleRoutes
 ]
 
 const router = createRouter({

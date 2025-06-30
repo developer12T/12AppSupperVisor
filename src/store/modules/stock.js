@@ -4,6 +4,7 @@ import api from '../../utils/axios'
 export const useStockStore = defineStore('stock', {
   state: () => ({
     stock: {},
+    stockSummary: {},
     stockDetail: {},
     stockIn: {},
     stockOut: {},
@@ -44,6 +45,7 @@ export const useStockStore = defineStore('stock', {
         })
         // const result = response.data
         console.log('stockToExcel', response.data)
+        this.stockSummary = response.data.data
         this.stockIn = response.data.data.stockIn
         this.stockOut = response.data.data.stockOut
         this.balance = response.data.data.balance

@@ -141,14 +141,13 @@
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                     <tr>
                         <th colspan="2" class="p-2 border">รวม</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-
+                        <th class="p-2 border">{{ stockSummary.sumStockIn }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockIn }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockInGood }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockInDamaged }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockInCredit }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockInsumStock }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockInsummary }}</th>
                     </tr>
                 </tfoot>
             </table>
@@ -217,17 +216,17 @@
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                     <tr>
                         <th colspan="2" class="p-2 border">รวม</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutSale }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutSummarySale }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutPromotion }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutSummaryPromotion }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutChange }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutSummaryChange }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutGive }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutSummaryGive }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutexchange }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutSummaryQtySalePromotionChange }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumStockOutSummarySalePromotionChange }}</th>
                     </tr>
                 </tfoot>
             </table>
@@ -267,10 +266,9 @@
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                     <tr>
                         <th colspan="2" class="p-2 border">รวม</th>
-
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
-                        <th class="p-2 border">0</th>
+                        <th class="p-2 border">{{ stockSummary.sumBalanceGood }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumBalanceDamaged }}</th>
+                        <th class="p-2 border">{{ stockSummary.sumBalanceSummary }}</th>
                     </tr>
                 </tfoot>
             </table>
@@ -296,6 +294,7 @@ const period = today.getFullYear().toString() + String(today.getMonth() + 1).pad
 
 // ใช้ data ที่คุณให้มา หรือ fetch ก็ได้
 const data = ref({})
+const stockSummary = ref({})
 const stockIn = ref({})
 const stockOut = ref({})
 const balance = ref({})
@@ -331,6 +330,7 @@ watch(selectedArea, async (newVal) => {
         await stockStore.getStock(newVal, period)
         await stockStore.stockToExcel(newVal, period)
         data.value = stockStore.stock
+        stockSummary.value = stockStore.stockSummary
         stockIn.value = stockStore.stockIn
         stockOut.value = stockStore.stockOut
         console.log('stockOut', stockOut.value)

@@ -8,16 +8,16 @@
                     <span class="text-gray-400">#{{ data.orderId ?? '-' }}</span>
                 </h2>
                 <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full" :class="{
-                    'bg-green-100 text-green-600': data.status === 'success',
+                    'bg-green-100 text-green-600': data.status === 'success' || data.status === 'approved',
                     'bg-yellow-100 text-yellow-600': data.status === 'pending',
-                    'bg-red-100 text-red-600': data.status !== 'success' && data.status !== 'pending'
+                    'bg-red-100 text-red-600': data.status !== 'success' && data.status !== 'pending' && data.status !== 'approved'
                 }">
                     {{ statusLabel(data.status) }}
                 </span>
             </div>
             <div class="flex gap-2">
                 <button class="rounded-xl px-4 py-2 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition"
-                    @click="exportData">
+                    @click="onApproveClick">
                     อนุมัติใบเบิก
                 </button>
                 <button class="rounded-xl px-4 py-2 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition"
@@ -102,6 +102,17 @@
         </div>
     </div>
     <div v-else class="text-center mt-20 text-gray-400">ไม่มีข้อมูล</div>
+    <!-- Custom Alert Dialog -->
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4">Confirm Approval</h2>
+            <p class="mb-6">Are you sure you want to approve this?</p>
+            <div class="flex justify-end gap-2">
+                <button class="btn" @click="showAlert = false">Cancel</button>
+                <button class="btn btn-primary" @click="approveStatus">Approve</button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -114,11 +125,18 @@ import Info from '../../views/Info.vue'
 const withdrawStore = useWithdrawStore()
 const route = useRoute()
 const data = ref(null)
+const showAlert = ref(false)
+const status = ref('pending')
 
 const loadData = async () => {
     await withdrawStore.getWithdrawDetail('cash', route.params.id)
     data.value = withdrawStore.withdrawDetail
 }
+
+function onApproveClick() {
+    showAlert.value = true
+}
+
 
 onMounted(loadData)
 
@@ -130,9 +148,20 @@ function formatNumber(val) {
 function statusLabel(status) {
     if (status === 'success') return 'สำเร็จ'
     if (status === 'pending') return 'รอดำเนินการ'
+    if (status === 'approved') return 'อนุมัติ'
+    if (status === 'rejected') return 'ไม่อนุมัติ'
     return status || '-'
 }
 
+async function approveStatus() {
+    status.value = 'approved'      // Update status
+    showAlert.value = false        // Hide alert
+    const statusBool = status.value == 'approved' ? true : false
+    await withdrawStore.approve('cash', route.params.id, statusBool)
+    window.location.reload()
+    // Optionally: send API request here!
+    // await axios.post('/api/approve', { ... })
+}
 function exportData() {
     // เพิ่ม logic export excel/pdf หรือ copy
     alert('Export ยังไม่ได้ implement');

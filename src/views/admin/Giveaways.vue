@@ -17,19 +17,17 @@
             <!-- ApplicableTo Section -->
             <div class="border p-4 rounded mt-4">
                 <h2 class="font-semibold mb-2">กำหนดเงื่อนไขร้านค้า (Applicable To)</h2>
-
-                <VueMultiselect v-model="form.applicableTo.store" :options="storeOptions" :multiple="true"
-                    :close-on-select="false" :clear-on-select="true" :preserve-search="true" placeholder="เลือกร้านค้า"
-                    label="storeId" track-by="storeId" class="w-full mb-2" />
-
-                <VueMultiselect v-model="form.applicableTo.typeStore" :options="typeStoreOptions" :multiple="true"
-                    placeholder="เลือกประเภทร้านค้า" class="w-full mb-2" />
-
-                <VueMultiselect v-model="form.applicableTo.zone" :options="zoneOptions" :multiple="true"
-                    placeholder="เลือกโซน" class="w-full mb-2" />
-
-                <VueMultiselect v-model="form.applicableTo.area" :options="areaOptions" :multiple="true"
-                    placeholder="เลือกพื้นที่" class="w-full" />
+                <input v-model="form.applicableTo.store" class="input input-bordered w-full my-2"
+                    placeholder="รหัสร้านค้า" />
+                <VueMultiselect v-model="selectedTypeStore" :options="typeStoreWithLabel" :multiple="true"
+                    track-by="label" :preserve-search="true" :clear-on-select="true" :close-on-select="false"
+                    placeholder="เลือกประเภทร้านค้า" class="w-full mb-2" label="label" />
+                <VueMultiselect v-model="selectedZone" :options="zone" :multiple="true" track-by="zone"
+                    :preserve-search="true" :clear-on-select="true" :close-on-select="false" placeholder="เลือกโซน"
+                    class="w-full mb-2" label="zone" />
+                <VueMultiselect v-model="selectedArea" :options="area" :multiple="true" track-by="area"
+                    :preserve-search="true" :clear-on-select="true" :close-on-select="false" placeholder="เลือกเขต"
+                    class="w-full mb-2" label="area" />
             </div>
 
             <!-- เงื่อนไขการแจก -->
@@ -56,10 +54,35 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useOption } from '../../store/modules/option'
+import { useFilter } from '../../store/modules/filter'
 import axios from 'axios'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
+import { toast } from 'vue3-toastify';
+const today = new Date();
+const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
+
+
+const optionStore = useOption()
+const filterStore = useFilter()
+
+const selectedFlavour = ref([])
+const selectedGroup = ref([])
+const selectedSize = ref([])
+const selectedBrand = ref([])
+const selectedArea = ref([])
+const selectedZone = ref([])
+const selectedTypeStore = ref([])
+
+const flavour = ref([])
+const group = ref([])
+const size = ref([])
+const brand = ref([])
+const area = ref([])
+const zone = ref([])
+const typeStore = ref([])
 
 // --- Form Data ---
 const form = ref({
@@ -97,9 +120,20 @@ const storeOptions = [
     { storeId: 'VTEST001' },
 ]
 
-const typeStoreOptions = ['031', '045', '099']
-const zoneOptions = ['BE', 'SH', 'NN']
-const areaOptions = ['BE215', 'BE123', 'SH101']
+const submitForm = async () => {
+    try {
+        form.value.applicableTo.area = selectedArea.value.map(item => item.area)
+        form.value.applicableTo.typeStore = selectedTypeStore.value.map(item => item.id)
+
+    } catch (error) {
+        toast(`${err}`, {
+            theme: toast.THEME.COLORED,
+            type: toast.TYPE.ERROR,
+            dangerouslyHTMLString: true
+        })
+        console.error(err)
+    }
+}
 
 // --- Submit Handler ---
 const prepareFormData = () => {
@@ -118,5 +152,24 @@ const submitGiveType = async () => {
         console.error('❌ เกิดข้อผิดพลาด:', err)
         alert('❌ ส่งข้อมูลไม่สำเร็จ')
     }
+
+
 }
+
+const typeStoreWithLabel = computed(() => {
+    return typeStore.value.map(item => ({
+        ...item,
+        label: `${item.id} - ${item.name}`,
+    }))
+})
+
+
+onMounted(async () => {
+    await optionStore.getTypeStore()
+    await filterStore.getZone(period)
+    await filterStore.getArea(period, '')
+    typeStore.value = optionStore.typeStore
+    area.value = filterStore.area
+    zone.value = filterStore.zone
+})
 </script>

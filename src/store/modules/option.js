@@ -4,6 +4,7 @@ import api from '../../utils/axios'
 export const useOption = defineStore('options', {
   state: () => ({
     area: [],
+    typeStore: [],
     zone: [],
     brandFilter: [],
     brand: [],
@@ -13,10 +14,23 @@ export const useOption = defineStore('options', {
     size: [],
     groupFilter: [],
     group: [],
+    unitFilter: [],
     message: '',
     statusCode: null
   }),
   actions: {
+    async getTypeStore (period) {
+      try {
+        const response = await api.get(
+          `/api/cash/store/getTypeStore`
+        )
+        const result = response.data.deletedStore
+        this.typeStore = result
+        console.log('typeStore', this.typeStore)
+      } catch (error) {
+        console.error(error)
+      }
+    },
     async getZone (period) {
       try {
         const response = await api.get(
@@ -138,6 +152,22 @@ export const useOption = defineStore('options', {
 
         const result = response.data.data
         this.sizeFilter = result
+        console.log('getSizeFilter', this.sizeFilter)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getUnitFilter (group, brand, flavour, size) {
+      try {
+        const response = await api.post(`/api/cash/product/unitByFilter`, {
+          group: group,
+          brand: brand,
+          flavour: flavour,
+          size: size
+        })
+
+        const result = response.data.data
+        this.unitFilter = result
         console.log('getSizeFilter', this.sizeFilter)
       } catch (error) {
         console.error(error)

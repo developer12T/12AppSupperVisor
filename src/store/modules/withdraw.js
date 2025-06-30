@@ -4,9 +4,25 @@ import api, { setChannel } from '../../utils/axios'
 export const useWithdrawStore = defineStore('withdraws', {
   state: () => ({
     withdraw: [],
-    withdrawDetail: {}
+    withdrawDetail: {},
+    status: 0
   }),
   actions: {
+    async approve (channel, id, status) {
+      try {
+        setChannel(channel)
+        const response = await api.post(
+          `/api/cash/distribution/approveWithdraw`,
+          {
+            orderId: id,
+            status: status
+          }
+        )
+        this.status = response.data.status
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async getWithdraw (channel, period) {
       try {
         // setChannel(channel)
@@ -21,7 +37,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         }
 
         const response = await api.get(
-          `/api/cash/distribution/get?type=history&area=${filters}&period=${period}`
+          `/api/cash/distribution/get?type=pending&area=${filters}&period=${period}`
         )
         this.withdraw = response.data.data
         console.log('withdraw', withdraw)

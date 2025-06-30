@@ -81,7 +81,7 @@
                 </button>
                 <button :disabled="customer.status === '20' || customer.status === '90'" class="btn btn-primary"
                     @click="showConfirmationDialog(customer.storeId, customer.name)">
-                    อุนมัติร้านค้า
+                    อนุมัติร้านค้า
                 </button>
             </div>
         </div>
@@ -90,29 +90,31 @@
         <div @click="showModal = false" class="absolute inset-0"></div>
         <img :src="modalImageSrc" class="max-w-full max-h-full z-10" />
     </div>
-    <div v-if="showModalConfirm" class="fixed inset-0  bg-black flex items-center justify-center z-50">
-        <!-- Overlay -->
-        <div class="bg-white p-6 rounded opacity-100 shadow-lg w-1/3 max-w-md">
-            <h3 class="text-lg font-semibold mb-4">ต้องการอนุมัติ ร้านค้า {{ storeName }}</h3>
-            <p class="mb-4"> รหัสร้านค้า: {{ storeId }}</p>
-            <div class="flex justify-between">
-                <button @click="cancelAction" class="btn btn-error">ยกเลิก</button>
-                <button @click="confirmAction" class="btn btn-primary">อนุมัติร้านค้า</button>
-            </div>
-        </div>
-    </div>
-    <div v-if="showModalReject" class="fixed inset-0  bg-black flex items-center justify-center z-50">
-        <!-- Overlay -->
-        <div class="bg-white p-6 rounded opacity-100 shadow-lg w-1/3 max-w-md">
-            <h3 class="text-lg font-semibold mb-4">ไม่อนุมัติร้านค้า {{ storeName }}</h3>
-            <p class="mb-4"> รหัสร้านค้า: {{ storeId }}</p>
 
-            <div class="flex justify-between">
-                <button @click="cancelAction" class="btn btn-error">ยกเลิก</button>
-                <button @click="rejectAction" class="btn btn-primary">ยืนยัน</button>
+    <div v-if="showModalConfirm" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4">ต้องการอนุมัติ ร้านค้า {{ storeName }}</h2>
+            <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการอนุมัติรหัสร้านค้านี้ ?</p>
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-error" @click="cancelAction">ยกเลิก</button>
+                <button class="btn btn-primary" @click="confirmAction">อนุมัติร้านค้า</button>
             </div>
         </div>
     </div>
+
+    <div v-if="showModalReject" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4">ไม่อนุมัติร้านค้า {{ storeName }}</h2>
+            <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการไม่อนุมัติรหัสร้านค้านี้ ?</p>
+            <div class="flex justify-end gap-2">
+                <button class="btn" @click="cancelAction">ยกเลิก</button>
+                <button class="btn btn-primary" @click="rejectAction">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
+
+
+
 </template>
 
 <script setup>
