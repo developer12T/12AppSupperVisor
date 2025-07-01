@@ -24,7 +24,7 @@ export const useOption = defineStore('options', {
         const response = await api.get(
           `/api/cash/store/getTypeStore`
         )
-        const result = response.data.deletedStore
+        const result = response.data.data
         this.typeStore = result
         console.log('typeStore', this.typeStore)
       } catch (error) {

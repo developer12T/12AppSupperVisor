@@ -51,7 +51,9 @@
                     <button v-if="index !== 0" type="button" class="btn btn-error text-white"
                         @click="deleteReward(index)">ลบของรางวัล</button>
                 </div>
+
                 <input v-model="reward.productId" class="input input-bordered w-full my-2" placeholder="Product ID" />
+
                 <VueMultiselect v-model="selectedBrandReward[index]" :options="brandReward[index]" :multiple="false"
                     :close-on-select="false" :clear-on-select="true" :preserve-search="true" placeholder="เลือกแบรนด์"
                     label="brandName" track-by="brandName" class="w-full my-2" />
