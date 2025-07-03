@@ -5,6 +5,7 @@ export const useFilter = defineStore('filters', {
   state: () => ({
     area: [],
     zone: [],
+    team: [],
     message: ''
   }),
   actions: {
@@ -20,14 +21,24 @@ export const useFilter = defineStore('filters', {
         console.error(error)
       }
     },
-    async getArea (period, zone) {
+    async getArea (period, zone, team) {
       try {
         const response = await api.get(
-          `/api/cash/route/getArea?zone=${zone}&period=${period}`
+          `/api/cash/route/getArea?zone=${zone}&period=${period}&team=${team}`
         )
         const result = response.data.data
         this.area = result
         console.log('Areas', this.area)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getTeam (zone) {
+      try {
+        const response = await api.get(`/api/cash/user/getTeam?zone=${zone}`)
+        const result = response.data.data
+        this.team = result
+        console.log('Teams', this.team)
       } catch (error) {
         console.error(error)
       }

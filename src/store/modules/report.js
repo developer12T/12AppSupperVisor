@@ -4,6 +4,7 @@ import api, { setChannel } from '../../utils/axios'
 export const useReport = defineStore('reports', {
   state: () => ({
     summaryProduct: [],
+    summary18SKU: [],
     zone: [],
     checklist: [],
     message: '',
@@ -23,6 +24,20 @@ export const useReport = defineStore('reports', {
         console.error(error)
       }
     },
+
+    async getSummary18SKU (area) {
+      try {
+        const response = await api.get(
+          `/api/cash/order/getSummary18SKU?area=${area}`
+        )
+        const result = response.data.data
+        this.summary18SKU = result
+        this.statusCode = response.status
+        console.log('getSummary18SKU', this.summary18SKU)
+      } catch (error) {
+        console.error(error)
+      }
+    },
     async getProductionAll (channel) {
       try {
         setChannel(channel)
@@ -35,11 +50,14 @@ export const useReport = defineStore('reports', {
         console.error(error)
       }
     },
-    async getChecklist (startDate, endDate) {
+    async getChecklist (startDate, endDate, zone, team, area) {
       try {
         // setChannel()
         const response = await api.get(
-          `/api/cash/admin/reportCheck?start=${startDate}&end=${endDate}`
+          `/api/cash/admin/reportCheck?start=${startDate}&end=${endDate}&zone=${zone}&team=${team}&area=${area}`
+        )
+        console.log(
+          `/api/cash/admin/reportCheck?start=${startDate}&end=${endDate}&zone=${zone}&team=${team}&area=${area}`
         )
         const result = response.data.data
         this.checklist = result
