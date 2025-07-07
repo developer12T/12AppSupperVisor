@@ -53,23 +53,23 @@
                 <td class="border p-2 text-center">{{ item.area }}</td>
                 <td class="border p-2 text-center" :class="{
                     'bg-red-200 text-red-700': item.store === 0,
-                    'bg-green-200 text-green-700': item.store === 1
+                    'bg-green-200 text-green-700': item.store > 0
                 }">{{ item.store }}</td>
                 <td class="border p-2 text-center" :class="{
                     'bg-red-200 text-red-700': item.Route === 0,
-                    'bg-green-200 text-green-700': item.Route === 1
+                    'bg-green-200 text-green-700': item.Route > 0
                 }">{{ item.Route }}</td>
                 <td class="border p-2 text-center" :class="{
                     'bg-red-200 text-red-700': item.order === 0,
-                    'bg-green-200 text-green-700': item.order === 1
+                    'bg-green-200 text-green-700': item.order > 0
                 }">{{ item.order }}</td>
                 <td class="border p-2 text-center" :class="{
                     'bg-red-200 text-red-700': item.distribution === 0,
-                    'bg-green-200 text-green-700': item.distribution === 1
+                    'bg-green-200 text-green-700': item.distribution > 0
                 }">{{ item.distribution }}</td>
                 <td class="border p-2 text-center" :class="{
                     'bg-red-200 text-red-700': item.refund === 0,
-                    'bg-green-200 text-green-700': item.refund === 1
+                    'bg-green-200 text-green-700': item.refund > 0
                 }">{{ item.refund }}</td>
             </tr>
         </tbody>

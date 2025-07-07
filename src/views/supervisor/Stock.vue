@@ -345,9 +345,7 @@ onMounted(async () => {
     if (selectedZone.value) {
         await filter.getArea(period, selectedZone.value);
     }
-    if (selectedArea.value) {
-        await routeStore.getCheckin(period, selectedArea.value);
-    }
+
 
     // isLoading.value = false
 })

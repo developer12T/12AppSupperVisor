@@ -1,8 +1,41 @@
 <template>
     <div class="flex justify-between">
-        <h1 class="p-3 text-xl font-bold">อนุมัติร้านค้าใหม่</h1>
-        <input type="date" class="input" />
+        <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
+        <div class="flex justify-start">
+            <h1 class="p-3 text-xl font-bold">อนุมัติร้านค้าใหม่</h1>
+            <div class="ms-3" v-if="userRole != 'supervisor'">
+                <select class="select select-info ms-3 text-center" v-model="selectedZone">
+                    <option disabled value="">Select Zone</option>
+                    <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+                </select>
+            </div>
+            <div class="ms-3" v-if="userRole != 'supervisor'">
+                <select class="select select-info ms-3 text-center" v-model="selectedTeam">
+                    <option disabled value="">Select Team</option>
+                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
+                    </option>
+                </select>
+            </div>
+            <div class="ms-3" v-if="userRole != 'supervisor'">
+                <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                    <option disabled value="">Select Area</option>
+                    <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                </select>
+            </div>
+
+        </div>
+        <div class="flex justify-start">
+            <div class="ms-3" v-if="userRole != 'supervisor'">
+                <div>
+                    <input type="month" v-model="selectedMonth" @change="onMonthChange" class="border p-2 rounded" />
+                    <!-- ตัวอย่างแสดงค่าที่เลือก -->
+                    <p>Month: {{ month }}, Year: {{ year }}</p>
+                </div>
+            </div>
+        </div>
+
     </div>
+
     <div v-for="customer in customers" :key="customer.id"
         class="product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4 ">
         <figure class="w-1/7">
@@ -118,18 +151,41 @@
 </template>
 
 <script setup>
+import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
 import { Icon } from '@iconify/vue'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useStoresStore } from '../../store/modules/store'
+import { useRouter, useRoute } from 'vue-router'
+import { useFilter } from '../../store/modules/filter'
+
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import { Slide } from 'vue3-toastify'
+
+
+const selectedMonth = ref('') // format: YYYY-MM
+
+const month = computed(() => selectedMonth.value.split('-')[1])
+const year = computed(() => selectedMonth.value.split('-')[0])
+const getSafe = v => (typeof v === 'string' ? v : '');
 
 
 const store = useStoresStore()
+const filter = useFilter()
+
+const router = useRouter()
+const route = useRoute()
+
 const customers = ref([])
 dayjs.extend(utc)
 dayjs.extend(timezone)
+
+const userRole = localStorage.getItem('role')
+
+const today = new Date();
+const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
+
 
 const showModal = ref(false);
 const showModalConfirm = ref(false);
@@ -137,7 +193,28 @@ const showModalReject = ref(false);
 const modalImageSrc = ref('');
 const storeId = ref('');
 const storeName = ref('');
-const area = localStorage.getItem('area')
+const isLoading = ref(false)
+
+
+const selectedZone = ref(route.query.zone || '')
+const selectedArea = ref(route.query.area || '')
+const selectedTeam = ref(route.query.team || '')
+
+
+
+async function onMonthChange() {
+    // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
+    // ตัวอย่าง:
+    isLoading.value = true
+    console.log('เลือกเดือน:', month.value)
+    console.log('เลือกปี:', year.value)
+    await store.getCustomerAll(selectedZone.value, selectedArea.value, selectedTeam.value, year.value, month.value)
+    customers.value = store.storeNew.data
+    isLoading.value = false
+}
+
+
+
 
 const openGoogleMap = (latitude, longitude) => {
     // const latitude = 37.7749;   // example: San Francisco
@@ -165,8 +242,10 @@ const confirmAction = async () => {
     console.log('storeId', storeId.value);
     console.log('area', area);
     try {
+        isLoading.value = true
         await store.updateStoreStatus({ storeId: storeId.value, status: '20' })
         showModalConfirm.value = false;
+        isLoading.value = false
         window.location.reload();
     } catch (error) {
         console.log('Error confirming:', error);
@@ -176,8 +255,10 @@ const confirmAction = async () => {
 
 const rejectAction = async () => {
     try {
+        isLoading.value = true
         await store.updateStoreStatus({ storeId: storeId.value, status: '90' })
         showModalConfirm.value = false;
+        isLoading.value = false
         window.location.reload();
     } catch (error) {
         console.log('Error confirming:', error);
@@ -191,9 +272,59 @@ const cancelAction = () => {
     showModalReject.value = false;
 };
 
+watch(selectedTeam, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    if (newVal) {
+        isLoading.value = true
+        await filter.getArea(period, selectedZone.value, newVal);
+        await store.getCustomerAll(selectedZone.value, selectedArea.value, newVal, getSafe(year.value),
+            getSafe(month.value),)
+        customers.value = store.storeNew.data
+        isLoading.value = false
+    }
+});
+
+watch(selectedArea, async (newVal) => {
+
+    if (newVal) {
+        isLoading.value = true
+        await store.getCustomerAll(selectedZone.value, newVal, selectedTeam.value, getSafe(year.value),
+            getSafe(month.value))
+        customers.value = store.storeNew.data
+        isLoading.value = false
+    }
+});
+
+
+
+watch(selectedZone, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    selectedTeam.value = ''
+    // router.replace({
+    //     query: {
+    //         ...route.query,
+    //         zone: newVal,
+    //         area: '' // clear old area
+    //     }
+    // });
+    if (newVal) {
+        isLoading.value = true
+        await filter.getArea(period, newVal, selectedTeam.value);
+        await filter.getTeam(newVal);
+        await store.getCustomerAll(newVal, selectedArea.value, selectedTeam.value, getSafe(year.value),
+            getSafe(month.value))
+        customers.value = store.storeNew.data
+        isLoading.value = false
+    }
+});
+
+
 onMounted(async () => {
-    await store.getCustomerAll()
+    isLoading.value = true
+    await store.getCustomerAll('', '', '', '', '')
+    await filter.getZone(period);
     customers.value = store.storeNew.data
+    isLoading.value = false
     // console.log("store.storeAll", store.storeNew)
     // console.log("customers", customers.storeNew)
 })
