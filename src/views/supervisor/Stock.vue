@@ -317,7 +317,7 @@ watch(selectedZone, async (newVal) => {
     //     }
     // });
     if (newVal) {
-        filter.getArea(period, newVal);
+        filter.getArea(period, newVal, '');
     }
 });
 
@@ -343,7 +343,7 @@ onMounted(async () => {
     // isLoading.value = true
     await filter.getZone(period);
     if (selectedZone.value) {
-        await filter.getArea(period, selectedZone.value);
+        await filter.getArea(period, selectedZone.value, '');
     }
 
 

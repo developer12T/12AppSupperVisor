@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import api from '../../utils/axios'
+import api, { setChannel } from '../../utils/axios'
 
 export const useStockStore = defineStore('stock', {
   state: () => ({
@@ -12,9 +12,23 @@ export const useStockStore = defineStore('stock', {
     sumStockIn: 0,
     sumStockOut: 0,
     sumBalance: 0,
+    adjuststock: [],
     message: ''
   }),
   actions: {
+    async getAdjustStock (channel, zone, teamm, area, period) {
+      try {
+        setChannel(channel)
+        const response = await api.get(
+          `/api/cash/stock/getAdjustStock?type=adjuststock&period=${period}&zone=${zone}&team=${teamm}&area=${area}`
+        )
+        this.adjuststock = response.data.data
+        this.message = response.data.message
+        console.log('adjuststock', this.adjuststock)
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async getStock (area, period) {
       try {
         const response = await api.post(`/api/cash/stock/getStockQty`, {

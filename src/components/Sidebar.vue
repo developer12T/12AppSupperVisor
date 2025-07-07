@@ -36,7 +36,7 @@ const menuItems = ref([
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'] },
     { name: 'คู่มือการใช้งาน', icon: 'mdi:book-information-variant', link: '/sale/manual', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager','sale'] },
     { name: 'อนุมัติเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
-    { name: 'อนุมัติขอปรับสต๊อก', icon: 'mdi:archive-edit', link: '/supervisor/stockajust', submenu: null, roles: ['admin', 'dc', 'supervisor', 'area_manager', 'sale_manager'] },
+    { name: 'อนุมัติขอปรับสต๊อก', icon: 'mdi:archive-edit', link: '/supervisor/stockadjust', submenu: null, roles: ['admin', 'dc', 'supervisor', 'area_manager', 'sale_manager'] },
     { name: 'จัดการผู้ใช้งาน', icon: 'mdi:person-card-details', link: '/admin/manageuser', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'] },
     { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },

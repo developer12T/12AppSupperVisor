@@ -1,10 +1,5 @@
 <template>
-    <!-- Loading Screen Overlay -->
-    <div v-if="isLoading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-90">
-        <div class="text-white text-lg font-semibold">Loading...</div>
-    </div>
-
-    <!-- Filter Controls -->
+    <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
     <div class="flex mt-10 justify-start gap-6 mb-3">
         <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
             <select class="select select-info ms-3 text-center mb-3" v-model="selectedZone">
@@ -83,6 +78,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
 import { useRouter, useRoute } from 'vue-router'
 import { useReport } from '../../store/modules/report'
 import { useFilter } from '../../store/modules/filter'
@@ -131,7 +127,7 @@ const extractProductsAndSubs = (data) => {
     const productsMap = {}
 
     fields.forEach(key => {
-        const match = key.match(/^(TRAGET|SELL|PERCENT|TRAGET STORE|STORE|PERCENT STORE) (.+)$/)
+        const match = key.match(/^(TRAGET|SELL|PERCENT|TRAGET_STORE|STORE|PERCENT_STORE) (.+)$/)
         if (match) {
             const subKey = match[1]
             const productName = match[2]
@@ -143,7 +139,7 @@ const extractProductsAndSubs = (data) => {
     const sortedProducts = Object.keys(productsMap).sort()
     const subHeaders = [
         'TRAGET', 'SELL', 'PERCENT',
-        'TRAGET STORE', 'STORE', 'PERCENT STORE'
+        'TRAGET_STORE', 'STORE', 'PERCENT_STORE'
     ]
 
     return { headers: sortedProducts, subHeaders, productsMap }
@@ -159,12 +155,17 @@ const rows = computed(() =>
         const data = headers.value.flatMap(product =>
             subHeaders.value.map(sub => {
                 const key = productsMap.value[product]?.[sub]
-                const value = key ? item[key] : ''
-                return typeof value === 'number'
-                    ? sub.includes('PERCENT')
+                let value = key ? item[key] : ''
+                // ถ้า value เป็น number และเป็น 0
+                if (typeof value === 'number') {
+                    if (value === 0) return '-'
+                    return sub.includes('PERCENT')
                         ? value.toFixed(2) + ' %'
                         : value.toFixed(2)
-                    : value
+                }
+                // ถ้า value เป็น string และเท่ากับ "0" หรือ "0.00" ก็แสดง "-"
+                if (value === '0' || value === '0.00') return '-'
+                return value
             })
         )
         return { area: item.area, data }
