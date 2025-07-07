@@ -60,8 +60,12 @@ const supervisorRoutes = [
         component: () => import('../../views/supervisor/Stock.vue')
       },
       {
-        path: 'stockadjust',
+        path: 'adjuststock',
         component: () => import('../../views/supervisor/AjustStock.vue')
+      },
+      {
+        path: 'adjuststock/:orderId',
+        component: () => import('../../views/supervisor/AjustStockDetail.vue')
       }
     ]
   }

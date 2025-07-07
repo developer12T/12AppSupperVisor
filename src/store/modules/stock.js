@@ -13,6 +13,7 @@ export const useStockStore = defineStore('stock', {
     sumStockOut: 0,
     sumBalance: 0,
     adjuststock: [],
+    adjuststockDetail: {},
     message: ''
   }),
   actions: {
@@ -20,11 +21,25 @@ export const useStockStore = defineStore('stock', {
       try {
         setChannel(channel)
         const response = await api.get(
-          `/api/cash/stock/getAdjustStock?type=adjuststock&period=${period}&zone=${zone}&team=${teamm}&area=${area}`
+          `/api/cash/stock/adjuststock?type=adjuststock&period=${period}&zone=${zone}&team=${teamm}&area=${area}`
         )
         this.adjuststock = response.data.data
         this.message = response.data.message
         console.log('adjuststock', this.adjuststock)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async getAdjustStockDetail (channel, orderId) {
+      try {
+        setChannel(channel)
+        const response = await api.get(
+          `/api/cash/stock/adjuststock/${orderId}`
+        )
+        this.adjuststockDetail = response.data.data[0]
+        this.message = response.data.message
+        console.log('getAdjustStockDetail', this.adjuststock)
       } catch (error) {
         console.log(error)
       }
