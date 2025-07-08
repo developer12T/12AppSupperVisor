@@ -1,6 +1,10 @@
 <template>
     <div class="flex  justify-start gap-6 ">
+        <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <div class="flex flex-col mt-10 justify-start gap-6 mb-3">
+            <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
+                <button class="btn btn-primary" @click="clearSelect">ล้างตัวเลือก</button>
+            </div>
             <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
                 <select class="select select-info ms-3 text-center mb-3" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
@@ -30,6 +34,7 @@
 
 </template>
 <script setup>
+import LoadingOverlay from '../LoadingOverlay.vue'
 import LineChart from '../chart/LineChart.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ref, computed, onMounted, watch } from 'vue';
@@ -48,6 +53,7 @@ const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 
+const isLoading = ref(false)
 const filter = useFilter()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
@@ -58,7 +64,6 @@ const reportStore = useReport();
 
 
 
-// chartData: อัปเดตอัตโนมัติตาม headers
 const chartData = computed(() => ({
     labels: headers.value,
     datasets: [
@@ -104,6 +109,7 @@ const chartOptions = {
             display: true,
             position: 'right',
 
+
             // Optional: ซ่อน grid ของแกนขวาเพื่อไม่ให้ซ้อนกับแกนซ้าย
             grid: {
                 drawOnChartArea: false,
@@ -112,8 +118,36 @@ const chartOptions = {
     }
 };
 
+watch(selectedTeam, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    if (newVal) {
+        isLoading.value = true
+        await filter.getArea(period, selectedZone.value, newVal);
+        await reportStore.getSummary18SKU(selectedZone.value, selectedArea.value, newVal)
+        rawData.value = reportStore.summary18SKU
+        headers.value = rawData.value.map(item => `${item.group} ${item.groupCodeM3}`)
+        summaryQty.value = rawData.value.map(item => item.summaryQty)
+        summary.value = rawData.value.map(item => item.summary)
+        isLoading.value = false
+    }
+});
+
+watch(selectedArea, async (newVal) => {
+    if (newVal) {
+        isLoading.value = true
+        await reportStore.getSummary18SKU(selectedZone.value, newVal, selectedTeam.value)
+        rawData.value = reportStore.summary18SKU
+        headers.value = rawData.value.map(item => `${item.group} ${item.groupCodeM3}`)
+        summaryQty.value = rawData.value.map(item => item.summaryQty)
+        summary.value = rawData.value.map(item => item.summary)
+        isLoading.value = false
+    }
+});
+
+
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
+    selectedTeam.value = ''
     router.replace({
         query: {
             ...route.query,
@@ -122,8 +156,13 @@ watch(selectedZone, async (newVal) => {
         }
     });
     if (newVal) {
-        filter.getArea(period, newVal);
-        filter.getTeam(newVal);
+        await filter.getArea(period, newVal, selectedTeam.value);
+        await filter.getTeam(newVal);
+        await reportStore.getSummary18SKU(newVal, selectedArea.value, selectedTeam.value)
+        rawData.value = reportStore.summary18SKU
+        headers.value = rawData.value.map(item => `${item.group} ${item.groupCodeM3}`)
+        summaryQty.value = rawData.value.map(item => item.summaryQty)
+        summary.value = rawData.value.map(item => item.summary)
     }
 });
 
@@ -131,14 +170,14 @@ watch(selectedZone, async (newVal) => {
 onMounted(async () => {
     try {
 
-        await reportStore.getSummary18SKU('BE224')
+        await reportStore.getSummary18SKU('', '', '')
         await filter.getZone(period);
         rawData.value = reportStore.summary18SKU
-        await filter.getZone(period);
-        if (selectedZone.value) {
-            await filter.getArea(period, selectedZone.value);
-        }
 
+        // await filter.getZone(period);
+        // if (selectedZone.value) {
+        //     await filter.getArea(period, selectedZone.value, '');
+        // }
         headers.value = rawData.value.map(item => `${item.group} ${item.groupCodeM3}`)
         summaryQty.value = rawData.value.map(item => item.summaryQty)
         summary.value = rawData.value.map(item => item.summary)

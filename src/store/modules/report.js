@@ -25,10 +25,23 @@ export const useReport = defineStore('reports', {
       }
     },
 
-    async getSummary18SKU (area) {
+    async getSummary18SKU (selectZone, selectArea, team) {
       try {
+        let zone = ''
+        let area = ''
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
         const response = await api.get(
-          `/api/cash/order/getSummary18SKU?area=${area}`
+          `/api/cash/order/getSummary18SKU?zone=${zone}&team=${team}&area=${area}`
         )
         const result = response.data.data
         this.summary18SKU = result
