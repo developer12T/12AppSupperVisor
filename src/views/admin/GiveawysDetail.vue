@@ -50,7 +50,12 @@
 </template>
 
 <script setup>
+import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import { useGiveAway } from '../../store/modules/giveaway'
+
+const giveawayStore = useGiveAway()
+const route = useRoute()
 
 // ตัวอย่าง fetch data จาก API
 const data = ref({
@@ -70,39 +75,41 @@ const data = ref({
 })
 
 async function fetchData() {
+    await giveawayStore.getGiveAwayDetail(route.params.giveId)
+    data.value = giveawayStore.giveawaysDetail
     // ปกติจะเปลี่ยน URL ด้านล่างนี้ให้เป็น API ของจริง
     // const res = await fetch('/api/campaign/6833d31efbd047c8c0bfb758')
     // data.value = await res.json()
     // 👇 MOCK ตัวอย่างใช้แทน API จริง
-    data.value = {
-        applicableTo: { store: [], typeStore: [], zone: [], area: [] },
-        _id: "6833d31efbd047c8c0bfb758",
-        giveId: "GIVE-202505-0001",
-        name: "กิจกรรมตกแต่งร้านค้าสวยงาม",
-        description: "แจกผงปรุงรส 75 กรัม 1 ซองให้ร้านค้าสวยงาม",
-        type: "I16",
-        remark: "V16",
-        dept: "09",
-        conditions: [
-            {
-                productId: [],
-                productGroup: ["ผงปรุงรส"],
-                productFlavour: [],
-                productBrand: [],
-                productSize: ["75 G"],
-                productUnit: ["PCS"],
-                productQty: 1,
-                productAmount: 0,
-                limitType: "limited",
-                lot: [],
-                _id: "6833d31efbd047c8c0bfb759"
-            }
-        ],
-        status: "active",
-        updatedAt: "2025-05-26T02:34:06.714Z",
-        createdAt: "2025-05-26T02:34:06.714Z",
-        __v: 0
-    }
+    // data.value = {
+    //     applicableTo: { store: [], typeStore: [], zone: [], area: [] },
+    //     _id: "6833d31efbd047c8c0bfb758",
+    //     giveId: "GIVE-202505-0001",
+    //     name: "กิจกรรมตกแต่งร้านค้าสวยงาม",
+    //     description: "แจกผงปรุงรส 75 กรัม 1 ซองให้ร้านค้าสวยงาม",
+    //     type: "I16",
+    //     remark: "V16",
+    //     dept: "09",
+    //     conditions: [
+    //         {
+    //             productId: [],
+    //             productGroup: ["ผงปรุงรส"],
+    //             productFlavour: [],
+    //             productBrand: [],
+    //             productSize: ["75 G"],
+    //             productUnit: ["PCS"],
+    //             productQty: 1,
+    //             productAmount: 0,
+    //             limitType: "limited",
+    //             lot: [],
+    //             _id: "6833d31efbd047c8c0bfb759"
+    //         }
+    //     ],
+    //     status: "active",
+    //     updatedAt: "2025-05-26T02:34:06.714Z",
+    //     createdAt: "2025-05-26T02:34:06.714Z",
+    //     __v: 0
+    // }
 }
 
 function formatDate(dt) {

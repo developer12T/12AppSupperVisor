@@ -55,7 +55,7 @@
             </h3>
             <div class="overflow-x-auto rounded-lg border border-gray-100 shadow">
                 <table class="min-w-full text-sm align-middle">
-                    <thead class="sticky top-0 bg-gray-50 z-10">
+                    <thead class="sticky top-0 bg-gray-50">
                         <tr>
                             <th class="p-2 text-left">No</th>
                             <th class="p-2 text-left">สินค้า</th>

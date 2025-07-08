@@ -112,7 +112,7 @@ const chartOptions = {
         },
         title: {
             display: true,
-            text: 'Performance Overview',
+            text: 'กราฟแสดงจำนวนและยอดขายสินค้า',
         },
         datalabels: {
             display: true,
@@ -131,7 +131,7 @@ const chartOptions = {
             position: 'left',
             title: {
                 display: true,
-                text: 'รวมมูลค่า', // 🔴 Change this to your preferred label (e.g., "Summary")
+                text: 'ยอดขาย', // 🔴 Change this to your preferred label (e.g., "Summary")
                 color: '#222', // Optional: change color
                 font: {
                     size: 14,

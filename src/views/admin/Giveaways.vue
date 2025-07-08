@@ -123,11 +123,11 @@ const form = ref({
     conditions: [
         {
             productId: [],
-            productGroup: ['ผงปรุงรส'],
+            productGroup: [],
             productFlavour: [],
             productBrand: [],
-            productSize: ['75 G'],
-            productUnit: ['PCS'],
+            productSize: [],
+            productUnit: [],
             productQty: 1,
             productAmount: 0,
             limitType: 'limited',
@@ -144,26 +144,14 @@ watch(selectedZone, async (newVal) => {
     // console.log('selectedZone', zoneString)
 })
 
-// --- Submit Handler ---
-const prepareFormData = () => {
-    // อัปเดต applicableTo ก่อนส่ง
-    form.value.applicableTo.typeStore = selectedTypeStore.value.map(item => item.id)
-    form.value.applicableTo.area = selectedArea.value.map(item => item.area)
-    form.value.applicableTo.zone = selectedZone.value.map(item => item.zone)
-    // ถ้าร้านค้าเดียวให้เป็น array เช่น ['xxx']
-    if (typeof form.value.applicableTo.store === 'string') {
-        form.value.applicableTo.store = [form.value.applicableTo.store]
-    }
-    // clone ข้อมูลกัน side effect
-    return JSON.parse(JSON.stringify(form.value))
-}
+
 
 const submitForm = async () => {
     try {
 
-        form.value.applicableTo.typeStore = selectedArea.value.map(item => item.id)
+        form.value.applicableTo.typeStore = selectedTypeStore.value.map(item => item.id)
         form.value.applicableTo.area = selectedArea.value.map(item => item.area)
-        form.value.applicableTo.zone = selectedArea.value.map(item => item.zone)
+        form.value.applicableTo.zone = selectedZone.value.map(item => item.zone)
 
         form.value.conditions[0].productBrand = selectedBrand.value.map(item => item.brandName)
         form.value.conditions[0].productGroup = selectedGroup.value.map(item => item.group)
@@ -179,9 +167,9 @@ const submitForm = async () => {
                 dangerouslyHTMLString: true
             })
             // --- delay 1.5 วินาที ก่อน push-- -
-            // setTimeout(() => {
-            //     router.push('/admin/promotion')
-            // }, 1500)
+            setTimeout(() => {
+                router.push('/admin/giveawayall')
+            }, 1500)
         } else {
             toast(`เพิ่มโปรโมทชั่นใหม่ไม่สำเร็จ (${giveawayStore.statusCode})`, {
                 theme: toast.THEME.COLORED,
