@@ -41,7 +41,7 @@ const menuItems = ref([
     { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'รายการส่งเงิน', icon: 'mdi:money-100', link: '/supervisor/sendmoney', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'] },
-    { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveaway', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
+    { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveawayall', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'สต๊อกสินค้า', icon: 'mdi:warehouse', link: '/supervisor/stock', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
 
 

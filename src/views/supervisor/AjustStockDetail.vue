@@ -54,8 +54,8 @@
                     <button class="btn btn-error">
                         ไม่อนุมัติ
                     </button>
-                    <button class="btn btn-success">
-                        อนุมัติร้านค้า
+                    <button class="btn btn-success ">
+                        อนุมัติ
                     </button>
                 </div>
 

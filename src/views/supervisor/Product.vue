@@ -63,6 +63,23 @@ const subHeaders = ['เป้าหมาย', 'ยอดขาย', 'คิด
 const reportStore = useReport();
 
 
+async function clearSelect() {
+    // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
+    // ตัวอย่าง:
+    isLoading.value = true
+    selectedArea.value = ''
+    selectedTeam.value = ''
+    selectedZone.value = ''
+    await reportStore.getSummary18SKU(selectedZone.value, selectedArea.value, selectedTeam.value)
+    rawData.value = reportStore.summary18SKU
+    headers.value = rawData.value.map(item => `${item.group} ${item.groupCodeM3}`)
+    summaryQty.value = rawData.value.map(item => item.summaryQty)
+    summary.value = rawData.value.map(item => item.summary)
+    isLoading.value = false
+}
+
+
+
 
 const chartData = computed(() => ({
     labels: headers.value,
@@ -97,19 +114,44 @@ const chartOptions = {
             display: true,
             text: 'Performance Overview',
         },
+        datalabels: {
+            display: true,
+            color: '#111',
+            anchor: 'end',
+            align: 'top',
+            font: { weight: 'bold' },
+            formatter: value =>
+                new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(value)
+        }
     },
     scales: {
         y: {
             type: 'linear',
             display: true,
             position: 'left',
+            title: {
+                display: true,
+                text: 'รวมมูลค่า', // 🔴 Change this to your preferred label (e.g., "Summary")
+                color: '#222', // Optional: change color
+                font: {
+                    size: 14,
+                    weight: 'bold'
+                }
+            }
         },
         y1: {
             type: 'linear',
             display: true,
             position: 'right',
-
-
+            title: {
+                display: true,
+                text: 'รวมจำนวน', // 🔴 Change this to your preferred label (e.g., "Summary")
+                color: '#222', // Optional: change color
+                font: {
+                    size: 14,
+                    weight: 'bold'
+                }
+            },
             // Optional: ซ่อน grid ของแกนขวาเพื่อไม่ให้ซ้อนกับแกนซ้าย
             grid: {
                 drawOnChartArea: false,
@@ -173,11 +215,10 @@ onMounted(async () => {
         await reportStore.getSummary18SKU('', '', '')
         await filter.getZone(period);
         rawData.value = reportStore.summary18SKU
-
-        // await filter.getZone(period);
-        // if (selectedZone.value) {
-        //     await filter.getArea(period, selectedZone.value, '');
-        // }
+        if (selectedZone.value) {
+            await filter.getTeam(selectedZone.value);
+            await filter.getArea(period, selectedZone.value, '');
+        }
         headers.value = rawData.value.map(item => `${item.group} ${item.groupCodeM3}`)
         summaryQty.value = rawData.value.map(item => item.summaryQty)
         summary.value = rawData.value.map(item => item.summary)

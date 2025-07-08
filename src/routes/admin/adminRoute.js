@@ -51,6 +51,17 @@ const adminRoutes = [
         // meta: { breadcrumb: 'ใบรวมสินค้า' }
       },
       {
+        path: 'giveawayall',
+        component: () => import('../../views/admin/GiveawaysAll.vue')
+        // meta: { breadcrumb: 'ใบรวมสินค้า' }
+      },
+      {
+        path: 'giveawayall/:giveId',
+        name: 'GiveDetail',
+        component: () => import('../../views/admin/GiveawysDetail.vue')
+        // meta: { breadcrumb: 'ใบรวมสินค้า' }
+      },
+      {
         path: 'checklist',
         component: () => import('../../views/admin/ChecklistFlow.vue')
         // meta: { breadcrumb: 'ใบรวมสินค้า' }
