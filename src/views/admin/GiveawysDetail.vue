@@ -7,7 +7,7 @@
             <div><span class="font-semibold">ประเภทกิจกรรม:</span> {{ data.type }}</div>
             <div><span class="font-semibold">หมายเหตุ:</span> {{ data.remark }}</div>
             <div><span class="font-semibold">แผนก:</span> {{ data.dept }}</div>
-            <div><span class="font-semibold">สถานะ:</span>
+            <div><span class="font-semibold">สถานะ: </span>
                 <span :class="data.status === 'active' ? 'text-green-600' : 'text-gray-400'">
                     {{ data.status }}
                 </span>
