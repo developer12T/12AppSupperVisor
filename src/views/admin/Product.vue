@@ -8,12 +8,30 @@
         <button @click="showAlert = false" class="btn btn-sm ml-auto">Dismiss</button>
     </div>
     <div class="flex justify-between items-center p-3">
-        <div class="flex items-center gap-3  w-2/6">
+        <div class="flex items-center gap-6  w-4/6">
             <h1 class="text-xl font-bold">จัดการสินค้า</h1>
-            <select class="select select-info w-2/6" v-model="selectedChannel">
+            <select class="select select-info w-1/6" v-model="selectedChannel">
                 <option disabled value="">Select Channel</option>
                 <option value="cash">Cash</option>
                 <option value="credit">Credit</option>
+            </select>
+
+            <select class="select select-info w-1/6" v-model="selectedBrand">
+                <option disabled value="">Brand</option>
+                <option v-for="item in filter.brand" :key="item" :value="item.brand">{{ item.brand }}</option>
+
+            </select>
+            <select class="select select-info w-1/6" v-model="selectedGroup">
+                <option disabled value="">Group</option>
+                <option v-for="item in filter.group" :key="item" :value="item.group">{{ item.group }}</option>
+            </select>
+            <select class="select select-info w-1/6" v-model="selectedFlavour">
+                <option disabled value="">Flavour</option>
+                <option v-for="item in filter.flavour" :key="item" :value="item.flavour">{{ item.flavour }}</option>
+            </select>
+            <select class="select select-info w-1/6" v-model="selectedSize">
+                <option disabled value="">Size</option>
+                <option v-for="item in filter.size" :key="item" :value="item.size">{{ item.size }}</option>
             </select>
         </div>
 
@@ -34,7 +52,8 @@
             <img v-if="!noPicIds.includes(product.id)"
                 :src="`https://apps.onetwotrading.co.th/images/products/${product.id}.webp`" alt="placeholder"
                 :style="{ width: '150px', height: '150px', objectFit: 'cover' }" @error="onImgError(product.id)" />
-            <div v-else style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center;">
+            <div v-else
+                style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center;">
                 <Icon icon="mdi:image-off" :width="150" :height="150" style="color: #ccc;" />
             </div>
         </figure>
@@ -70,9 +89,11 @@
 </template>
 
 <script setup>
+import { useRouter, useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { computed, onMounted, ref, watch } from 'vue';
 import { useProductsStore } from '../../store/modules/product';
+import { useFilter } from '../../store/modules/filter'
 import { toast } from 'vue3-toastify';
 import "vue3-toastify/dist/index.css";
 
@@ -83,6 +104,16 @@ const showAlert = ref(false)
 const alertMessage = ref('Warning: Invalid email address!')
 const searchQuery = ref('');
 const selectedChannel = ref('cash');
+const filter = useFilter()
+const isLoading = ref(false)
+
+const router = useRouter()
+const route = useRoute()
+
+const selectedBrand = ref(route.query.brand || '')
+const selectedGroup = ref(route.query.group || '')
+const selectedFlavour = ref(route.query.flavour || '')
+const selectedSize = ref(route.query.size || '')
 
 function onImgError(id) {
     // เพิ่ม id ลง array ถ้ายังไม่มี (Vue detect ได้แน่นอน)
@@ -92,9 +123,12 @@ function onImgError(id) {
 }
 
 const filteredProducts = computed(() => {
-    const query = searchQuery.value.toLowerCase();
-    if (query != '') {
-        return productStore.product.data.filter(product =>
+    let data = productStore.product.data;
+
+    // Search filter (text input)
+    const query = searchQuery.value.trim().toLowerCase();
+    if (query) {
+        data = data.filter(product =>
             (product.name || '').toLowerCase().includes(query) ||
             (product.id || '').toLowerCase().includes(query) ||
             (product.group || '').toLowerCase().includes(query) ||
@@ -102,10 +136,31 @@ const filteredProducts = computed(() => {
             (product.size || '').toLowerCase().includes(query) ||
             (product.type || '').toLowerCase().includes(query)
         );
-    } else {
-        return productStore.product.data
     }
+
+    // Brand filter
+    if (selectedBrand.value) {
+        data = data.filter(product => product.brand === selectedBrand.value);
+    }
+
+    // Group filter
+    if (selectedGroup.value) {
+        data = data.filter(product => product.group === selectedGroup.value);
+    }
+
+    // Flavour filter
+    if (selectedFlavour.value) {
+        data = data.filter(product => product.flavour === selectedFlavour.value);
+    }
+
+    // Size filter
+    if (selectedSize.value) {
+        data = data.filter(product => product.size === selectedSize.value);
+    }
+
+    return data;
 });
+
 
 async function triggerAlert(product, status, onOff) {
     try {
@@ -159,9 +214,34 @@ watch(selectedChannel, async (newVal) => {
     }
 });
 
+watch(selectedBrand, async (newVal) => {
+    if (newVal) {
+        await filter.getGroup(newVal, selectedFlavour.value, selectedSize.value, '')
+    }
+});
+
+
+watch(selectedGroup, async (newVal) => {
+    if (newVal) {
+        await filter.getFlavour(selectedBrand.value, newVal, selectedSize.value, '')
+    }
+});
+
+watch(selectedFlavour, async (newVal) => {
+    if (newVal) {
+        await filter.getSize(selectedBrand.value, selectedGroup.value, newVal, '')
+    }
+});
+
 onMounted(async () => {
+    isLoading.value = true
     await productStore.getProductionAll('cash')
+    await filter.getBrand('', '', '', '')
+    await filter.getGroup('', '', '', '')
+    await filter.getFlavour('', '', '', '')
+    await filter.getSize('', '', '', '')
     products.value = productStore.product.data
+    isLoading.value = false
 })
 
 </script>
