@@ -16,10 +16,11 @@
                 </span>
             </div>
             <div class="flex gap-2">
-                <button class="rounded-xl px-4 py-2 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition"
+                <button v-if="data.status === 'pending'" class="rounded-xl px-4 py-2 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition"
                     @click="onApproveClick">
                     อนุมัติใบเบิก
                 </button>
+
                 <button class="rounded-xl px-4 py-2 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition"
                     @click="exportData">
                     Export
@@ -105,11 +106,12 @@
     <!-- Custom Alert Dialog -->
     <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
         <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
-            <h2 class="font-bold text-lg mb-4">Confirm Approval</h2>
-            <p class="mb-6">Are you sure you want to approve this?</p>
+            <h2 class="font-bold text-lg mb-4">อนุมัติใบเบิก</h2>
+            <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการอนุมัติใบเบิกนี้ ?</p>
             <div class="flex justify-end gap-2">
-                <button class="btn" @click="showAlert = false">Cancel</button>
-                <button class="btn btn-primary" @click="approveStatus">Approve</button>
+                <button class="btn btn-neutral" @click="showAlert = false">ยกเลิก</button>
+                <button class="btn btn-error text-white" @click="approveStatus(false)">ไม่อนุมัติ</button>
+                <button class="btn btn-primary" @click="approveStatus(true)">อนุมัติ</button>
             </div>
         </div>
     </div>
@@ -153,10 +155,7 @@ function statusLabel(status) {
     return status || '-'
 }
 
-async function approveStatus() {
-    status.value = 'approved'      // Update status
-    showAlert.value = false        // Hide alert
-    const statusBool = status.value == 'approved' ? true : false
+async function approveStatus(statusBool) {
     await withdrawStore.approve('cash', route.params.id, statusBool)
     window.location.reload()
     // Optionally: send API request here!

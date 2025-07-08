@@ -23,25 +23,39 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async getWithdraw (channel, period) {
+    async getWithdraw (
+      channel,
+      period,
+      selectZone,
+      selectArea,
+      team,
+      year,
+      month
+    ) {
       try {
         // setChannel(channel)
 
-        const area = localStorage.getItem('area')
-        const zone = localStorage.getItem('zone')
-        let filters
-        if (area) {
-          filters = area
+        let zone = ''
+        let area = ''
+        if (selectZone != '') {
+          zone = selectZone
         } else {
-          filters = zone
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
         }
 
         const response = await api.get(
-          `/api/cash/distribution/get?type=pending&area=${filters}&period=${period}`
+          `/api/cash/distribution/get?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}`
         )
         this.withdraw = response.data.data
-        console.log('withdraw', withdraw)
+        console.log('withdraw', this.withdraw)
       } catch (error) {
+        this.withdraw = [];
         console.log(error)
       }
     },

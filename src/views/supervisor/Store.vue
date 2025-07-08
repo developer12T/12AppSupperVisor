@@ -240,7 +240,7 @@ const showConfirmationDialog = (id, name) => {
 
 const confirmAction = async () => {
     console.log('storeId', storeId.value);
-    console.log('area', area);
+    // console.log('area', area);
     try {
         isLoading.value = true
         await store.updateStoreStatus({ storeId: storeId.value, status: '20' })
