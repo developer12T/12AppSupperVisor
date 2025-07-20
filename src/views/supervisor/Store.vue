@@ -108,12 +108,8 @@
                 <button class="btn btn-success" @click="openGoogleMap(customer.latitude, customer.longtitude)">
                     Google Map
                 </button>
-                <button :disabled="customer.status === '20' || customer.status === '90'" class="btn btn-error"
-                    @click="showRejectionDialog(customer.storeId, customer.name)">
-                    ไม่อนุมัติ
-                </button>
                 <button :disabled="customer.status === '20' || customer.status === '90'" class="btn btn-primary"
-                    @click="showConfirmationDialog(customer.storeId, customer.name)">
+                    @click="router.push(`/supervisor/approve/${customer.storeId}`)">
                     อนุมัติร้านค้า
                 </button>
             </div>
@@ -123,7 +119,6 @@
         <div @click="showModal = false" class="absolute inset-0"></div>
         <img :src="modalImageSrc" class="max-w-full max-h-full z-10" />
     </div>
-
     <div v-if="showModalConfirm" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
         <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
             <h2 class="font-bold text-lg mb-4">ต้องการอนุมัติ ร้านค้า {{ storeName }}</h2>
@@ -134,20 +129,17 @@
             </div>
         </div>
     </div>
-
     <div v-if="showModalReject" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
         <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
             <h2 class="font-bold text-lg mb-4">ไม่อนุมัติร้านค้า {{ storeName }}</h2>
             <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการไม่อนุมัติรหัสร้านค้านี้ ?</p>
             <div class="flex justify-end gap-2">
                 <button class="btn" @click="cancelAction">ยกเลิก</button>
-                <button class="btn btn-primary" @click="rejectAction">ยืนยัน</button>
+                <button class="btn btn-primary" @click="rejectAction">
+                    ยืนยัน</button>
             </div>
         </div>
     </div>
-
-
-
 </template>
 
 <script setup>
@@ -232,11 +224,7 @@ const showRejectionDialog = (id, name) => {
     storeName.value = name;
 };
 
-const showConfirmationDialog = (id, name) => {
-    showModalConfirm.value = true;
-    storeId.value = id;
-    storeName.value = name;
-};
+
 
 const confirmAction = async () => {
     console.log('storeId', storeId.value);
@@ -323,6 +311,9 @@ onMounted(async () => {
     isLoading.value = true
     await store.getCustomerAll('', '', '', '', '')
     await filter.getZone(period);
+    if (userRole == 'supervisor' || userRole == 'area_manager') {
+
+    }
     customers.value = store.storeNew.data
     isLoading.value = false
     // console.log("store.storeAll", store.storeNew)

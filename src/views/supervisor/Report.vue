@@ -7,7 +7,7 @@
                 <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
             </select>
         </div>
-        <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
+        <!-- <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
             <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                 <option disabled value="">Select Team</option>
                 <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">
@@ -20,7 +20,7 @@
                 <option disabled value="">Select Area</option>
                 <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
             </select>
-        </div>
+        </div> -->
     </div>
 
     <!-- Table -->
@@ -100,13 +100,13 @@ const selectedTeam = ref(route.query.team || '')
 watch(selectedZone, async (newVal) => {
     selectedArea.value = ''
     isLoading.value = true
-    router.replace({
-        query: {
-            ...route.query,
-            zone: newVal,
-            area: ''
-        }
-    })
+    // router.replace({
+    //     query: {
+    //         ...route.query,
+    //         zone: newVal,
+    //         area: ''
+    //     }
+    // })
     if (newVal) {
         await filter.getArea(period, newVal)
         await filter.getTeam(newVal)

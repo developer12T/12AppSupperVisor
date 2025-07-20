@@ -230,7 +230,7 @@ export default {
         selectedZone(newVal) {
             this.selectedArea = ''
             if (newVal) {
-                this.filter.getArea(period, newVal);
+                this.filter.getArea(period, newVal, '');
                 this.fetchData();
             }
         },
@@ -256,7 +256,7 @@ export default {
                     query += `&area=${this.selectedArea}`;
                 }
 
-                console.log("$query",query);
+                console.log("$query", query);
                 console.log("Fetching API Data for type:", this.selectedType);
                 const responseBarChart = await api.get(
                     query

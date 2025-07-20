@@ -22,25 +22,30 @@ const showText = ref(isSidebarOpen.value)
 
 const menuItems = ref([
     { name: 'แดชบอร์ด', icon: 'mdi:monitor-dashboard', link: '/', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
+
     {
         name: 'รายงานยอดขาย',
         icon: 'mdi:chart-areaspline',
         link: '#',
+        roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'],
         submenu: [
             { icon: 'mdi:chart-areaspline', name: 'รายงานยอดขาย', link: '/supervisor/report' },
             { icon: 'mdi:shop-location', name: 'รายงานการเช็คอิน', link: '/supervisor/checkin' },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product' },
+            { icon: 'mdi:money-100', name: 'รายการส่งเงิน', link: '/supervisor/sendmoney' },
+
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager']
     },
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'] },
-    { name: 'คู่มือการใช้งาน', icon: 'mdi:book-information-variant', link: '/sale/manual', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager','sale'] },
-    { name: 'อนุมัติเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
+    { name: 'อนุมัติใบเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
+    { name: 'อนุมัติขอคืน', icon: 'mdi:autorenew', link: '/supervisor/refund', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
     { name: 'อนุมัติขอปรับสต๊อก', icon: 'mdi:archive-edit', link: '/supervisor/adjuststock', submenu: null, roles: ['admin', 'dc', 'supervisor', 'area_manager', 'sale_manager'] },
+    { name: 'คู่มือการใช้งาน', icon: 'mdi:book-information-variant', link: '/sale/manual', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'sale'] },
     { name: 'จัดการผู้ใช้งาน', icon: 'mdi:person-card-details', link: '/admin/manageuser', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'] },
+    { name: 'ดูร้านค้าตามพื้นที่', icon: 'mdi:map-marker-radius', link: '/supervisor/storemap', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
-    { name: 'รายการส่งเงิน', icon: 'mdi:money-100', link: '/supervisor/sendmoney', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'] },
     { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveawayall', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'สต๊อกสินค้า', icon: 'mdi:warehouse', link: '/supervisor/stock', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
 
@@ -80,7 +85,7 @@ watch(isSidebarOpen, (newVal) => {
                                 :class="['flex items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-base-300', isSubmenuOpen(index) ? 'bg-base-300' : '', !isSidebarOpen ? 'justify-center' : '']">
                                 <Icon :icon="item.icon" class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                 <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{ item.name
-                                }}</span>
+                                    }}</span>
                                 <Icon v-if="showText" class="w-3 h-3" icon="mdi:chevron-down" />
                             </button>
                             <ul v-show="isSidebarOpen && isSubmenuOpen(index)" class="py-2 space-y-2">
@@ -92,7 +97,7 @@ watch(isSidebarOpen, (newVal) => {
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                            }}</span>
+                                        }}</span>
                                     </router-link>
                                 </li>
                             </ul>

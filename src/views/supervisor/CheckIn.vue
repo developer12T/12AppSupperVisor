@@ -12,10 +12,12 @@
         </div>
         <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
 
-            <select class="select select-info ms-3 text-center" v-model="selectedArea">
+            <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                 <option disabled value="">Select Team</option>
-                <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}</option>
+                <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
+                </option>
             </select>
+            <button class="btn btn-primary ms-3 mt-3 text-center" @click="clearFilter">ล้างตัวเลือก</button>
         </div>
         <div class="card bg-base-100 shadow-xl p-4 w-full max-w-sm">
             <div class="flex items-center justify-between mb-2">
@@ -173,52 +175,90 @@ const selectedRoute = ref(null)
 
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
+const selectedTeam = ref(route.query.team || '')
+
 function showDetail(item, routeCode, routeId) {
     selectedRoute.value = item
     router.push({ name: 'RouteDetail', params: { route: routeCode, routeId: routeId } })
+}
+
+function clearFilter() {
+    selectedZone.value = ''
+    selectedArea.value = ''
+    selectedTeam.value = ''
+    window.location.assign('/supervisor/checkin')
 }
 
 onMounted(async () => {
     isLoading.value = true;
     await filter.getZone(period);
     if (selectedZone.value) {
-        await filter.getArea(period, selectedZone.value);
+        await filter.getArea(period, selectedZone.value, selectedTeam.value);
+        await filter.getTeam(selectedZone.value);
     }
     if (selectedArea.value) {
-        await routeStore.getCheckin(period, selectedArea.value);
+        await routeStore.getCheckin(period, selectedArea.value, selectedTeam.value);
     }
     await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
     await new Promise(resolve => setTimeout(resolve, 2000))
     isLoading.value = false;
 })
 
+watch(selectedTeam, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    // router.replace({
+    //     query: {
+    //         ...route.query,
+    //         area: '',
+    //         team: newVal
+    //     }
+    // });
+    if (newVal) {
+        filter.getArea(period, selectedZone.value, newVal);
+    }
+});
+
+watch(() => route.query.zone, (val) => {
+    selectedZone.value = val || ''
+})
+
+watch(() => route.query.area, (val) => {
+    selectedArea.value = val || ''
+})
+watch(() => route.query.team, (val) => {
+    selectedTeam.value = val || ''
+})
+
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
-    router.replace({
-        query: {
-            ...route.query,
-            zone: newVal,
-            area: '' // clear old area
-        }
-    });
+    selectedTeam.value = '' // Reset area when zone changes
+    // router.replace({
+    //     query: {
+    //         ...route.query,
+    //         zone: newVal,
+    //         area: '',
+    //         team: ''
+    //     }
+    // });
     if (newVal) {
-        filter.getArea(period, newVal);
+        filter.getArea(period, newVal, selectedTeam.value);
         filter.getTeam(newVal);
     }
 });
 
 watch(selectedArea, async (newVal) => {
-    router.replace({
-        query: {
-            ...route.query,
-            area: newVal
-        }
-    });
+    // router.replace({
+    //     query: {
+    //         ...route.query,
+    //         area: newVal
+    //     }
+    // });
     if (newVal) {
         isLoading.value = true;
         await filter.getZone(period);
         if (selectedZone.value) {
-            await filter.getArea(period, selectedZone.value);
+            await filter.getArea(period, selectedZone.value, selectedArea.value);
+
         }
         if (selectedArea.value) {
             await routeStore.getCheckin(period, selectedArea.value);

@@ -20,6 +20,10 @@ const supervisorRoutes = [
         component: () => import('../../views/supervisor/Store.vue')
       },
       {
+        path: 'approve/:storeid',
+        component: () => import('../../views/supervisor/StoreDetail.vue')
+      },
+      {
         path: 'checkin',
         component: () => import('../../views/supervisor/CheckIn.vue')
       },
@@ -45,7 +49,7 @@ const supervisorRoutes = [
       },
       {
         path: 'sendmoney',
-        component: () => import('../../views/supervisor/Sendmoney.vue')
+        component: () => import('../../views/supervisor/SendmoneyTable.vue')
       },
       {
         path: 'withdraw',
@@ -66,6 +70,18 @@ const supervisorRoutes = [
       {
         path: 'adjuststock/:orderId',
         component: () => import('../../views/supervisor/AjustStockDetail.vue')
+      },
+      {
+        path: 'storemap',
+        component: () => import('../../views/supervisor/Googlemap.vue')
+      },
+      {
+        path: 'refund',
+        component: () => import('../../views/supervisor/Refund.vue')
+      },
+      {
+        path: 'refund/:orderId',
+        component: () => import('../../views/supervisor/RefundDetail.vue')
       }
     ]
   }

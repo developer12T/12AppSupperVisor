@@ -3,8 +3,12 @@ import api from '../../utils/axios'
 
 export const useStoresStore = defineStore('stores', {
   state: () => ({
+    newstoreId: '',
     storeAll: [],
+    storeDetail: {},
+    storeMap: [],
     storeNew: [],
+    similarStore: [],
     policies: [],
     provice: [],
     district: [],
@@ -17,6 +21,39 @@ export const useStoresStore = defineStore('stores', {
     }
   }),
   actions: {
+    async getStoreMap (zone) {
+      try {
+        const response = await api.get(
+          `/api/cash/store/getStore?type=all&zone=${zone}&showMap=true`
+        )
+        const result = response.data.data
+        this.storeMap = result
+        console.log('storeMap', this.storeMap)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getDetailStore (storeId) {
+      try {
+        const response = await api.get(`/api/cash/store/${storeId}`)
+        const result = response.data.data
+        this.storeDetail = result
+        console.log('storeDetail', this.storeDetail)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async checkSimilarStore (storeId) {
+      try {
+        const response = await api.get(`/api/cash/store/check/${storeId}`)
+        const result = response.data.data
+        this.similarStore = result
+        console.log('similarStore', this.similarStore)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
     async getCustomerAll (selectZone, selectArea, team, year, month) {
       try {
         //   const token = JSON.parse(localStorage.getItem('token'));
@@ -41,20 +78,22 @@ export const useStoresStore = defineStore('stores', {
         this.storeNew = result
         console.log('storeNew', this.storeNew)
       } catch (error) {
-         this.storeNew = []
+        this.storeNew = []
         console.error(error)
       }
     },
     async updateStoreStatus (data) {
       try {
         // const area = localStorage.getItem('area')
-        const user = localStorage.getItem('user')
+        const user = localStorage.getItem('fullName')
         const response = await api.post(`/api/cash/store/updateStoreStatus`, {
           storeId: data.storeId,
           status: data.status,
           user: user
         })
-        console.log('response', response.data)
+        const result = response.data.storeId
+        this.newstoreId = result
+        console.log('newstoreId', this.newstoreId)
       } catch (error) {
         console.error(error)
       }

@@ -190,13 +190,13 @@ watch(selectedArea, async (newVal) => {
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
     selectedTeam.value = ''
-    router.replace({
-        query: {
-            ...route.query,
-            zone: newVal,
-            area: '' // clear old area
-        }
-    });
+    // router.replace({
+    //     query: {
+    //         ...route.query,
+    //         zone: newVal,
+    //         area: '' // clear old area
+    //     }
+    // });
     if (newVal) {
         await filter.getArea(period, newVal, selectedTeam.value);
         await filter.getTeam(newVal);

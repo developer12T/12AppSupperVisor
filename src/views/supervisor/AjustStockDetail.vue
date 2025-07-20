@@ -8,7 +8,14 @@
                 <h1 class="text-xl font-bold mb-2">ข้อมูลรายการปรับสต็อก</h1>
                 <div class="mb-4 grid grid-cols-2 gap-3 text-sm">
                     <div><span class="font-semibold">Order ID:</span> {{ data.orderId }}</div>
-                    <div><span class="font-semibold">สถานะ:</span> {{ data.statusTH }}</div>
+                    <div><span class="font-semibold">สถานะ:</span> <span
+                            class="inline-block rounded px-3 py-1 text-xs font-bold" :class="{
+                                'bg-yellow-100 text-yellow-700': data.status === 'pending',
+                                'bg-green-100 text-green-700': data.status === 'approved',
+                                'bg-red-100 text-red-700': data.status === 'rejected'
+                            }">
+                            {{ data.statusTH }}
+                        </span></div>
                     <div><span class="font-semibold">พื้นที่:</span> {{ data.area }}</div>
                     <div><span class="font-semibold">เซลล์โค้ด:</span> {{ data.saleCode }}</div>
                     <div><span class="font-semibold">รอบบัญชี:</span> {{ data.period }}</div>
@@ -32,7 +39,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="(item, idx) in data.listProduct" :key="item.id"
-                                :class="item.action === 'reduce' ? 'bg-red-50' : 'bg-green-50'">
+                                :class="item.action === 'OUT' ? 'bg-red-50' : 'bg-green-50'">
                                 <td class="p-2 border text-center">{{ idx + 1 }}</td>
                                 <td class="p-2 border">{{ item.id }}</td>
                                 <td class="p-2 border">{{ item.name }}</td>
@@ -42,19 +49,19 @@
                                 <td class="p-2 border text-right">{{ item.price }}</td>
                                 <td class="p-2 border text-right">{{ item.discount }}</td>
                                 <td class="p-2 border text-center">
-                                    <span :class="item.action === 'reduce' ? 'text-red-500' : 'text-green-600'">
-                                        {{ item.action === 'reduce' ? 'ตัดออก' : 'เพิ่มเข้า' }}
+                                    <span :class="item.action === 'OUT' ? 'text-red-500' : 'text-green-600'">
+                                        {{ item.action === 'OUT' ? 'ตัดออก' : 'เพิ่มเข้า' }}
                                     </span>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="flex justify-end gap-2 mt-4">
-                    <button class="btn btn-error">
+                <div v-if="data.status == 'pending'" class="flex justify-end gap-2 mt-4">
+                    <button class="btn btn-error" @click="approve(false)">
                         ไม่อนุมัติ
                     </button>
-                    <button class="btn btn-success ">
+                    <button class="btn btn-success " @click="approve(true)">
                         อนุมัติ
                     </button>
                 </div>
@@ -77,6 +84,18 @@ const route = useRoute()
 const data = ref(null)
 const isLoading = ref(false)
 const stockStore = useStockStore()
+
+async function approve(status) {
+    try {
+        isLoading.value = true
+        await stockStore.approveAdjustStock('cash', route.params.orderId, status)
+        window.location.reload()
+        isLoading.value = false
+    } catch (error) {
+        console.log(error)
+    }
+
+}
 
 async function loadData() {
     isLoading.value = true

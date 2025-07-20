@@ -41,11 +41,12 @@
         <thead>
             <tr>
                 <th class="border p-2 text-center">เขต</th>
-                <th class="border p-2 text-center">การเปิดร้านค้า</th>
+                <th class="border p-2 text-center">การเปิดร้านค้าใหม่</th>
                 <th class="border p-2 text-center">การเข้าเยี่ยม</th>
                 <th class="border p-2 text-center">การเปิดขาย</th>
                 <th class="border p-2 text-center">การเบิก</th>
                 <th class="border p-2 text-center">การคืนสินค้า</th>
+                <th class="border p-2 text-center">การส่งเงิน</th>
             </tr>
         </thead>
         <tbody>
@@ -71,6 +72,10 @@
                     'bg-red-200 text-red-700': item.refund === 0,
                     'bg-green-200 text-green-700': item.refund > 0
                 }">{{ item.refund }}</td>
+                <td class="border p-2 text-center" :class="{
+                    'bg-red-200 text-red-700': item.sendMoney === 0,
+                    'bg-green-200 text-green-700': item.sendMoney > 0
+                }">{{ item.sendMoney }}</td>
             </tr>
         </tbody>
     </table>

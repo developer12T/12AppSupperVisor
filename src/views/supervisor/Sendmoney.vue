@@ -1,105 +1,201 @@
 <template>
-    <div class="p-4">
-        <h2 class="text-xl font-bold mb-4">Send Money</h2>
-
-        <div class="overflow-x-auto">
-            <table class="table table-zebra w-full border border-gray-300">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th>No.</th>
-                        <th>รูท</th>
-                        <th>ยอดส่ง</th>
-                        <th>ยออดรวม</th>
-                        <th>รูปภาพ</th>
-                        <th>วันที่</th>
-                        <th>สถานะ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item, index) in sendMoneyList" :key="item.id">
-                        <td>{{ index + 1 }}</td>
-                        <td>{{ item.area }}</td>
-                        <td>{{ formatCurrency(item.sendmoney) }}</td>
-                        <td>{{ formatCurrency(item.sendmoney) }}</td>
-                        <td>
-                            <img @click="openPreview(filePathToUrl(item.imageList[0].path))"
-                                :src="filePathToUrl(item.imageList[0].path)" alt="placeholder"
-                                :style="{ width: '75px', height: '75px', objectFit: 'cover' }" />
-                        </td>
-                        <td>{{ formatDate(item.createdAt) }}</td>
-                        <!-- <td>
-                            <span :class="statusColor(item.status)">
-                                {{ item.status }}
-                            </span>
-                        </td> -->
-                    </tr>
-                </tbody>
-            </table>
+    <div class="">
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-4 gap-4">
+            <div class="bg-blue-500 text-white rounded-xl flex items-center px-6 py-4 gap-3 w-full">
+                <i class="fa fa-clock text-2xl"></i>
+                <div class="flex flex-col flex-1">
+                    <div class="flex justify-between w-full">
+                        <span class="font-bold text-xl">ผลต่าง</span>
+                        <span class="text-xl font-semibold">2117</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-red-500 text-white rounded-xl flex items-center px-6 py-4 gap-3 w-full">
+                <i class="fa fa-clock text-2xl"></i>
+                <div class="flex flex-col flex-1">
+                    <div class="flex justify-between w-full">
+                        <span class="font-bold text-xl">จ่ายเงินล่าช้า</span>
+                        <span class="text-xl font-semibold">2117</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-500 text-white rounded-xl flex items-center px-6 py-4 gap-3 w-full">
+                <i class="fa fa-clock text-2xl"></i>
+                <div class="flex flex-col flex-1">
+                    <div class="flex justify-between w-full">
+                        <span class="font-bold text-xl">รอบันทึก</span>
+                        <span class="text-xl font-semibold">2117</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-yellow-500 text-white rounded-xl flex items-center px-6 py-4 gap-3 w-full">
+                <i class="fa fa-clock text-2xl"></i>
+                <div class="flex flex-col flex-1">
+                    <div class="flex justify-between w-full">
+                        <span class="font-bold text-xl">รอการอนุมัติ</span>
+                        <span class="text-xl font-semibold">2117</span>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div v-if="previewImg" @click.self="closePreview"
-        style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000">
-        <img :src="previewImg" style="max-width:90vw;max-height:90vh;border-radius:16px;background:#fff" />
+
+        <!-- Filters -->
+        <!-- <div class="flex gap-4 items-center">
+            <div>
+                <label class="block font-bold mb-1">Year</label>
+                <select v-model="filters.year" class="select select-bordered w-32">
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold mb-1">Channel</label>
+                <select v-model="filters.channel" class="select select-bordered w-40">
+                    <option value="">เลือกทั้งหมด</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold mb-1">Zone</label>
+                <select v-model="filters.zone" class="select select-bordered w-32">
+                    <option value="">เลือกทั้งหมด</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold mb-1">Area</label>
+                <select v-model="filters.area" class="select select-bordered w-32">
+                    <option value="">เลือกทั้งหมด</option>
+                </select>
+            </div>
+        </div> -->
+
+        <!-- Chart -->
+        <div class="flex  justify-between gap-6 ">
+            <div class="flex flex-col mt-10 justify-start gap-6 mb-3">
+                <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
+                    <button class="btn btn-primary" @click="clearSelect">ล้างตัวเลือก</button>
+                </div>
+                <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
+                    <select class="select select-info ms-3 text-center mb-3" v-model="selectedZone">
+                        <option disabled value="">Select Zone</option>
+                        <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+                    </select>
+                </div>
+                <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
+                    <select class="select select-info ms-3 text-center" v-model="selectedTeam">
+                        <option disabled value="">Select Team</option>
+                        <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
+                        }}
+                        </option>
+                    </select>
+                </div>
+                <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
+                    <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                        <option disabled value="">Select Area</option>
+                        <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="max-h-[calc(100vh-150px)] w-full bg-white rounded-xl p-10 mt-4">
+                <LineChart :chart-data="chartData" :chart-options="chartOptions" />
+            </div>
+        </div>
+
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useSendmoney } from '../../store/modules/sendmoney'
+import { ref, computed } from 'vue'
+import LineChart from '../chart/LineChart.vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useFilter } from '../../store/modules/filter'
 
+const router = useRouter()
+const route = useRoute()
+const filter = useFilter()
 
-function filePathToUrl(filePath) {
-    return filePath.replace('/var/www/12AppAPI/public', 'https://apps.onetwotrading.co.th')
+const selectedZone = ref(route.query.zone || '')
+const selectedArea = ref(route.query.area || '')
+const selectedTeam = ref(route.query.team || '')
+
+// Filters
+const filters = ref({
+    year: '2025',
+    channel: '',
+    zone: '',
+    area: '',
+})
+
+// Chart Data (fix ตามตัวอย่าง)
+const chartData = computed(() => ({
+    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+    datasets: [
+        {
+            label: 'QR Payment',
+            data: [275300, 172900, 164700, 0, 0, 0, 0, 0, 0, 0, 20000, 30000],
+            borderColor: '#3399ff',
+            backgroundColor: '#3399ff33',
+            tension: 0.2,
+            pointRadius: 6,
+            pointBackgroundColor: '#17bebb',
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                font: { weight: 'bold', size: 16 },
+                formatter: v => v === 0 ? '.00' : formatValue(v)
+            }
+        },
+        {
+            label: 'Money',
+            data: [2400000, 1100000, 961900, 0, 0, 0, 0, 0, 0, 0, 0, 30000],
+            borderColor: '#ffa600',
+            backgroundColor: '#ffa60033',
+            tension: 0.2,
+            pointRadius: 6,
+            pointBackgroundColor: '#ff9100',
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                font: { weight: 'bold', size: 16 },
+                formatter: v => v === 0 ? '.00' : formatValue(v)
+            }
+        }
+    ]
+}))
+
+function formatValue(val) {
+    if (val >= 1_000_000) return (val / 1_000_000).toFixed(1) + 'M'
+    if (val >= 1_000) return (val / 1_000).toFixed(1) + 'K'
+    return val
 }
 
-
-const previewImg = ref(null)
-function openPreview(src) {
-    previewImg.value = src
-}
-function closePreview() {
-    previewImg.value = null
-}
-
-const sendmoneyStore = useSendmoney()
-
-const sendMoneyList = ref([])
-
-function formatCurrency(value) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'THB',
-    }).format(value)
-}
-
-function formatDate(dateStr) {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
-    return new Date(dateStr).toLocaleDateString('th-TH', options)
-}
-
-function statusColor(status) {
-    switch (status) {
-        case 'pending':
-            return 'text-yellow-600 font-semibold'
-        case 'sent':
-            return 'text-green-600 font-semibold'
-        case 'failed':
-            return 'text-red-600 font-semibold'
-        default:
-            return ''
+// Chart options
+const chartOptions = {
+    responsive: true,
+    plugins: {
+        legend: { display: true, position: 'top' },
+        tooltip: {
+            callbacks: {
+                label: ctx => {
+                    let val = ctx.parsed.y
+                    return ctx.dataset.label + ': ' + (val ? val.toLocaleString() : '0')
+                }
+            }
+        },
+        datalabels: {
+            color: '#111',
+            font: { weight: 'bold', size: 16 },
+            formatter: v => v === 0 ? '.00' : formatValue(v)
+        }
+    },
+    scales: {
+        y: {
+            ticks: {
+                callback: value =>
+                    value >= 1_000_000 ? (value / 1_000_000) + 'M'
+                        : value >= 1_000 ? (value / 1_000) + 'K'
+                            : value
+            }
+        }
     }
 }
-
-onMounted(async () => {
-    await sendmoneyStore.getSendmoney();
-    sendMoneyList.value = sendmoneyStore.sendmoney
-})
 </script>
-
-<style scoped>
-.table th,
-.table td {
-    padding: 0.75rem;
-    text-align: left;
-}
-</style>

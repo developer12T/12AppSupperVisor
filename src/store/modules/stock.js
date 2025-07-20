@@ -31,12 +31,25 @@ export const useStockStore = defineStore('stock', {
       }
     },
 
+    async approveAdjustStock (channel, orderId, status) {
+      try {
+        setChannel(channel)
+        const response = await api.post(`/api/cash/stock/approveAdjustStock`, {
+          orderId: orderId,
+          status: status
+        })
+        // this.adjuststock = response.data.data
+        this.message = response.data.message
+        console.log('approveAdjustStock', this.message)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
     async getAdjustStockDetail (channel, orderId) {
       try {
         setChannel(channel)
-        const response = await api.get(
-          `/api/cash/stock/adjuststock/${orderId}`
-        )
+        const response = await api.get(`/api/cash/stock/getAdjustStockDetail?orderId=${orderId}`)
         this.adjuststockDetail = response.data.data[0]
         this.message = response.data.message
         console.log('getAdjustStockDetail', this.adjuststock)
@@ -44,6 +57,7 @@ export const useStockStore = defineStore('stock', {
         console.log(error)
       }
     },
+
     async getStock (area, period) {
       try {
         const response = await api.post(`/api/cash/stock/getStockQty`, {
@@ -57,6 +71,7 @@ export const useStockStore = defineStore('stock', {
         console.log(error)
       }
     },
+
     async getStockDetail () {
       try {
         const response = await api.get(`/api/cash/promotion/getPromotion`)
@@ -66,6 +81,7 @@ export const useStockStore = defineStore('stock', {
         console.log(error)
       }
     },
+
     async stockToExcel (area, period) {
       try {
         const response = await api.post(`/api/cash/stock/stockToExcel`, {
