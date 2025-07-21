@@ -168,7 +168,7 @@ export const useOption = defineStore('options', {
 
         const result = response.data.data
         this.unitFilter = result
-        console.log('getSizeFilter', this.sizeFilter)
+        console.log('getUnitFilter', this.sizeFilter)
       } catch (error) {
         console.error(error)
       }

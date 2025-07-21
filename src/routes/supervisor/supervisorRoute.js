@@ -82,6 +82,10 @@ const supervisorRoutes = [
       {
         path: 'refund/:orderId',
         component: () => import('../../views/supervisor/RefundDetail.vue')
+      },
+      {
+        path: 'routestore',
+        component: () => import('../../views/supervisor/RouteStore.vue')
       }
     ]
   }

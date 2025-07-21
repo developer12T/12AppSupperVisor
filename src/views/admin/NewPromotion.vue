@@ -41,8 +41,10 @@
                 <VueMultiselect v-model="selectedUnit" :options="unit" :multiple="true" :close-on-select="false"
                     :clear-on-select="true" :preserve-search="true" placeholder="เลือกยูนิต" label="unit"
                     track-by="unit" class="w-full my-2" />
-                <input v-model="form.conditions[0].productQty" type="number" class="input input-bordered w-full"
-                    placeholder="Quantity" />
+                <input v-model="form.conditions[0].productQty" type="number" class="input input-bordered w-full my-2"
+                    placeholder="จำนวน" />
+                <input v-model="form.conditions[0].productAmount" type="number" class="input input-bordered w-full"
+                    placeholder="ราคา" />
             </div>
 
             <div v-for="(reward, index) in form.rewards" :key="index" class="border p-4 rounded">
@@ -144,8 +146,6 @@ const form = ref({
             productBrand: [],
             productSize: [],
             productUnit: [],
-            productQty: 1,
-            productAmount: 0
         }
     ],
     rewards: [

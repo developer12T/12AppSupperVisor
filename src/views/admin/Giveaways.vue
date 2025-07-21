@@ -51,7 +51,7 @@
                 <input v-model.number="form.conditions[0].productQty" type="number" class="input input-bordered w-full"
                     placeholder="จำนวน" />
                 <input v-model.number="form.conditions[0].productAmount" type="number"
-                    class="input my-2 input-bordered w-full" placeholder="จำนวน" />
+                    class="input my-2 input-bordered w-full" placeholder="ราคารวม" />
                 <select v-model="form.conditions[0].limitType" class="select select-bordered w-full mt-2">
                     <option value="limited">limited</option>
                     <option value="unlimited">unlimited</option>
@@ -109,11 +109,11 @@ const typeStoreWithLabel = computed(() => {
 
 // --- Form Data ---
 const form = ref({
-    name: 'กิจกรรมตกแต่งร้านค้าสวยงาม',
-    description: 'แจกผงปรุงรส 75 กรัม 1 ซองให้ร้านค้าสวยงาม',
-    type: 'I16',
-    remark: 'V16',
-    dept: '09',
+    name: '',
+    description: '',
+    type: '',
+    remark: '',
+    dept: '',
     applicableTo: {
         store: [],
         typeStore: [],
@@ -128,8 +128,7 @@ const form = ref({
             productBrand: [],
             productSize: [],
             productUnit: [],
-            productQty: 1,
-            productAmount: 0,
+
             limitType: 'limited',
         },
     ],
@@ -189,23 +188,23 @@ const submitForm = async () => {
 
 // --- onMounted โหลด options ---
 onMounted(async () => {
-    await optionStore.getTypeStore()
-    await filterStore.getZone(period)
-    await filterStore.getArea(period, '')
-    await optionStore.getBrand()
-    await optionStore.getGroup()
-    await optionStore.getSize()
-    await optionStore.getUnitFilter('', '', '', '')
-    await optionStore.getFlavour()
+    // await optionStore.getTypeStore()
+    // await filterStore.getZone(period)
+    // await filterStore.getArea(period, '')
+    // await optionStore.getBrand()
+    // await optionStore.getGroup()
+    // await optionStore.getSize()
+    // await optionStore.getUnitFilter('', '', '', '')
+    // await optionStore.getFlavour()
 
-    typeStore.value = optionStore.typeStore
-    area.value = filterStore.area
-    zone.value = filterStore.zone
+    // typeStore.value = optionStore.typeStore
+    // area.value = filterStore.area
+    // zone.value = filterStore.zone
 
-    flavour.value = optionStore.flavour
-    brand.value = optionStore.brand
-    group.value = optionStore.group
-    size.value = optionStore.size
-    unit.value = optionStore.unitFilter
+    // flavour.value = optionStore.flavour
+    // brand.value = optionStore.brand
+    // group.value = optionStore.group
+    // size.value = optionStore.size
+    // unit.value = optionStore.unitFilter
 })
 </script>

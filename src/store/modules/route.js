@@ -4,6 +4,7 @@ import api from '../../utils/axios'
 export const useRouteStore = defineStore('checkin', {
   state: () => ({
     routes: [],
+    routesStore: [],
     checkIn: [],
     visit: '',
     effective: '',
@@ -15,6 +16,19 @@ export const useRouteStore = defineStore('checkin', {
     message: ''
   }),
   actions: {
+    async getRoutesStore (period, zone) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/CheckRouteStore?zone=${zone}&period=${period}`
+        )
+        console.log('routesStore', response.data)
+        this.routesStore = response.data.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async getRoutes (routeId) {
       try {
         const response = await api.post(
@@ -25,7 +39,7 @@ export const useRouteStore = defineStore('checkin', {
             routeId: routeId
           }
         )
-        console.log('response', response.data)
+        console.log('routes', response.data)
         this.routes = response.data.data
       } catch (error) {
         console.error(error)
