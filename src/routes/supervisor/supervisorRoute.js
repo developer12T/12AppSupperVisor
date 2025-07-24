@@ -86,6 +86,14 @@ const supervisorRoutes = [
       {
         path: 'routestore',
         component: () => import('../../views/supervisor/RouteStore.vue')
+      },
+      {
+        path: 'polylineroute',
+        component: () => import('../../views/supervisor/PolylineRoute.vue')
+      },
+      {
+        path: 'polylineroute2/:area',
+        component: () => import('../../views/supervisor/PolylineRoute2.vue')
       }
     ]
   }

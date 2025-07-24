@@ -47,9 +47,15 @@ export const useStoresStore = defineStore('stores', {
       try {
         const response = await api.get(`/api/cash/store/check/${storeId}`)
         const result = response.data.data
-        this.similarStore = result
+        if (result.length > 0) {
+          this.similarStore = result
+        } else {
+          this.similarStore = []
+        }
+        // this.similarStore = result
         console.log('similarStore', this.similarStore)
       } catch (error) {
+        this.similarStore = []
         console.error(error)
       }
     },

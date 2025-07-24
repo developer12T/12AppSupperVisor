@@ -65,6 +65,7 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useOption } from '../../store/modules/option'
 import { useFilter } from '../../store/modules/filter'
 import { useGiveAway } from '../../store/modules/giveaway'
@@ -78,6 +79,8 @@ const period = today.getFullYear().toString() + String(today.getMonth() + 1).pad
 const optionStore = useOption()
 const filterStore = useFilter()
 const giveawayStore = useGiveAway()
+
+const router = useRouter()
 
 const selectedArea = ref([])
 const selectedZone = ref([])
@@ -170,41 +173,42 @@ const submitForm = async () => {
                 router.push('/admin/giveawayall')
             }, 1500)
         } else {
-            toast(`เพิ่มโปรโมทชั่นใหม่ไม่สำเร็จ (${giveawayStore.statusCode})`, {
-                theme: toast.THEME.COLORED,
-                type: toast.TYPE.ERROR,
-                dangerouslyHTMLString: true
-            })
+            // toast(`เพิ่มโปรโมทชั่นใหม่ไม่สำเร็จ (${giveawayStore.statusCode})`, {
+            //     theme: toast.THEME.COLORED,
+            //     type: toast.TYPE.ERROR,
+            //     dangerouslyHTMLString: true
+            // })
         }
     } catch (err) {
         console.error('❌ เกิดข้อผิดพลาด:', err)
-        toast('❌ ส่งข้อมูลไม่สำเร็จ', {
-            theme: toast.THEME.COLORED,
-            type: toast.TYPE.ERROR,
-            dangerouslyHTMLString: true
-        })
+        // toast('❌ ส่งข้อมูลไม่สำเร็จ', {
+        //     theme: toast.THEME.COLORED,
+        //     type: toast.TYPE.ERROR,
+        //     dangerouslyHTMLString: true
+        // })
     }
 }
 
 // --- onMounted โหลด options ---
 onMounted(async () => {
-    // await optionStore.getTypeStore()
-    // await filterStore.getZone(period)
-    // await filterStore.getArea(period, '')
-    // await optionStore.getBrand()
-    // await optionStore.getGroup()
-    // await optionStore.getSize()
-    // await optionStore.getUnitFilter('', '', '', '')
-    // await optionStore.getFlavour()
+    await optionStore.getTypeStore()
+    await filterStore.getZone(period)
+    await filterStore.getArea(period, '', '')
 
-    // typeStore.value = optionStore.typeStore
-    // area.value = filterStore.area
-    // zone.value = filterStore.zone
+    await optionStore.getBrand()
+    await optionStore.getGroup()
+    await optionStore.getSize()
+    await optionStore.getUnitFilter('', '', '', '')
+    await optionStore.getFlavour()
 
-    // flavour.value = optionStore.flavour
-    // brand.value = optionStore.brand
-    // group.value = optionStore.group
-    // size.value = optionStore.size
-    // unit.value = optionStore.unitFilter
+    typeStore.value = optionStore.typeStore
+    area.value = filterStore.area
+    zone.value = filterStore.zone
+
+    flavour.value = optionStore.flavour
+    brand.value = optionStore.brand
+    group.value = optionStore.group
+    size.value = optionStore.size
+    unit.value = optionStore.unitFilter
 })
 </script>

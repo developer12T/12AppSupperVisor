@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api, { setChannel } from '../../utils/axios'
+import socket, { setSocketChannel } from '../../utils/socket'
 
 export const useWithdrawStore = defineStore('withdraws', {
   state: () => ({
@@ -52,10 +53,15 @@ export const useWithdrawStore = defineStore('withdraws', {
         const response = await api.get(
           `/api/cash/distribution/get?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}`
         )
+
+        socket.on('store-updated', data => {
+          console.log('store updated', data)
+        })
+        
         this.withdraw = response.data.data
         console.log('withdraw', this.withdraw)
       } catch (error) {
-        this.withdraw = [];
+        this.withdraw = []
         console.log(error)
       }
     },

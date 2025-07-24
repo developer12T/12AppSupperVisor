@@ -15,7 +15,9 @@
                         }} </div>
                 </div>
                 <p class="text-sm text-gray-600 msb-1">รหัสร้านค้า: {{ storeDetail.storeId }}</p>
-                <p class="text-sm text-gray-600 msb-1">รูท: {{ storeDetail.route }}</p>
+                <p class="text-sm text-gray-600 msb-1">เลขผู้เสียภาษี: {{ storeDetail.taxId }}</p>
+                <p class="text-sm text-gray-600 msb-1">รูท: {{ storeDetail.route }} </p>
+                <p class="text-sm text-gray-600 msb-1">โซน: {{ storeDetail.zone }} เขต: {{ storeDetail.area }} </p>
                 <p class="text-sm text-gray-600 msb-1">ประเภท: {{ storeDetail.typeName }}</p>
                 <p class="text-sm text-gray-600 msb-1">เบอร์โทร: {{ storeDetail.tel }}</p>
                 <p class="text-sm text-gray-600">
@@ -68,11 +70,36 @@
                     <div v-for="store in similarStore" :key="store.storeId"
                         class="p-3  flex flex-col product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4">
                         <div class="flex justify-between">
-                            <h2 class="card-title me-2">{{ store.store.name }}</h2>
-                            <h2 class="card-title text-error me-2">มีความคล้ายกันถึง {{ store.similarity }}%</h2>
+                            <div class="flex justify-start">
+                                <h2 class="card-title me-2">{{ store.store.name }}</h2>
+                            </div>
+                            <div class="flex justify-start">
+                                <div
+                                    :class="store.store.status == '20' ? 'badge badge-success' : store.store.status == '90' ? 'badge badge-error' : 'badge badge-warning'">
+                                    {{
+                                        store.store.status == '20' ? 'เปิดขาย' : store.store.status == '90' ? 'ถูกปิดการขาย'
+                                            :
+                                            'ยังไม่ได้อนุมัติ'
+                                    }} </div>
+
+                            </div>
                         </div>
-                        <p class="text-sm text-gray-600 msb-1">รหัสร้านค้า: {{ store.store.storeId }}</p>
+                        <div class="flex justify-between">
+                            <div>
+                                <h2 class="card-title text-error me-2">มีความคล้ายกันถึง {{ store.similarity }}%</h2>
+                                <p class="text-sm text-gray-600 msb-1">รหัสร้านค้า: {{ store.store.storeId }}</p>
+                            </div>
+                            <div class="cursor-pointer" @click="toggleSwitch(store, 'store')">
+                                <Icon :icon="store.store.status == '20' ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off'"
+                                    width="50" height="50"
+                                    :style="{ color: store.store.status == '20' ? 'green' : 'gray' }" />
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-gray-600 msb-1">เลขผู้เสียภาษี: {{ store.store.taxId }}</p>
                         <p class="text-sm text-gray-600 msb-1">รูท: {{ store.store.route }}</p>
+                        <p class="text-sm text-gray-600 msb-1">โซน: {{ store.store.zone }} เขต: {{ store.store.area }}
+                        </p>
                         <p class="text-sm text-gray-600 msb-1">ประเภท: {{ store.store.typeName }}</p>
                         <p class="text-sm text-gray-600 msb-1">เบอร์โทร: {{ store.store.tel }}</p>
                         <p class="text-sm text-gray-600">
@@ -100,6 +127,22 @@
                             </figure>
                         </div>
                         <div class="card-actions justify-end m-3">
+                            <select class="select select-info text-center w-35" v-model="selectedZone">
+                                <option disabled value="">Select Zone</option>
+                                <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}
+                                </option>
+                            </select>
+                            <select class="select select-info text-center w-35" v-model="selectedArea">
+                                <option disabled value="">Select Area</option>
+                                <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}
+                                </option>
+                            </select>
+                            <button class="btn btn-primary">
+                                เปลี่ยนโซน/เขต
+                            </button>
+                            <!-- <button class="btn btn-primary">
+                                เปิดขาย
+                            </button> -->
                             <button class="btn btn-success"
                                 @click="openGoogleMap(store.store.latitude, store.store.longtitude)">
                                 <Icon icon="mdi:google" width="24" height="24" />
@@ -144,7 +187,7 @@
 
 <script setup>
 import LoadingOverlay from '../LoadingOverlay.vue'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useStoresStore } from '../../store/modules/store'
 import { useRouter, useRoute } from 'vue-router'
 import { useFilter } from '../../store/modules/filter'
@@ -159,7 +202,6 @@ const similarStore = ref([])
 const storeDetail = computed(() => store.storeDetail || { imageList: [] }) // ป้องกัน undefined
 
 
-
 const showModal = ref(false);
 const showModalConfirm = ref(false);
 const showModalReject = ref(false);
@@ -167,14 +209,37 @@ const modalImageSrc = ref('');
 const storeId = ref('');
 const storeName = ref('');
 
+const selectedZone = ref('')
+const selectedArea = ref('')
+const today = new Date();
+const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
+
+
 onMounted(async () => {
     isLoading.value = true
     await store.getDetailStore(route.params.storeid)
+    await filter.getZone(period)
     // สมมุติให้ store.loadSimilarStore() เป็น method ดึงร้านค้าที่คล้ายกัน
     await store.checkSimilarStore(route.params.storeid) || []
     similarStore.value = store.similarStore
     isLoading.value = false
 })
+
+
+
+async function toggleSwitch(storeData, status) {
+    switch (status) {
+        case 'store':
+            storeData.store.status = storeData.store.status == '20' ? '90' : '20'
+            console.log(storeData.store.status)
+            console.log(storeData.store.storeId)
+            await store.updateStoreStatus({ storeId: storeData.store.storeId, status: storeData.store.status });
+            break;
+        default:
+            break;
+    }
+}
+
 
 function openModal(imagePath) {
     modalImageSrc.value = 'https://apps.onetwotrading.co.th/' + relativePath(imagePath);
@@ -195,6 +260,13 @@ const confirmAction = async () => {
         isLoading.value = false;
     }
 };
+
+watch(selectedZone, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    if (newVal) {
+        filter.getArea(period, newVal, '');
+    }
+});
 const rejectAction = async () => {
     try {
         isLoading.value = true

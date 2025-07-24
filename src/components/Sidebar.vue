@@ -29,7 +29,8 @@ const menuItems = ref([
         link: '#',
         submenu: [
             { icon: 'mdi:chart-areaspline', name: 'รายงานยอดขาย', link: '/supervisor/report' },
-            { icon: 'mdi:shop-location', name: 'รายงานการเช็คอิน', link: '/supervisor/checkin' },
+            { icon: 'mdi:routes', name: 'รายงานไลน์การเช็คอิน', link: '/supervisor/checkin' },
+            { icon: 'mdi:clipboard-check-outline', name: 'รายงานการเช็คอิน', link: '/supervisor/reportcheckin' },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product' },
             { icon: 'mdi:money-100', name: 'รายการส่งเงิน', link: '/supervisor/sendmoney' },
 

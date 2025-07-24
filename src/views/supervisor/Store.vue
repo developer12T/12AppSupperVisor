@@ -94,11 +94,9 @@
                 </div>
                 <div class="badge">{{ formatDate(customer.approve.dateAction) }}</div>
             </div>
-            <p class="text-sm text-gray-600 msb-1">รหัสร้านค้า: {{ customer.storeId }}
-
-            </p>
-            <p class="text-sm text-gray-600 msb-1">รูท: {{ customer.route }} เขต: {{ customer.area }}
-            </p>
+            <p class="text-sm text-gray-600 msb-1">รหัสร้านค้า: {{ customer.storeId }}</p>
+            <p class="text-sm text-gray-600 msb-1">เลขผู้เสียภาษี: {{ customer.taxId }}</p>
+            <p class="text-sm text-gray-600 msb-1">รูท: {{ customer.route }} โซน: {{ customer.zone }} เขต: {{ customer.area }}</p>
             <p class="text-sm text-gray-600 msb-1">ประเภท: {{ customer.typeName }}</p>
             <p class="text-sm text-gray-600 msb-1">เบอร์โทร: {{ customer.tel }}</p>
             <p class="text-sm text-gray-600">ที่อยู่: {{ customer.address }} {{ customer.subDistrict }} {{
@@ -186,8 +184,6 @@ const modalImageSrc = ref('');
 const storeId = ref('');
 const storeName = ref('');
 const isLoading = ref(false)
-
-
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
@@ -204,8 +200,6 @@ async function onMonthChange() {
     customers.value = store.storeNew.data
     isLoading.value = false
 }
-
-
 
 
 const openGoogleMap = (latitude, longitude) => {

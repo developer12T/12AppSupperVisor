@@ -19,6 +19,18 @@
             </select>
             <button class="btn btn-primary ms-3 mt-3 text-center" @click="clearFilter">ล้างตัวเลือก</button>
         </div>
+        <router-link :to="selectedArea ? `/supervisor/polylineroute2/${selectedArea}` : ''" custom
+            v-slot="{ navigate, href }">
+            <div :class="[
+                'bg-base-100 shadow-md rounded-xl p-6 flex justify-center flex-col items-center w-48',
+                !selectedArea && 'opacity-60 pointer-events-none cursor-not-allowed'
+            ]" :style="!selectedArea ? 'filter: grayscale(80%)' : ''" @click="selectedArea && navigate()">
+                <Icon icon="mdi:map-marker-distance" class="h-20 w-20" color="red" />
+                <h2>ดู Line การเช็คอิน</h2>
+                <p class="text-sm text-gray-500">(เลือกเขตก่อน)</p>
+            </div>
+        </router-link>
+
         <div class="card bg-base-100 shadow-xl p-4 w-full max-w-sm">
             <div class="flex items-center justify-between mb-2">
                 <h2 class="font-bold text-lg">Visit</h2>
@@ -95,7 +107,7 @@
                     <th class="text-center p-2 ">Count (CTN)</th>
                     <th class="text-center p-2 ">Visit (%)</th>
                     <th class="text-center p-2 ">Effective (%)</th>
-                    <th class="text-center p-2 ">จำนวนทั้งหมด</th>
+                    <th class="text-center p-2 ">ยอดขายรวม</th>
                     <th class="text-center p-2 ">ร้านทั้งหมด</th>
                 </tr>
             </thead>
@@ -157,6 +169,7 @@
 </template>
 
 <script setup>
+import { Icon } from '@iconify/vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted, watch } from 'vue'
 import { useRouteStore } from '../../store/modules/route'
@@ -164,6 +177,7 @@ import { useFilter } from '../../store/modules/filter'
 
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
+
 const router = useRouter()
 const route = useRoute()
 const routeStore = useRouteStore()

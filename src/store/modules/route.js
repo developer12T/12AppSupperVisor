@@ -4,6 +4,7 @@ import api from '../../utils/axios'
 export const useRouteStore = defineStore('checkin', {
   state: () => ({
     routes: [],
+    polyline: [],
     routesStore: [],
     checkIn: [],
     visit: '',
@@ -16,6 +17,19 @@ export const useRouteStore = defineStore('checkin', {
     message: ''
   }),
   actions: {
+    async getPolyLine (period, area) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/polylineRoute?area=${area}&period=${period}`
+        )
+        console.log('polyline', response.data)
+        this.polyline = response.data.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async getRoutesStore (period, zone) {
       try {
         const response = await api.get(
