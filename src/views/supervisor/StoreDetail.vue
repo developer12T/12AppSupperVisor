@@ -233,7 +233,7 @@ async function toggleSwitch(storeData, status) {
             storeData.store.status = storeData.store.status == '20' ? '90' : '20'
             console.log(storeData.store.status)
             console.log(storeData.store.storeId)
-            await store.updateStoreStatus({ storeId: storeData.store.storeId, status: storeData.store.status });
+            await store.updateStoreStatusNoNewId({ storeId: storeData.store.storeId, status: storeData.store.status });
             break;
         default:
             break;

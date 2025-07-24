@@ -104,6 +104,26 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
+
+    async updateStoreStatusNoNewId (data) {
+      try {
+        // const area = localStorage.getItem('area')
+        const user = localStorage.getItem('fullName')
+        const response = await api.post(
+          `/api/cash/store/updateStoreStatusNoNewId `,
+          {
+            storeId: data.storeId,
+            status: data.status,
+            user: user
+          }
+        )
+        // const result = response.data.storeId
+        // this.newstoreId = result
+        console.log('newstoreId', response.data)
+      } catch (error) {
+        console.error(error)
+      }
+    },
     async rejectStore (data) {
       try {
         const area = localStorage.getItem('area')
