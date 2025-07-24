@@ -1,7 +1,7 @@
 <template>
     <div class="p-6 bg-gray-50 min-h-screen">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
-        <h2 class="text-2xl font-bold mb-6">ขออนุมัติคืนสินค้า</h2>
+        <h2 class="text-2xl font-bold mb-6">ขออนุมัติปรับใบเบิก</h2>
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             <div v-for="item in cardData" :key="item.orderId"
                 class="bg-white rounded-xl shadow p-6 border flex flex-col gap-2">
