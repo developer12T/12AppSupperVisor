@@ -2,20 +2,26 @@
     <div class="p-6 bg-gray-50 min-h-screen">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">ใบขออนุมัติขอคืนสินค้า</h2>
-            <select class="select select-info ms-3 text-center" v-model="selectedZone">
-                <option disabled value="">Select Zone</option>
-                <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
-            </select>
-            <select class="select select-info ms-3 text-center" v-model="selectedTeam">
-                <option disabled value="">Select Team</option>
-                <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
-                </option>
-            </select>
-            <select class="select select-info ms-3 text-center" v-model="selectedArea">
-                <option disabled value="">Select Area</option>
-                <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
-            </select>
+            <h2 class="text-2xl font-bold mb-6">อนุมัติขอคืนสินค้า</h2>
+            <div class="ms-3" v-if="userRole != 'supervisor'">
+                <select class="select select-info ms-3 text-center" v-model="selectedZone">
+                    <option disabled value="">Select Zone</option>
+                    <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+                </select>
+            </div>
+            <div class="ms-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedTeam">
+                    <option disabled value="">Select Team</option>
+                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
+                    </option>
+                </select>
+            </div>
+            <div class="ms-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                    <option disabled value="">Select Area</option>
+                    <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                </select>
+            </div>
         </div>
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             <div v-for="item in cardData" :key="item.orderId"
@@ -27,7 +33,7 @@
                     </div>
                     <div class="text-sm text-gray-500">พื้นที่: <span class="font-semibold">{{ item.area }}</span></div>
                     <div class="text-sm text-gray-500">ประเภท: <span class="font-semibold">{{ item.orderTypeName
-                            }}</span>
+                    }}</span>
                     </div>
                     <div class="text-sm text-gray-500">วันที่ส่ง: <span class="font-semibold">{{
                         formatDate(item.createdAt)
@@ -71,14 +77,23 @@ const selectedZone = ref('')
 const selectedArea = ref('')
 const selectedTeam = ref('')
 
+const userRole = localStorage.getItem('role')
+const zone = localStorage.getItem('zone')
 
-onMounted(async () => {
-    isLoading.value = true
-    await refundStore.getRefundAll('cash', '', period)
-    await filter.getZone(period);
-    cardData.value = refundStore.refund
-    isLoading.value = false
-})
+
+
+onMounted(
+    async () => {
+        isLoading.value = true
+        if (userRole == 'supervisor' || userRole == 'area_manager') {
+            await filter.getTeam(zone);
+            await filter.getArea(period, zone, '');
+        }
+        await refundStore.getRefundAll('cash', period, '', '', '')
+        await filter.getZone(period);
+        cardData.value = refundStore.refund
+        isLoading.value = false
+    })
 
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
@@ -87,7 +102,7 @@ watch(selectedZone, async (newVal) => {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
         await filter.getTeam(newVal);
-        await refundStore.getRefundAll('cash', newVal, period)
+        await refundStore.getRefundAll('cash', period, newVal, '', '')
         cardData.value = refundStore.refund
         isLoading.value = false
     }
@@ -98,6 +113,8 @@ watch(selectedTeam, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, selectedZone.value, newVal);
+        await refundStore.getRefundAll('cash', period, selectedZone.value, newVal, selectedArea.value)
+        cardData.value = refundStore.refund
         isLoading.value = false
     }
 });
@@ -105,7 +122,7 @@ watch(selectedTeam, async (newVal) => {
 watch(selectedArea, async (newVal) => {
     if (newVal) {
         isLoading.value = true
-        await refundStore.getRefundAll('cash', newVal, period)
+        await refundStore.getRefundAll('cash', period, '', selectedTeam.value, newVal)
         cardData.value = refundStore.refund
         isLoading.value = false
     }

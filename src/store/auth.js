@@ -22,7 +22,9 @@ export const useAuthStore = defineStore('auth', {
             }
           }
         )
-        const result = response.data
+        console.log(response.data.data[0])
+        const result = response.data.data[0]
+        // console.log(result)
         if (result) {
           this.username = result.data[0].username
           this.saleCode = result.data[0].saleCode
@@ -53,7 +55,7 @@ export const useAuthStore = defineStore('auth', {
         }
         console.log('login', response.data)
       } catch (error) {
-        console.error(error)
+        console.log(error)
       }
     },
 

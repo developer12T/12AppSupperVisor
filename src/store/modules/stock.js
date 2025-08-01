@@ -17,16 +17,31 @@ export const useStockStore = defineStore('stock', {
     message: ''
   }),
   actions: {
-    async getAdjustStock (channel, zone, teamm, area, period) {
+    async getAdjustStock (channel, selectZone, team, selectArea, period) {
       try {
+        let zone = ''
+        let area = ''
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+
         setChannel(channel)
         const response = await api.get(
-          `/api/cash/stock/adjuststock?type=adjuststock&period=${period}&zone=${zone}&team=${teamm}&area=${area}`
+          `/api/cash/stock/adjuststock?type=adjuststock&period=${period}&zone=${zone}&team=${team}&area=${area}`
         )
         this.adjuststock = response.data.data
         this.message = response.data.message
         console.log('adjuststock', this.adjuststock)
       } catch (error) {
+        this.adjuststock = []
         console.log(error)
       }
     },
@@ -49,7 +64,9 @@ export const useStockStore = defineStore('stock', {
     async getAdjustStockDetail (channel, orderId) {
       try {
         setChannel(channel)
-        const response = await api.get(`/api/cash/stock/getAdjustStockDetail?orderId=${orderId}`)
+        const response = await api.get(
+          `/api/cash/stock/getAdjustStockDetail?orderId=${orderId}`
+        )
         this.adjuststockDetail = response.data.data[0]
         this.message = response.data.message
         console.log('getAdjustStockDetail', this.adjuststock)

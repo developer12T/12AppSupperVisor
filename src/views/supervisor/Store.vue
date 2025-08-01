@@ -2,27 +2,26 @@
     <div class="flex justify-between">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <div class="flex justify-start">
-            <h1 class="p-3 text-xl font-bold">อนุมัติร้านค้าใหม่</h1>
+            <h2 class="text-2xl font-bold mb-6">อนุมัติร้านค้าใหม่</h2>
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
                     <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
                 </select>
             </div>
-            <div class="ms-3" v-if="userRole != 'supervisor'">
+            <div class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
                     <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
                     </option>
                 </select>
             </div>
-            <div class="ms-3" v-if="userRole != 'supervisor'">
+            <div class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedArea">
                     <option disabled value="">Select Area</option>
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
             </div>
-
         </div>
         <div class="flex justify-start">
             <div class="ms-3" v-if="userRole != 'supervisor'">
@@ -96,7 +95,8 @@
             </div>
             <p class="text-sm text-gray-600 msb-1">รหัสร้านค้า: {{ customer.storeId }}</p>
             <p class="text-sm text-gray-600 msb-1">เลขผู้เสียภาษี: {{ customer.taxId }}</p>
-            <p class="text-sm text-gray-600 msb-1">รูท: {{ customer.route }} โซน: {{ customer.zone }} เขต: {{ customer.area }}</p>
+            <p class="text-sm text-gray-600 msb-1">รูท: {{ customer.route }} โซน: {{ customer.zone }} เขต: {{
+                customer.area }}</p>
             <p class="text-sm text-gray-600 msb-1">ประเภท: {{ customer.typeName }}</p>
             <p class="text-sm text-gray-600 msb-1">เบอร์โทร: {{ customer.tel }}</p>
             <p class="text-sm text-gray-600">ที่อยู่: {{ customer.address }} {{ customer.subDistrict }} {{
@@ -188,6 +188,8 @@ const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 
+const zone = localStorage.getItem('zone')
+
 
 
 async function onMonthChange() {
@@ -205,7 +207,6 @@ async function onMonthChange() {
 const openGoogleMap = (latitude, longitude) => {
     // const latitude = 37.7749;   // example: San Francisco
     // const longitude = -122.4194;
-
     const latitudeF = parseFloat(latitude);   // example: San Francisco latitude;   
     const longitudeF = parseFloat(longitude);
     const url = `https://www.google.com/maps?q=${latitudeF},${longitudeF}`;
@@ -277,8 +278,6 @@ watch(selectedArea, async (newVal) => {
     }
 });
 
-
-
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
     selectedTeam.value = ''
@@ -306,7 +305,8 @@ onMounted(async () => {
     await store.getCustomerAll('', '', '', '', '')
     await filter.getZone(period);
     if (userRole == 'supervisor' || userRole == 'area_manager') {
-
+        await filter.getTeam(zone);
+        await filter.getArea(period, zone, '');
     }
     customers.value = store.storeNew.data
     isLoading.value = false

@@ -2,27 +2,26 @@
     <div class="p-6 bg-gray-50 min-h-screen">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">ใบเบิก</h2>
+            <h2 class="text-2xl font-bold mb-6">อนุมัติใบเบิก</h2>
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
                     <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
                 </select>
             </div>
-            <div class="ms-3" v-if="userRole != 'supervisor'">
+            <div class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
                     <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
                     </option>
                 </select>
             </div>
-            <div class="ms-3" v-if="userRole != 'supervisor'">
+            <div class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedArea">
                     <option disabled value="">Select Area</option>
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
             </div>
-
         </div>
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             <div v-for="item in cardData" :key="item.orderId"
@@ -85,9 +84,14 @@ const period = today.getFullYear().toString() + String(today.getMonth() + 1).pad
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
+const zone = localStorage.getItem('zone')
 
 onMounted(async () => {
     isLoading.value = true
+    if (userRole == 'supervisor' || userRole == 'area_manager') {
+        await filter.getTeam(zone);
+        await filter.getArea(period, zone, '');
+    }
     await filter.getZone(period);
     await withdrawStore.getWithdraw('cash', period, '', '', '', '', '') // fetch from API
     cardData.value = withdrawStore.withdraw
