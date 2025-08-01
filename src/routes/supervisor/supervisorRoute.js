@@ -94,6 +94,10 @@ const supervisorRoutes = [
       {
         path: 'polylineroute2/:area',
         component: () => import('../../views/supervisor/PolylineRoute2.vue')
+      },
+      {
+        path: 'storeinroute',
+        component: () => import('../../views/supervisor/StoreInRoute.vue')
       }
     ]
   }

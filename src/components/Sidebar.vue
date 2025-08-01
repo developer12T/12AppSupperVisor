@@ -24,7 +24,7 @@ const menuItems = ref([
     { name: 'แดชบอร์ด', icon: 'mdi:monitor-dashboard', link: '/', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
 
     {
-        name: 'รายงานยอดขาย',
+        name: 'รายงานต่างๆ',
         icon: 'mdi:chart-areaspline',
         link: '#',
         submenu: [
@@ -33,6 +33,7 @@ const menuItems = ref([
             // { icon: 'mdi:clipboard-check-outline', name: 'รายงานการเช็คอิน', link: '/supervisor/reportcheckin' },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product' },
             { icon: 'mdi:money-100', name: 'รายการส่งเงิน', link: '/supervisor/sendmoney' },
+            { icon: 'mdi:home-report', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute' },
 
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager']

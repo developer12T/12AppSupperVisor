@@ -22,20 +22,20 @@ export const useAuthStore = defineStore('auth', {
             }
           }
         )
-        console.log(response.data.data[0])
-        const result = response.data.data[0]
+        console.log(response.data['data'])
+        const result = response.data['data']
         // console.log(result)
         if (result) {
-          this.username = result.data[0].username
-          this.saleCode = result.data[0].saleCode
-          this.salePayer = result.data[0].salePayer
-          this.fullName = result.data[0].fullName
-          this.tel = result.data[0].tel
-          this.area = result.data[0].area
-          this.zone = result.data[0].zone
-          this.warehouse = result.data[0].warehouse
-          this.token = result.data[0].token
-          this.role = result.data[0].role
+          this.username = result.username
+          this.saleCode = result.saleCode
+          this.salePayer = result.salePayer
+          this.fullName = result.fullName
+          this.tel = result.tel
+          this.area = result.area
+          this.zone = result.zone
+          this.warehouse = result.warehouse
+          this.token = result.token
+          this.role = result.role
 
           localStorage.setItem('saleCode', this.saleCode)
           localStorage.setItem('fullName', this.fullName)
@@ -48,7 +48,7 @@ export const useAuthStore = defineStore('auth', {
           localStorage.setItem('warehouse', this.warehouse)
           localStorage.setItem('token', JSON.stringify(this.token))
           localStorage.setItem('role', this.role)
-          this.statusCode = response.data.status
+          this.statusCode = response.data['status']
         } else {
           this.validateLogin = user.message
           this.logout()
