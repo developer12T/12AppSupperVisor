@@ -7,6 +7,7 @@ export const useRouteStore = defineStore('checkin', {
     polyline: [],
     routesStore: [],
     checkIn: [],
+    routeInStore: [],
     visit: '',
     effective: '',
     totalStoreAll: 0,
@@ -26,6 +27,18 @@ export const useRouteStore = defineStore('checkin', {
         )
         console.log('polyline', response.data)
         this.polyline = response.data.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getStoreInRoute (period, zone, team) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/checkroutestore?period=${period}&zone=${zone}&team=${team}`
+        )
+        this.routeInStore = response.data.data
       } catch (error) {
         console.log(error)
       }
