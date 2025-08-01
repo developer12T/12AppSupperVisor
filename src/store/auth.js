@@ -22,8 +22,8 @@ export const useAuthStore = defineStore('auth', {
             }
           }
         )
-        console.log(response.data['data'])
-        const result = response.data['data']
+        console.log(response.data['data'][0])
+        const result = response.data['data'][0]
         // console.log(result)
         if (result) {
           this.username = result.username

@@ -51,7 +51,7 @@ const router = useRouter();
 const SignIn = async () => {
     await store.login(userLogin.value, passwordLogin.value);
     console.log(store.statusCode)
-    if (store.statusCode == 201) {
+    if (store.statusCode == 200) {
         loginValidation.value = false;
         console.log('เข้าสู่ระบบสำเร็จ');
         router.push("/");

@@ -71,6 +71,12 @@
                 <VueMultiselect v-model="selectedUnitReward[index]" :options="unitReward[index]" :multiple="false"
                     :close-on-select="false" :clear-on-select="true" :preserve-search="true" placeholder="เลือกยูนิต"
                     label="unit" track-by="unit" class="w-full my-2" />
+                <input v-model="form.rewards[index].productQty" type="number" class="input input-bordered w-full my-2"
+                    placeholder="จำนวน" />
+                <select v-model="form.rewards[index].limitType" class="select select-bordered w-full mt-2">
+                    <option value="limited">limited</option>
+                    <option value="unlimited">unlimited</option>
+                </select>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <label>Valid From:
@@ -156,7 +162,7 @@ const form = ref({
             productBrand: '',
             productSize: '',
             productUnit: 'ซอง',
-            productQty: 1,
+            // productQty: 1,
             limitType: 'limited'
         }
     ],
@@ -172,8 +178,8 @@ const addReward = () => {
         productFlavour: '',
         productBrand: '',
         productSize: '',
-        productUnit: 'ซอง',
-        productQty: 1,
+        // productUnit: 'ซอง',
+        // productQty: 1,
         limitType: 'limited'
     })
 

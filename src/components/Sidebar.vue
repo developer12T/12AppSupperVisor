@@ -48,9 +48,10 @@ const menuItems = ref([
             { icon: 'mdi:box-clock-outline', name: 'อนุมัติใบเบิก', link: '/supervisor/withdraw' },
             { icon: 'mdi:autorenew', name: 'อนุมัติขอคืน', link: '/supervisor/refund' },
             { icon: 'mdi:archive-edit', name: 'อนุมัติขอปรับสต๊อก', link: '/supervisor/adjuststock' },
+            { icon: 'mdi:gift-open', name: 'อนุมัติแจกสินค้า', link: '/supervisor/gift' },
+
         ],
     },
-    { name: 'เช็คร้านค้าตามรูท', icon: 'mdi:store-marker', link: '/supervisor/routestore', submenu: null, roles: ['supervisor', 'admin', 'area_manager', 'sale_manager'] },
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['supervisor'] },
     { name: 'อนุมัติใบเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['supervisor', 'dc',] },
     { name: 'อนุมัติขอคืน', icon: 'mdi:autorenew', link: '/supervisor/refund', submenu: null, roles: ['supervisor', 'dc',] },
