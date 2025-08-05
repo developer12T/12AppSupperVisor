@@ -1,4 +1,12 @@
 <template>
+    <button @click="goBack"
+        class="flex items-center gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
+    </button>
     <div v-if="data" class="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-2xl mt-10">
         <!-- Header Section -->
         <div class="flex items-center justify-between mb-6">
@@ -16,7 +24,8 @@
                 </span>
             </div>
             <div class="flex gap-2">
-                <button v-if="data.status === 'pending'" class="rounded-xl px-4 py-2 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition"
+                <button v-if="data.status === 'pending'"
+                    class="rounded-xl px-4 py-2 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition"
                     @click="onApproveClick">
                     อนุมัติใบเบิก
                 </button>
@@ -118,7 +127,7 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { useWithdrawStore } from '../../store/modules/withdraw'
 import Info from '../../views/Info.vue'
@@ -129,6 +138,7 @@ const route = useRoute()
 const data = ref(null)
 const showAlert = ref(false)
 const status = ref('pending')
+const router = useRouter()
 
 const loadData = async () => {
     await withdrawStore.getWithdrawDetail('cash', route.params.id)
@@ -137,6 +147,10 @@ const loadData = async () => {
 
 function onApproveClick() {
     showAlert.value = true
+}
+
+const goBack = () => {
+    router.back()
 }
 
 

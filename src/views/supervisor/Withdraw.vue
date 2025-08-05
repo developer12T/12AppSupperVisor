@@ -1,6 +1,7 @@
 <template>
     <div class="p-6 bg-gray-50 min-h-screen">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
+
         <div class="flex justify-start">
             <h2 class="text-2xl font-bold mb-6">อนุมัติใบเบิก</h2>
             <div class="ms-3" v-if="userRole != 'supervisor'">
@@ -12,7 +13,8 @@
             <div class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
-                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
+                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
+                    }}
                     </option>
                 </select>
             </div>
@@ -22,7 +24,15 @@
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
             </div>
+            <div class="ms-3">
+                <button @click="clearFilter"
+                    class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
+                    <Icon icon="mdi:broom" width="24" height="24" />
+                    เคลีย
+                </button>
+            </div>
         </div>
+
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             <div v-for="item in cardData" :key="item.orderId"
                 class="bg-white rounded-xl shadow p-6 border flex flex-col gap-2">
@@ -31,10 +41,22 @@
                         <span class="font-bold text-lg text-gray-700">เลขใบเบิก</span>
                         <span class="text-sm text-gray-500">{{ item.orderId }}</span>
                     </div>
-                    <div class="text-sm text-gray-500">พื้นที่: <span class="font-semibold">{{ item.area }}</span></div>
-                    <div class="text-sm text-gray-500">ประเภท: <span class="font-semibold">{{ item.orderTypeName
-                            }}</span>
+                    <div class="flex justify-between">
+                        <div class="text-sm text-gray-500">พื้นที่: <span class="font-semibold">{{ item.area }}</span>
+                        </div>
+                        <div class="text-sm text-gray-500">Sale: <span class="font-semibold">{{ item.sale.fullname
+                        }}</span>
+                        </div>
                     </div>
+                    <div class="flex justify-between">
+                        <div class="text-sm text-gray-500">ประเภท: <span class="font-semibold">{{ item.orderTypeName
+                        }}</span>
+                        </div>
+                        <div class="text-sm text-gray-500">เบอร์โทร: <span class="font-semibold">{{ item.sale.tel
+                        }}</span>
+                        </div>
+                    </div>
+
                     <div class="text-sm text-gray-500">วันที่ส่ง: <span class="font-semibold">{{
                         formatDate(item.sendDate)
                             }}</span></div>
@@ -61,7 +83,7 @@ import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตา�
 import { ref, computed, onMounted, watch } from 'vue'
 import { useWithdrawStore } from '../../store/modules/withdraw'
 import { useFilter } from '../../store/modules/filter'
-
+import { Icon } from '@iconify/vue'
 
 
 const filter = useFilter()
@@ -86,14 +108,27 @@ const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 const zone = localStorage.getItem('zone')
 
+function clearFilter() {
+    selectedZone.value = ''
+    selectedArea.value = ''
+    selectedTeam.value = ''
+    window.location.reload()
+}
+
+
 onMounted(async () => {
     isLoading.value = true
     if (userRole == 'supervisor' || userRole == 'area_manager') {
         await filter.getTeam(zone);
         await filter.getArea(period, zone, '');
     }
+    await filter.getTeam(selectedZone.value);
+    await filter.getArea(period, zone, '');
+    if (route.query.area) {
+
+    }
     await filter.getZone(period);
-    await withdrawStore.getWithdraw('cash', period, '', '', '', '', '') // fetch from API
+    await withdrawStore.getWithdraw('cash', period, selectedZone.value, selectedArea.value, selectedTeam.value, '', '') // fetch from API
     cardData.value = withdrawStore.withdraw
     isLoading.value = false
 })
@@ -116,16 +151,29 @@ function statusTH(status) {
 }
 
 
+watch(() => route.query.zone, (val) => {
+    selectedZone.value = val || ''
+})
+
+watch(() => route.query.area, (val) => {
+    selectedArea.value = val || ''
+})
+watch(() => route.query.team, (val) => {
+    selectedTeam.value = val || ''
+})
+
+
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
     selectedTeam.value = ''
-    // router.replace({
-    //     query: {
-    //         ...route.query,
-    //         zone: newVal,
-    //         area: '' // clear old area
-    //     }
-    // });
+    router.replace({
+        query: {
+            ...route.query,
+            zone: newVal,
+            team: '',
+            area: '',
+        }
+    });
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
@@ -138,7 +186,15 @@ watch(selectedZone, async (newVal) => {
 
 
 watch(selectedTeam, async (newVal) => {
-    selectedArea.value = '' // Reset area when zone changes
+    selectedArea.value = ''
+    router.replace({
+        query: {
+            ...route.query,
+            zone: selectedZone.value,
+            team: newVal,
+            area: '',
+        }
+    });
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, selectedZone.value, newVal);
@@ -149,6 +205,14 @@ watch(selectedTeam, async (newVal) => {
 });
 
 watch(selectedArea, async (newVal) => {
+    router.replace({
+        query: {
+            ...route.query,
+            zone: selectedZone.value,
+            team: selectedTeam.value,
+            area: newVal,
+        }
+    });
     if (newVal) {
         isLoading.value = true
         console.log(selectedZone.value, newVal, selectedTeam.value)
