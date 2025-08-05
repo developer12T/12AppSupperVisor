@@ -14,7 +14,7 @@
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
                     <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
-                    }}
+                        }}
                     </option>
                 </select>
             </div>
@@ -45,15 +45,15 @@
                         <div class="text-sm text-gray-500">พื้นที่: <span class="font-semibold">{{ item.area }}</span>
                         </div>
                         <div class="text-sm text-gray-500">Sale: <span class="font-semibold">{{ item.sale.fullname
-                        }}</span>
+                                }}</span>
                         </div>
                     </div>
                     <div class="flex justify-between">
                         <div class="text-sm text-gray-500">ประเภท: <span class="font-semibold">{{ item.orderTypeName
-                        }}</span>
+                                }}</span>
                         </div>
                         <div class="text-sm text-gray-500">เบอร์โทร: <span class="font-semibold">{{ item.sale.tel
-                        }}</span>
+                                }}</span>
                         </div>
                     </div>
 
@@ -112,7 +112,7 @@ function clearFilter() {
     selectedZone.value = ''
     selectedArea.value = ''
     selectedTeam.value = ''
-    window.location.reload()
+    window.location.assign('/supervisor/withdraw')
 }
 
 
