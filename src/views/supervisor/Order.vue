@@ -19,10 +19,10 @@
                     <option disabled value="">Select Status</option>
                     <option value="pending">Pending</option>
                     <option value="completed">Completed</option>
-                    <option value="cancel">Cancel</option>
+                    <option value="canceled">Cancel</option>
                 </select>
             </div>
-
+<!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
@@ -33,7 +33,7 @@
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
                     <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
-                        }}
+                    }}
                     </option>
                 </select>
             </div>
@@ -42,14 +42,22 @@
                     <option disabled value="">Select Area</option>
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
-            </div>
-            <div class="ms-3">
+            </div> -->
+            <!-- <div class="ms-3">
                 <button @click="clearFilter"
                     class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
                     <Icon icon="mdi:broom" width="24" height="24" />
                     เคลีย
                 </button>
-            </div>
+            </div> -->
+
+            <!-- <div class="ms-3">
+                <button @click="exportExcel"
+                    class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
+                    <Icon icon="mdi:file-excel" style="color: #00912f" width="24" height="24" />
+                    Excel
+                </button>
+            </div> -->
 
         </div>
         <div class="overflow-x-auto rounded-xl" style="max-height: 480px; overflow-y: auto;">
@@ -60,6 +68,7 @@
                         <th class="p-2 border">เขต</th>
                         <th class="p-2 border">รหัสร้าน</th>
                         <th class="p-2 border">วันที่สั่ง</th>
+                        <th class="p-2 border">รายการ</th>
                         <th class="p-2 border">สถานะ</th>
                         <th class="p-2 border">ยอดรวม</th>
                     </tr>
@@ -81,7 +90,15 @@
                             <div class="">{{ formatDate(prod.createdAt) }}</div>
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.status }}</div>
+                            <div class="">{{ prod.listProduct }}</div>
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            <div :class="{
+                                'text-warning': prod.status === 'pending',
+                                'text-green-700': prod.status === 'completed',
+                                'text-red-700': prod.status === 'canceled'
+                            }">
+                                {{ prod.status }}</div>
                         </td>
                         <td class="border p-2 text-right whitespace-pre">
                             <div class="">{{ formatCurrency(prod.total) }}</div>
@@ -170,12 +187,20 @@ const filteredOrders = computed(() => {
         data = data.filter(order => order.area === selectedArea.value);
     }
 
-    if (selectedArea.value) {
-        data = data.filter(order => order.area === selectedArea.value);
+    if (selectedStatus.value) {
+        data = data.filter(order => order.status === selectedStatus.value);
     }
 
     return data;
 })
+
+async function exportExcel() {
+
+    // await reportStore.downloadExcel(
+    //     formatDate2(selectedDateStart.value),
+    //     formatDate2(selectedDateEnd.value)
+    // )
+}
 
 
 function clearFilter() {
@@ -184,13 +209,39 @@ function clearFilter() {
     selectedTeam.value = ''
 }
 
+watch(selectedZone, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    // router.replace({
+    //     query: {
+    //         ...route.query,
+    //         zone: newVal,
+    //         area: '' // clear old area
+    //     }
+    // });
+    if (newVal) {
+        filter.getArea(period, newVal, selectedTeam.value);
+        filter.getTeam(newVal);
+    }
+});
+
+
+watch(selectedTeam, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    if (newVal) {
+        filter.getArea(period, selectedZone.value, newVal);
+    }
+});
+
+
 
 
 function formatCurrency(value) {
     return new Intl.NumberFormat('th-TH', {
         style: 'currency',
         currency: 'THB',
-        minimumFractionDigits: 0
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+
     }).format(value || 0)
 }
 
