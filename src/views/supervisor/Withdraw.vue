@@ -56,10 +56,16 @@
                                 }}</span>
                         </div>
                     </div>
+                    <div class="flex justify-between">
+                        <div class="text-sm text-gray-500">วันที่เบิก: <span class="font-semibold">{{
+                            item.createdAt.slice(0,16)
+                                }}</span></div>
+                        <div class="text-sm text-gray-500">วันที่ส่ง: <span class="font-semibold">{{
+                            formatDate(item.sendDate)
+                                }}</span></div>
+                    </div>
 
-                    <div class="text-sm text-gray-500">วันที่ส่ง: <span class="font-semibold">{{
-                        formatDate(item.sendDate)
-                            }}</span></div>
+
                     <div class="text-sm text-gray-500">จำนวนทั้งหมด: <span class="font-semibold">{{ item.total }}</span>
                     </div>
                     <div>

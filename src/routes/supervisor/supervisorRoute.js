@@ -11,7 +11,7 @@ const supervisorRoutes = [
         'dc',
         'area_manager',
         'sale_manager'
-      ] // ONLY these roles can access
+      ]
     },
     component: Layout,
     children: [
@@ -35,6 +35,12 @@ const supervisorRoutes = [
       },
       {
         path: 'checkin/:route/orderDetail/:orderId',
+        name: 'OrderDetail',
+        component: () => import('../../views/supervisor/OrderDetail.vue'),
+        props: true // allows useRoute().params.route OR `props: true` to bind as prop
+      },
+      {
+        path: 'order/:orderId',
         name: 'OrderDetail',
         component: () => import('../../views/supervisor/OrderDetail.vue'),
         props: true // allows useRoute().params.route OR `props: true` to bind as prop
@@ -94,6 +100,10 @@ const supervisorRoutes = [
       {
         path: 'storeinroute',
         component: () => import('../../views/supervisor/StoreInRoute.vue')
+      },
+      {
+        path: 'order',
+        component: () => import('../../views/supervisor/Order.vue')
       }
     ]
   }

@@ -50,7 +50,8 @@
             <Info label="Shipping Route" :value="data.shippingRoute ?? '-'" />
             <Info label="Shipping Name" :value="data.shippingName || '-'" />
             <Info label="Send Address" :value="data.sendAddress || '-'" />
-            <Info label="Send Date" :value="data.sendDate || '-'" />
+            <Info label="Create Date" :value="formatDate(data.createdAt) || '-'" />
+            <Info label="Send Date" :value="formatDate(data.sendDate) || '-'" />
             <Info label="Remark" :value="data.remark || '-'" />
         </div>
         <!-- Product List Section -->
@@ -151,6 +152,15 @@ function onApproveClick() {
 
 const goBack = () => {
     router.back()
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return ''
+    const d = new Date(dateStr)
+    const day = String(d.getDate()).padStart(2, '0')
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const year = d.getFullYear()
+    return `${day}-${month}-${year}`
 }
 
 

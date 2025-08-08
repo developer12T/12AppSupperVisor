@@ -8,19 +8,21 @@ export const useOrder = defineStore('order', {
     message: ''
   }),
   actions: {
-    async fetchOrder () {
+    async fetchOrder (period) {
       try {
-        const response = await api.get('/order')
+        const response = await api.get(
+          `api/cash/order/all?type=sale&period=${period}`
+        )
         this.order = response.data
+        console.log('response', this.order)
       } catch (error) {
         console.error(error)
       }
     },
+
     async fetchOrderDetail (orderId) {
       try {
-        const response = await api.get(
-          `${import.meta.env.VITE_API_URL}/api/cash/order/detail/${orderId}`
-        )
+        const response = await api.get(`/api/cash/order/detail/${orderId}`)
         console.log('response', response.data)
         this.orderDetail = response.data.data[0]
       } catch (error) {
