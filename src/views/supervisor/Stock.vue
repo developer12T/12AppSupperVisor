@@ -32,10 +32,16 @@
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
                         <th class="p-2 border">ชื่อ</th>
-                        <th class="p-2 border">STOCK</th>
-                        <th class="p-2 border">IN</th>
-                        <th class="p-2 border">OUT</th>
-                        <th class="p-2 border">BAL</th>
+                        <th class="p-2 border">ต้นทริป</th>
+                        <th class="p-2 border">เบิก</th>
+                        <th class="p-2 border">คืนดี</th>
+                        <th class="p-2 border">คืนเสีย</th>
+                        <th class="p-2 border">ขาย</th>
+                        <th class="p-2 border">แถม</th>
+                        <th class="p-2 border">เปลี่ยน</th>
+                        <th class="p-2 border">ปรับ</th>
+                        <th class="p-2 border">แจก</th>
+                        <th class="p-2 border">คงเหลือ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,16 +58,53 @@
                                 <div class="text-center">{{ unit.stock ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
                             </template>
                         </td>
-                        <!-- IN -->
+                        <!-- Withdraw -->
                         <td class="border p-2">
                             <template v-for="(unit, j) in prod.listUnit" :key="j">
-                                <div class="text-center">{{ unit.stockIn ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                                <div class="text-center">{{ unit.withdraw ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
                             </template>
                         </td>
-                        <!-- OUT -->
+                        <!-- Damaged -->
                         <td class="border p-2">
                             <template v-for="(unit, j) in prod.listUnit" :key="j">
-                                <div class="text-center">{{ unit.stockOut ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                                <div class="text-center">{{ unit.damaged ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
+                        </td>
+                        <!-- Good -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.good ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
+                        </td>
+                        <!-- Sale -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.sale ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
+                        </td>
+                        <!-- Promotion -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.promotion ?? 0 }} {{ unit.unitName ?? unit.unit }}
+                                </div>
+                            </template>
+                        </td>
+                        <!-- Change -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.change ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
+                        </td>
+                        <!-- Adjust Stock -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.adjust ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
+                        </td>
+                        <!-- Give Aways -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.give ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
                             </template>
                         </td>
                         <!-- BAL -->
@@ -78,16 +121,28 @@
                     <tr class="bg-gray-300 font-bold ">
                         <td class="border p-2 text-center">รวมจำนวน (PCS)</td>
                         <td class="border p-2 text-right">{{ formatNumber(data.summaryStockPcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStockInPcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStockOutPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryWithdrawPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryGoodPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryDamagedPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summarySalePcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryPromotionPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryChangePcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryAdjustPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryGivePcs) }}</td>
                         <td class="border p-2 text-right">{{ formatNumber(data.summaryStockBalPcs) }}</td>
                     </tr>
                     <!-- Summary row (Baht) -->
                     <tr class="bg-gray-300  font-bold">
                         <td class="border p-2 text-center">รวมจำนวนเงิน (บาท)</td>
                         <td class="border p-2 text-right">{{ formatNumber(data.summaryStock) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStockIn) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStockOut) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryWithdraw) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryGood) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryDamaged) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summarySale) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryPromotion) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryChange) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryAdjust) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryGive) }}</td>
                         <td class="border p-2 text-right">{{ formatNumber(data.summaryStockBal) }}</td>
                     </tr>
                 </tfoot>

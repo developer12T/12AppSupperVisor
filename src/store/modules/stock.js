@@ -77,7 +77,7 @@ export const useStockStore = defineStore('stock', {
 
     async getStock (area, period) {
       try {
-        const response = await api.post(`/api/cash/stock/getStockQty`, {
+        const response = await api.post(`/api/cash/stock/getStockQtyNew`, {
           area: area,
           period: period
         })

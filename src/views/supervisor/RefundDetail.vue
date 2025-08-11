@@ -93,7 +93,7 @@
                     <button class="btn btn-error" @click="approve('reject')">
                         ไม่อนุมัติ
                     </button>
-                    <button class="btn btn-success " @click="approve('completed')">
+                    <button class="btn btn-success " @click="approve('approved')">
                         อนุมัติ
                     </button>
                 </div>

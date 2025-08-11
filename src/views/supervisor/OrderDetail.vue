@@ -67,7 +67,6 @@
                 <table class="table table-zebra w-full">
                     <thead class="bg-base-200">
                         <tr>
-                            <th class="text-left w-10"></th>
                             <th class="text-left">No</th>
                             <th class="text-left">Pro ID</th>
                             <th class="text-left">Pro Code</th>
@@ -75,73 +74,40 @@
                             <th class="text-left">จำนวน</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        <template v-for="(promo, index) in (orderStore.orderDetail?.listPromotions || [])"
+                        <template v-for="(promo, index) in orderStore.orderDetail?.listPromotions || []"
                             :key="promo.proId || index">
-                            <!-- Summary row -->
-                            <tr class="hover">
-                                <td class="align-top">
-                                    <button class="btn btn-xs" @click="toggle(index)">
-                                        {{ expanded[index] ? '−' : '+' }}
-                                    </button>
-                                </td>
-                                <td class="align-top">{{ index + 1 }}</td>
-                                <td class="align-top">{{ promo.proId }}</td>
-                                <td class="align-top">{{ promo.proCode }}</td>
-                                <td class="align-top">{{ promo.proName }}</td>
-                                <td class="align-top">
-                                    {{ promo.proQty ?? (promo.listProduct?.length || 0) }}
+
+                            <!-- Summary Row -->
+                            <tr class="hover font-semibold">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ promo.proId }}</td>
+                                <td>{{ promo.proCode }}</td>
+                                <td>{{ promo.proName }}</td>
+                                <td>{{ promo.proQty ?? (promo.listProduct?.length || 0) }}</td>
+                            </tr>
+
+                            <!-- Detail Rows -->
+                            <tr v-for="(p, i) in promo.listProduct || []" :key="p.id || p.productId || i"
+                                class="bg-base-100">
+                                <td class="pl-10">{{ i + 1 }}</td>
+                                <td>{{ p.id ?? p.productId }}</td>
+                                <td>{{ p.name ?? p.proName ?? '-' }}</td>
+                                <td></td>
+                                <td>{{ p.qty ?? p.quantity ?? 0 }} {{ p.unit }}</td>
+                            </tr>
+
+                            <!-- No products -->
+                            <tr v-if="!promo.listProduct?.length" class="bg-base-100">
+                                <td colspan="5" class="text-center text-base-content/60">
+                                    — ไม่มีรายการสินค้าในโปร —
                                 </td>
                             </tr>
 
-                            <!-- Detail row: listProduct -->
-                            <tr v-show="expanded[index]">
-                                <td colspan="6" class="bg-base-100">
-                                    <div class="p-3 rounded-lg">
-                                        <div class="font-semibold mb-2">รายการสินค้าในโปร</div>
-
-                                        <table class="table w-full">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-left">#</th>
-                                                    <th class="text-left">Product ID</th>
-                                                    <th class="text-left">Name</th>
-                                                    <th class="text-left">Qty</th>
-                                                    <th class="text-left">Unit</th>
-                                                    <th class="text-left">Note</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="(p, i) in (promo.listProduct || [])"
-                                                    :key="p.id || p.productId || i">
-                                                    <td>{{ i + 1 }}</td>
-                                                    <td>{{ p.id ?? p.productId }}</td>
-                                                    <td>{{ p.name ?? p.proName ?? '-' }}</td>
-                                                    <td>{{ p.qty ?? p.quantity ?? 0 }}</td>
-                                                    <td>{{ p.unit ?? p.obUnit ?? '-' }}</td>
-                                                    <td>{{ p.note ?? '-' }}</td>
-                                                </tr>
-                                                <tr v-if="!(promo.listProduct && promo.listProduct.length)">
-                                                    <td colspan="6" class="text-center text-base-content/60">
-                                                        — ไม่มีรายการสินค้าในโปร —
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </td>
-                            </tr>
                         </template>
-
-                        <!-- Empty state -->
-                        <tr v-if="!(orderStore.orderDetail?.listPromotions?.length)">
-                            <td colspan="6" class="text-center text-base-content/60">
-                                — ไม่มีโปรโมชัน —
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
+
             </div>
 
             <!-- Summary -->
