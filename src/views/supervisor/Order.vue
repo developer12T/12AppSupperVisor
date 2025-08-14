@@ -14,6 +14,23 @@
                 </svg>
                 <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
             </label>
+            <div class="flex justify-start ms-2">
+                <div>
+                    <input type="date" v-model="startDate" @change="onMonthChange" class="border p-2 rounded" />
+                    <p>เลือกวันที่: {{ formatDate(startDate) }}</p>
+                </div>
+            </div>
+            <div class="ms-2 pt-2">ถึง</div>
+            <div class="flex justify-start ms-2">
+                <div>
+
+                    <input type="date" v-model="endDate" @change="onMonthChange" class="border p-2 rounded" />
+                    <p>เลือกวันที่: {{ formatDate(endDate) }}</p>
+                </div>
+            </div>
+
+            <!-- <input type="date" v-model="startDate" class="input input-bordered w-full" /> -->
+
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedStatus">
                     <option disabled value="">Select Status</option>
@@ -22,7 +39,7 @@
                     <option value="canceled">Cancel</option>
                 </select>
             </div>
-<!-- 
+            <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
@@ -154,7 +171,8 @@ const userRole = localStorage.getItem('role')
 const router = useRouter()
 const route = useRoute()
 const isLoading = ref(false)
-const selectedMonth = ref('') // format: YYYY-MM
+const startDate = ref('') // format: YYYY-MM
+const endDate = ref('') // format: YYYY-MM
 const searchQuery = ref('');
 
 const cardData = ref([]);
@@ -168,6 +186,9 @@ const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 const zone = localStorage.getItem('zone')
+
+// const month = computed(() => startDate.value.split('-')[1])
+// const year = computed(() => startDate.value.split('-')[0])
 
 
 const filteredOrders = computed(() => {
@@ -190,6 +211,22 @@ const filteredOrders = computed(() => {
     if (selectedStatus.value) {
         data = data.filter(order => order.status === selectedStatus.value);
     }
+    // --- Date range filter (client-side) ---
+    const s = toDateOrNull(startDate.value)   // expects 'YYYY-MM-DD' from <input type="date">
+    const e = toDateOrNull(endDate.value) ? endOfDay(endDate.value) : null
+
+    if (s || e) {
+        data = data.filter(order => {
+            const od = toDateOrNull(order.createdAt)
+            if (!od) return false
+            if (s && od < s) return false
+            if (e && od > e) return false
+            return true
+        })
+    }
+
+    // newest first
+    // data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
     return data;
 })
@@ -201,6 +238,38 @@ async function exportExcel() {
     //     formatDate2(selectedDateEnd.value)
     // )
 }
+
+function toDateOrNull(val) {
+    if (!val) return null
+    const d = new Date(val)
+    return isNaN(d.getTime()) ? null : d
+}
+
+// make end-of-day inclusive for comparisons
+function endOfDay(d) {
+    const x = new Date(d)
+    x.setHours(23, 59, 59, 999)
+    return x
+}
+
+async function onMonthChange() {
+    // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
+    // ตัวอย่าง:
+
+    // console.log('startDate:', startDate.value)
+    // console.log('endDate:', endDate.value)
+    // if (startDate.value && endDate.value) {
+    //     isLoading.value = true
+    //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
+    //     cardData.value = useOrderStore.order.data
+    //     isLoading.value = false
+    // }
+    // console.log('เลือกเดือน:', month.value)
+    // console.log('เลือกเดือน:', month.value)
+    // console.log('เลือกปี:', year.value)
+
+}
+
 
 
 function clearFilter() {
@@ -260,7 +329,7 @@ onMounted(async () => {
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
     await filter.getZone(period);
-    await useOrderStore.fetchOrder(period)
+    await useOrderStore.fetchOrder(period, '', '')
     console.log(useOrderStore.order)
     cardData.value = useOrderStore.order.data
     isLoading.value = false

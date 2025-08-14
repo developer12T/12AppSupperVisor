@@ -43,7 +43,7 @@
                     <div class="flex justify-end">
                         <span class="inline-block rounded px-3 py-1 text-xs font-bold" :class="{
                             'bg-yellow-100 text-yellow-700': item.status === 'pending',
-                            'bg-green-100 text-green-700': item.status === 'completed',
+                            'bg-green-100 text-green-700': item.status === 'completed' || item.status === 'approved',
                             'bg-red-100 text-red-700': item.status === 'rejected' || item.status === 'canceled'
                         }">
                             {{ item.status }}

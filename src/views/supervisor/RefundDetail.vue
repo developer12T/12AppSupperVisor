@@ -60,8 +60,7 @@
                                 <th class="p-2 border">หน่วย</th>
                                 <th class="p-2 border">ประเภท</th>
                                 <th class="p-2 border">ราคา/หน่วย</th>
-
-
+                                <th class="p-2 border">วันหมดอายุ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,8 +72,9 @@
                                 <td class="p-2 border text-right">{{ item.qty }}</td>
                                 <td class="p-2 border">{{ item.unit }}</td>
                                 <td class="p-2 border text-right">{{ item.condition === 'damaged' ? 'คืนเสีย' : 'คืนดี'
-                                    }}</td>
+                                }}</td>
                                 <td class="p-2 border text-right">{{ item.price }}</td>
+                                <td class="p-2 border text-right">{{ formatDateYYYYMMDD(item.expireDate) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -128,6 +128,8 @@ async function approve(status) {
     } catch (error) {
         console.log(error)
     }
+
+
 }
 
 
@@ -137,6 +139,17 @@ function formatNumber(val) {
 }
 
 
+function formatDateYYYYMMDD(dateStr) {
+    if (!dateStr) return ''
+    // รับค่าเป็น string เช่น "20230901"
+    if (dateStr.length !== 8) return dateStr
+
+    const year = dateStr.substring(0, 4)      // "2023"
+    const month = dateStr.substring(4, 6)     // "09"
+    const day = dateStr.substring(6, 8)       // "01"
+
+    return `${day}-${month}-${year}`          // => "01-09-2023"
+}
 async function loadData() {
     isLoading.value = true
     data.value = null

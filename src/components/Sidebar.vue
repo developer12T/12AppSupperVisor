@@ -48,7 +48,7 @@ const menuItems = ref([
             { icon: 'mdi:box-clock-outline', name: 'อนุมัติใบเบิก', link: '/supervisor/withdraw' },
             { icon: 'mdi:autorenew', name: 'อนุมัติขอคืน', link: '/supervisor/refund' },
             { icon: 'mdi:archive-edit', name: 'อนุมัติขอปรับสต๊อก', link: '/supervisor/adjuststock' },
-            { icon: 'mdi:gift-open', name: 'อนุมัติแจกสินค้า', link: '/supervisor/gift' },
+            // { icon: 'mdi:gift-open', name: 'อนุมัติแจกสินค้า', link: '/supervisor/gift' },
 
         ],
     },

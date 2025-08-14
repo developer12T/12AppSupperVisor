@@ -100,15 +100,15 @@
             <thead class="bg-primary text-white sticky top-0 z-10">
                 <tr>
                     <th class="text-left p-2 ">Route</th>
+                    <th class="text-center p-2 ">ร้านทั้งหมด</th>
                     <th class="text-center p-2 ">รอเยี่ยม</th>
                     <th class="text-center p-2 ">ซื้อ</th>
-                    <th class="text-center p-2 ">ไม่ซื้อ</th>
-                    <th class="text-center p-2 ">เยี่ยมแล้ว</th>
-                    <th class="text-center p-2 ">Count (CTN)</th>
+                    <th class="text-center p-2 ">เยี่ยม</th>
+                    <th class="text-center p-2 ">ยอดขายรวม</th>
+                    <th class="text-center p-2 ">ยอดหีบ (CTN)</th>
                     <th class="text-center p-2 ">Visit (%)</th>
                     <th class="text-center p-2 ">Effective (%)</th>
-                    <th class="text-center p-2 ">ยอดขายรวม</th>
-                    <th class="text-center p-2 ">ร้านทั้งหมด</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -151,15 +151,19 @@
                         class="hover:bg-blue-100 cursor-pointer border-black"
                         @click="showDetail(item, item.route, item.routeId)">
                         <td class="p-2 border-r border-black">{{ item.route }}</td>
+                        <td class="text-center p-2 border-r border-black">{{ item.storeAll }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storePending }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeSell }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storeNotSell }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storeCheckInNotSell }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.totalqty }}</td>
+                        <td class="text-center p-2 border-r border-black">{{ item.storeCheckInNotSell +
+                            item.storeNotSell
+                            }}</td>
+                        <td class="text-right p-2  border-r border-black">{{ formatCurrency(item.summary) }}</td>
+                        <td class="text-right p-2 border-r border-black">
+                            {{ new Intl.NumberFormat('th-TH').format(item.totalqty || 0) }}
+                        </td>
                         <td class="text-center p-2 border-r border-black">{{ item.percentVisit }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.percentEffective }}</td>
-                        <td class="text-center p-2  border-r border-black">{{ item.summary }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storeAll }}</td>
+
                     </tr>
                 </template>
             </tbody>
@@ -201,6 +205,17 @@ function clearFilter() {
     selectedArea.value = ''
     selectedTeam.value = ''
     window.location.assign('/supervisor/checkin')
+}
+
+
+function formatCurrency(value) {
+    return new Intl.NumberFormat('th-TH', {
+        style: 'currency',
+        currency: 'THB',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+
+    }).format(value || 0)
 }
 
 onMounted(async () => {

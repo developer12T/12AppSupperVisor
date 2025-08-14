@@ -8,10 +8,10 @@ export const useOrder = defineStore('order', {
     message: ''
   }),
   actions: {
-    async fetchOrder (period) {
+    async fetchOrder (period, start, end) {
       try {
         const response = await api.get(
-          `api/cash/order/all?type=sale&period=${period}`
+          `api/cash/order/all?type=sale&period=${period}&start=${start}&end=${end}`
         )
         this.order = response.data
         console.log('response', this.order)
