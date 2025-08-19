@@ -67,13 +67,13 @@
                         <!-- Damaged -->
                         <td class="border p-2">
                             <template v-for="(unit, j) in prod.listUnit" :key="j">
-                                <div class="text-center">{{ unit.damaged ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                                <div class="text-center">{{ unit.good ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
                             </template>
                         </td>
                         <!-- Good -->
                         <td class="border p-2">
                             <template v-for="(unit, j) in prod.listUnit" :key="j">
-                                <div class="text-center">{{ unit.good ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                                <div class="text-center">{{ unit.damaged ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
                             </template>
                         </td>
                         <!-- Sale -->
