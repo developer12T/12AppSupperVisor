@@ -151,7 +151,6 @@ export const useStoresStore = defineStore('stores', {
     },
     async downloadExcel (period) {
       try {
-
         if (!/^\d{6}$/.test(period)) {
           const nowTH = new Date(
             new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })

@@ -104,6 +104,14 @@ const supervisorRoutes = [
       {
         path: 'order',
         component: () => import('../../views/supervisor/Order.vue')
+      },
+      {
+        path: 'give',
+        component: () => import('../../views/supervisor/GiveOrder.vue')
+      },
+      {
+        path: 'give/:orderId',
+        component: () => import('../../views/supervisor/GiveOrderDetail.vue')
       }
     ]
   }

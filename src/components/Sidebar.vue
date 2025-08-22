@@ -22,7 +22,8 @@ const showText = ref(isSidebarOpen.value)
 
 const menuItems = ref([
     { name: 'แดชบอร์ด', icon: 'mdi:monitor-dashboard', link: '/', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
-    { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/supervisor/order', submenu: null, roles: ['supervisor', 'admin', 'supervisor',] },
+    { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/supervisor/order', submenu: null, roles: ['supervisor', 'admin',] },
+    { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/supervisor/give', submenu: null, roles: ['supervisor', 'admin',] },
     {
         name: 'รายงานต่างๆ',
         icon: 'mdi:chart-areaspline',

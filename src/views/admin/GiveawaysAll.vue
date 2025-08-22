@@ -59,7 +59,7 @@ const gives = ref([])
 
 
 function goDetail(item) {
-    router.push({ name: 'GiveDetail', params: { giveId: item.giveId } })
+    // router.push({ name: 'GiveDetail', params: { giveId: item.giveId } })
 }
 
 const fetchGives = async () => {

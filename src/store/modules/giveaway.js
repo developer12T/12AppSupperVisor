@@ -4,6 +4,8 @@ import api from '../../utils/axios'
 export const useGiveAway = defineStore('giveaway', {
   state: () => ({
     giveaways: [],
+    give: [],
+    giveDetail: {},
     giveawaysDetail: {},
     message: '',
     status: 0
@@ -15,6 +17,30 @@ export const useGiveAway = defineStore('giveaway', {
         this.statusCode = response.status
 
         console.log('statusCode', this.status)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async giveOrder (period) {
+      try {
+        const response = await api.get(
+          `/api/cash/give/all?type=give&period=${period}`
+        )
+
+        this.give = response.data
+        console.log('response', this.give)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async giveOrderDetail (orderId) {
+      try {
+        const response = await api.get(`/api/cash/give/detail/${orderId}`)
+
+        console.log('response', response.data)
+        this.giveDetail = response.data.data[0]
       } catch (error) {
         console.error(error)
       }
@@ -36,6 +62,35 @@ export const useGiveAway = defineStore('giveaway', {
         this.giveaways = response.data.data
 
         console.log('giveaways', this.giveaways)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async downloadExcel (date) {
+      try {
+        if (!/^\d{8}$/.test(date)) {
+          const nowTH = new Date(
+            new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+          )
+          const y = nowTH.getFullYear()
+          const m = String(nowTH.getMonth() + 1).padStart(2, '0')
+          const d = String(nowTH.getDay() + 1).padStart(2, '0')
+          date = `${d}${m}${y}` // MMYYYY
+        }
+
+        const response = await api.get(
+          `/api/cash/give/giveToExcel?channel=cash&date=${date}`,
+          { responseType: 'blob' } // สำคัญมาก!
+        )
+        // สร้าง URL ให้ browser โหลดไฟล์
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `GIVE_${date}.xlsx`) // ชื่อไฟล์
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
       } catch (error) {
         console.error(error)
       }

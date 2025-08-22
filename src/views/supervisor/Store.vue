@@ -3,6 +3,16 @@
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <div class="flex justify-start">
             <h2 class="text-2xl font-bold mb-6">อนุมัติร้านค้าใหม่</h2>
+            <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
+                <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
+                        stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </g>
+                </svg>
+                <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
+            </label>
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
@@ -37,7 +47,7 @@
 
     </div>
 
-    <div v-for="customer in customers" :key="customer.id"
+    <div v-for="customer in filteredStores" :key="customer.id"
         class="product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4 ">
         <figure class="w-1/7">
             <div class="flex flex-col items-center pt-10">
@@ -174,7 +184,7 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 
 const userRole = localStorage.getItem('role')
-
+const searchQuery = ref('');
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
@@ -310,6 +320,19 @@ watch(selectedZone, async (newVal) => {
         isLoading.value = false
     }
 });
+
+const filteredStores = computed(() => {
+    let data = store.storeNew.data;
+    const query = searchQuery.value.trim().toLowerCase();
+    if (query) {
+        data = data.filter(store =>
+            (store.storeId || '').toLowerCase().includes(query) ||
+            (store.name || '').toLowerCase().includes(query)
+        );
+    }
+    return data;
+});
+
 
 
 onMounted(async () => {
