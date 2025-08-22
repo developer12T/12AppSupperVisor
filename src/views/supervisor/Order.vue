@@ -84,6 +84,7 @@
                         <th class="p-2 border">Order</th>
                         <th class="p-2 border">เขต</th>
                         <th class="p-2 border">รหัสร้าน</th>
+                        <th class="p-2 border">ชื่อร้าน</th>
                         <th class="p-2 border">วันที่สั่ง</th>
                         <th class="p-2 border">รายการ</th>
                         <th class="p-2 border">สถานะ</th>
@@ -102,6 +103,9 @@
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.storeId }}</div>
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            <div class="">{{ prod.storeName }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
                             <div class="">{{ formatDate(prod.createdAt) }}</div>

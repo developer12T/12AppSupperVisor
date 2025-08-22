@@ -148,6 +148,35 @@ export const useStoresStore = defineStore('stores', {
       } catch (error) {
         console.error(error)
       }
+    },
+    async downloadExcel (period) {
+      try {
+
+        if (!/^\d{6}$/.test(period)) {
+          const nowTH = new Date(
+            new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+          )
+          const y = nowTH.getFullYear()
+          const m = String(nowTH.getMonth() + 1).padStart(2, '0')
+          period = `${m}${y}` // MMYYYY
+        }
+
+        const response = await api.get(
+          `/api/cash/store/storeToExcel?date=${period}`,
+          { responseType: 'blob' } // สำคัญมาก!
+        )
+        // สร้าง URL ให้ browser โหลดไฟล์
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `store_${period}.xlsx`) // ชื่อไฟล์
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 })

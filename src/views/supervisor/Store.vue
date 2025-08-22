@@ -31,6 +31,8 @@
                     <p>Month: {{ month }}, Year: {{ year }}</p>
                 </div>
             </div>
+            <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
+
         </div>
 
     </div>
@@ -191,6 +193,15 @@ const selectedTeam = ref(route.query.team || '')
 const zone = localStorage.getItem('zone')
 
 
+async function exportExcel() {
+    await store.downloadExcel(`${month.value}${year.value}`)
+    // await reportStore.downloadExcel(
+    //     formatDate2(selectedDateStart.value),
+    //     formatDate2(selectedDateEnd.value)
+    // )
+}
+
+
 
 async function onMonthChange() {
     // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
@@ -198,6 +209,7 @@ async function onMonthChange() {
     isLoading.value = true
     console.log('เลือกเดือน:', month.value)
     console.log('เลือกปี:', year.value)
+    // console.log('selectedMonth:', selectedMonth.value)
     await store.getCustomerAll(selectedZone.value, selectedArea.value, selectedTeam.value, year.value, month.value)
     customers.value = store.storeNew.data
     isLoading.value = false

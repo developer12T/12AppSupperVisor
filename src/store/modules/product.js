@@ -38,6 +38,18 @@ export const useProductsStore = defineStore('products', {
       } catch (error) {
         console.error(error)
       }
+    },
+    async addNewProduct (channel) {
+      try {
+        setChannel(channel)
+        const response = await api.get(`/api/cash/product/getProductSwitch`)
+        const result = response.data
+        this.product = result
+        this.statusCode = response.status
+        console.log('products', this.product)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 })

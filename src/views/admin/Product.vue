@@ -42,8 +42,11 @@
                     <path d="m21 21-4.3-4.3"></path>
                 </g>
             </svg>
+
+
             <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
         </label>
+        <button class="btn btn-primary text-white" @click="exportExcel">เพิ่มสินค้า</button>
     </div>
 
     <div v-for="product in filteredProducts" :key="product.id"

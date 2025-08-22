@@ -65,6 +65,11 @@ const adminRoutes = [
         path: 'checklist',
         component: () => import('../../views/admin/ChecklistFlow.vue')
         // meta: { breadcrumb: 'ใบรวมสินค้า' }
+      },
+      {
+        path: 'addNewProduct',
+        component: () => import('../../views/admin/AddNewProduct.vue')
+        // meta: { breadcrumb: 'ใบสั่งจอง' }
       }
     ]
   }
