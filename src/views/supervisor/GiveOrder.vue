@@ -41,12 +41,7 @@
                 </div>
             </div>
             <div class="flex justify-end">
-                <div class="flex justify-start ms-2">
-                    <div>
-                        <input type="date" v-model="exportDate" @change="onMonthChange" class="border p-2 rounded" />
-                        <p>เลือกวันที่: {{ formatDate(exportDate) }}</p>
-                    </div>
-                </div>
+    
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
 
             </div>
@@ -169,9 +164,13 @@ const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 const zone = localStorage.getItem('zone')
 
-const day = computed(() => exportDate.value.split('-')[2])
-const month = computed(() => exportDate.value.split('-')[1])
-const year = computed(() => exportDate.value.split('-')[0])
+const startday = computed(() => startDate.value.split('-')[2])
+const startmonth = computed(() => startDate.value.split('-')[1])
+const startyear = computed(() => startDate.value.split('-')[0])
+
+const endday = computed(() => endDate.value.split('-')[2])
+const endmonth = computed(() => endDate.value.split('-')[1])
+const endyear = computed(() => endDate.value.split('-')[0])
 
 
 const filteredOrders = computed(() => {
@@ -215,7 +214,7 @@ const filteredOrders = computed(() => {
 })
 
 async function exportExcel() {
-    await giveStore.downloadExcel(`${year.value}${month.value}${day.value}`)
+    await giveStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`,`${endyear.value}${endmonth.value}${endday.value}`)
 }
 
 function toDateOrNull(val) {

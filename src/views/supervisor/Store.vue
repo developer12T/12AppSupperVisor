@@ -115,6 +115,9 @@
                 customer.district }}
                 {{ customer.province }} {{ customer.postCode }}</p>
             <div class="card-actions justify-end">
+                <!-- <button v-if="userRole == 'admin'" class="btn btn-warning" >
+                    นำเข้าระบบ M3
+                </button> -->
                 <button class="btn btn-success" @click="openGoogleMap(customer.latitude, customer.longtitude)">
                     Google Map
                 </button>
