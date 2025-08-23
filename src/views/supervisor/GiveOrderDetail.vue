@@ -1,6 +1,6 @@
 <template>
     <div class="p-6">
-        <h1 class="text-2xl font-bold mb-4">Order Detail</h1>
+        <h1 class="text-2xl font-bold mb-4">รายการแจก</h1>
 
         <!-- Loading Spinner -->
         <div v-if="isLoading" class="flex justify-center items-center p-6">

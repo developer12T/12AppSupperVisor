@@ -83,7 +83,7 @@
                             <div class="">{{ prod.storeName }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
-                            <div class="">{{ formatDate(prod.createdAt) }}</div>
+                            <div class="">{{ formatDate(prod.createAt) }}</div>
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.listProduct }}</div>
@@ -182,8 +182,8 @@ const filteredOrders = computed(() => {
         data = data.filter(order =>
             (order.orderId || '').toLowerCase().includes(query) ||
             (order.area || '').toLowerCase().includes(query) ||
-            (order.storeId || '').toLowerCase().includes(query) ||
-            (order.createdAt || '').toLowerCase().includes(query)
+            (order.storeId || '').toLowerCase().includes(query) 
+            
         );
     }
 
@@ -200,7 +200,7 @@ const filteredOrders = computed(() => {
 
     if (s || e) {
         data = data.filter(order => {
-            const od = toDateOrNull(order.createdAt)
+            const od = toDateOrNull(order.createAt)
             if (!od) return false
             if (s && od < s) return false
             if (e && od > e) return false

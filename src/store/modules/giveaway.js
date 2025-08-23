@@ -68,14 +68,15 @@ export const useGiveAway = defineStore('giveaway', {
     },
     async downloadExcel (date) {
       try {
+        // ถ้าไม่ได้ส่งมา หรือฟอร์แมตไม่ใช่ YYYYMMDD ให้ใช้ "วันนี้" ตามเวลาไทย
         if (!/^\d{8}$/.test(date)) {
           const nowTH = new Date(
             new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
           )
           const y = nowTH.getFullYear()
           const m = String(nowTH.getMonth() + 1).padStart(2, '0')
-          const d = String(nowTH.getDay() + 1).padStart(2, '0')
-          date = `${d}${m}${y}` // MMYYYY
+          const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
+          date = `${y}${m}${d}` // YYYYMMDD
         }
 
         const response = await api.get(
