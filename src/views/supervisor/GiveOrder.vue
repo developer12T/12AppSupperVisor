@@ -239,21 +239,6 @@ async function onMonthChange() {
         
         isLoading.value = false;
     }
-    // // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
-    // ตัวอย่าง:
-
-    // console.log('startDate:', startDate.value)
-    // console.log('endDate:', endDate.value)
-    // if (startDate.value && endDate.value) {
-    //     isLoading.value = true
-    //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
-    //     cardData.value = useOrderStore.order.data
-    //     isLoading.value = false
-    // }
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกปี:', year.value)
-
 }
 
 

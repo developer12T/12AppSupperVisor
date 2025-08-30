@@ -69,6 +69,37 @@ export const useRefundStock = defineStore('refund', {
       } catch (error) {
         console.log(error)
       }
+    },
+    async downloadExcel (start, end) {
+      try {
+        // ถ้าไม่ได้ส่งมา หรือฟอร์แมตไม่ใช่ YYYYMMDD ให้ใช้ "วันนี้" ตามเวลาไทย
+        if (!/^\d{8}$/.test(start)) {
+          const nowTH = new Date(
+            new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+          )
+          const y = nowTH.getFullYear()
+          const m = String(nowTH.getMonth() + 1).padStart(2, '0')
+          const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
+          start = `${y}${m}${d}` // YYYYMMDD
+          end = `${y}${m}${d}` // YYYYMMDD
+        }
+
+        const response = await api.get(
+          `/api/cash/refund/refundExcel?channel=cash&startDate=${start}&endDate=${end}`,
+          { responseType: 'blob' } // สำคัญมาก!
+        )
+        // สร้าง URL ให้ browser โหลดไฟล์
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `REFUND_${start}_${end}.xlsx`) // ชื่อไฟล์
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 })

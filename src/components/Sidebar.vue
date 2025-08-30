@@ -22,8 +22,22 @@ const showText = ref(isSidebarOpen.value)
 
 const menuItems = ref([
     { name: 'แดชบอร์ด', icon: 'mdi:monitor-dashboard', link: '/', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
-    { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/supervisor/order', submenu: null, roles: ['supervisor', 'admin',] },
-    { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/supervisor/give', submenu: null, roles: ['supervisor', 'admin',] },
+
+    // { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/supervisor/order', submenu: null, roles: ['supervisor', 'admin',] },
+    // { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/supervisor/give', submenu: null, roles: ['supervisor', 'admin',] },
+    {
+        name: 'รายการต่างๆ',
+        icon: 'mdi:file-replace',
+        link: '#',
+        submenu: [
+            { icon: 'mdi:receipt-text', name: 'รายการออเดอร์', link: '/supervisor/order' },
+            { icon: 'mdi:gift', name: 'รายการแจกสินค้า', link: '/supervisor/give' },
+            { icon: 'mdi:autorenew', name: 'รายการคืนสินค้า', link: '/supervisor/refundtable' },
+            { icon: 'mdi:box-clock-outline', name: 'รายการใบเบิก', link: '/supervisor/withdrawtable' },
+
+        ],
+        roles: ['admin', 'area_manager', 'sale_manager']
+    },
     {
         name: 'รายงานต่างๆ',
         icon: 'mdi:chart-areaspline',
@@ -34,10 +48,21 @@ const menuItems = ref([
             // { icon: 'mdi:clipboard-check-outline', name: 'รายงานการเช็คอิน', link: '/supervisor/reportcheckin' },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product' },
             { icon: 'mdi:money-100', name: 'รายการส่งเงิน', link: '/supervisor/sendmoney' },
-            { icon: 'mdi:home-report', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute' },
+            { icon: 'mdi:box-clock-outline', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute' },
 
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager']
+    },
+    {
+        name: 'เช็ครายการใน M3',
+        icon: 'mdi:error',
+        link: '#',
+        roles: ['admin'],
+        submenu: [
+            { icon: 'mdi:warehouse', name: 'เช็ครายการเบิก', link: '/supervisor/withdrawm3' },
+            { icon: 'mdi:cart', name: 'เช็ครายการออเดอร์', link: '/supervisor/orderm3' },
+
+        ],
     },
     {
         name: 'รายการอนุมัติ',
@@ -59,7 +84,7 @@ const menuItems = ref([
     { name: 'อนุมัติขอปรับสต๊อก', icon: 'mdi:archive-edit', link: '/supervisor/adjuststock', submenu: null, roles: ['dc'] },
     { name: 'คู่มือการใช้งาน', icon: 'mdi:book-information-variant', link: '/sale/manual', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'sale'] },
     { name: 'จัดการผู้ใช้งาน', icon: 'mdi:person-card-details', link: '/admin/manageuser', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'] },
-    { name: 'ดูร้านค้าตามพื้นที่', icon: 'mdi:map-marker-radius', link: '/supervisor/storemap', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
+    // { name: 'ดูร้านค้าตามพื้นที่', icon: 'mdi:map-marker-radius', link: '/supervisor/storemap', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveawayall', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },

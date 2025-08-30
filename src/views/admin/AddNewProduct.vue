@@ -34,46 +34,16 @@
             <fieldset class="section">
                 <legend>Classification</legend>
                 <div class="grid">
-                    <label>
-                        <span>Group</span>
-                        <input v-model.trim="form.group" />
-                    </label>
-                    <label>
-                        <span>Group Code</span>
-                        <input v-model.trim="form.groupCode" />
-                    </label>
-                    <label>
-                        <span>Group (M3)</span>
-                        <input v-model.trim="form.groupM3" />
-                    </label>
-                    <label>
-                        <span>Group Code (M3)</span>
-                        <input v-model.trim="form.groupCodeM3" />
-                    </label>
-                    <label>
-                        <span>Brand</span>
-                        <input v-model.trim="form.brand" />
-                    </label>
-                    <label>
-                        <span>Brand Code</span>
-                        <input v-model.trim="form.brandCode" />
-                    </label>
-                    <label>
-                        <span>Size</span>
-                        <input v-model.trim="form.size" />
-                    </label>
-                    <label>
-                        <span>Flavour</span>
-                        <input v-model.trim="form.flavour" />
-                    </label>
-                    <label>
-                        <span>Flavour Code</span>
-                        <input v-model.trim="form.flavourCode" />
-                    </label>
-                    <label>
-                        <span>Type</span>
-                        <input v-model.trim="form.type" />
-                    </label>
+                    <label><span>Group</span><input v-model.trim="form.group" /></label>
+                    <label><span>Group Code</span><input v-model.trim="form.groupCode" /></label>
+                    <label><span>Group (M3)</span><input v-model.trim="form.groupM3" /></label>
+                    <label><span>Group Code (M3)</span><input v-model.trim="form.groupCodeM3" /></label>
+                    <label><span>Brand</span><input v-model.trim="form.brand" /></label>
+                    <label><span>Brand Code</span><input v-model.trim="form.brandCode" /></label>
+                    <label><span>Size</span><input v-model.trim="form.size" /></label>
+                    <label><span>Flavour</span><input v-model.trim="form.flavour" /></label>
+                    <label><span>Flavour Code</span><input v-model.trim="form.flavourCode" /></label>
+                    <label><span>Type</span><input v-model.trim="form.type" /></label>
                 </div>
             </fieldset>
 
@@ -99,82 +69,65 @@
                     <label>
                         <span>Status (Sale)</span>
                         <select v-model="form.statusSale">
-                            <option value="">—</option>
-                            <option value="active">active</option>
-                            <option value="inactive">inactive</option>
-                            <option value="blocked">blocked</option>
+                            <option value="Y">active</option>
+                            <option value="N">inactive</option>
                         </select>
                     </label>
                     <label>
                         <span>Status (Withdraw)</span>
                         <select v-model="form.statusWithdraw">
-                            <option value="">—</option>
-                            <option value="active">active</option>
-                            <option value="inactive">inactive</option>
-                            <option value="blocked">blocked</option>
+                            <option value="Y">active</option>
+                            <option value="N">inactive</option>
                         </select>
                     </label>
                     <label>
                         <span>Status (Refund)</span>
                         <select v-model="form.statusRefund">
-                            <option value="">—</option>
-                            <option value="active">active</option>
-                            <option value="inactive">inactive</option>
-                            <option value="blocked">blocked</option>
+                            <option value="Y">active</option>
+                            <option value="N">inactive</option>
                         </select>
                     </label>
                 </div>
             </fieldset>
 
             <!-- Units -->
-            <fieldset class="section">
+            <fieldset class="section units-section">
                 <legend>Units & Prices</legend>
                 <div class="units">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="min-width: 120px;">Unit Code</th>
-                                <th>Display Name</th>
-                                <th>Factor*</th>
-                                <th>Sale</th>
-                                <th>Refund</th>
-                                <th>Refund (Damage)</th>
-                                <th>Change</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(u, idx) in form.listUnit" :key="idx">
-                                <td>
-                                    <input v-model.trim="u.unit" placeholder="e.g. CTN" />
-                                </td>
-                                <td>
-                                    <input v-model.trim="u.name" placeholder="e.g. หีบ" />
-                                </td>
-                                <td>
-                                    <input type="number" min="1" step="1" v-model.number="u.factor" />
-                                </td>
-                                <td>
-                                    <input type="number" min="0" step="0.01" v-model.number="u.price.sale" />
-                                </td>
-                                <td>
-                                    <input type="number" min="0" step="0.01" v-model.number="u.price.refund" />
-                                </td>
-                                <td>
-                                    <input type="number" min="0" step="0.01" v-model.number="u.price.refundDmg" />
-                                </td>
-                                <td>
-                                    <input type="number" min="0" step="0.01" v-model.number="u.price.change" />
-                                </td>
-                                <td class="actions">
-                                    <button type="button" class="danger" @click="removeUnit(idx)"
-                                        aria-label="Remove unit">✕</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="unit-actions">
-                        <button type="button" class="secondary" @click="addUnit">+ Add Unit</button>
+                    <div class="table-container-x">
+                        <table class="units-table">
+                            <thead>
+                                <tr>
+                                    <th>Unit Code</th>
+                                    <th>Display Name</th>
+                                    <th>Factor*</th>
+                                    <th>Sale</th>
+                                    <th>Refund</th>
+                                    <th>Refund (Damage)</th>
+                                    <th>Change</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(u, idx) in form.listUnit" :key="idx">
+                                    <td><input v-model.trim="u.unit" placeholder="e.g. CTN" /></td>
+                                    <td><input v-model.trim="u.name" placeholder="e.g. หีบ" /></td>
+                                    <td><input type="number" min="1" step="1" v-model.number="u.factor" /></td>
+                                    <td><input type="number" min="0" step="0.01" v-model.number="u.price.sale" /></td>
+                                    <td><input type="number" min="0" step="0.01" v-model.number="u.price.refund" /></td>
+                                    <td><input type="number" min="0" step="0.01" v-model.number="u.price.refundDmg" />
+                                    </td>
+                                    <td><input type="number" min="0" step="0.01" v-model.number="u.price.change" /></td>
+                                    <td class="actions">
+                                        <button type="button" class="danger" @click="removeUnit(idx)"
+                                            aria-label="Remove unit">✕</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="unit-actions">
+                            <button type="button" class="secondary" @click="addUnit">+ Add Unit</button>
+                        </div>
                     </div>
                 </div>
             </fieldset>
@@ -200,6 +153,9 @@
 
 <script setup lang="ts">
 import { reactive, ref, computed } from 'vue'
+import { useProductsStore } from '../../store/modules/product'
+
+const productStore = useProductsStore();
 
 type Price = { sale: number; refund: number; refundDmg: number; change: number }
 type Unit = { unit: string; name: string; factor: number; price: Price }
@@ -227,18 +183,18 @@ type Product = {
 }
 
 const sampleProduct: Product = {
-    id: '10010101006',
-    name: 'New Product',
-    group: 'new',
-    groupCode: 'new',
-    groupCodeM3: 'new',
-    groupM3: 'new',
-    brand: 'new',
-    brandCode: 'new',
-    size: 'new',
-    flavour: 'new',
-    flavourCode: 'new',
-    type: 'new',
+    id: '10010101001',
+    name: 'ผงปรุงรสหมู ฟ้าไทย 10g x12x20',
+    group: 'ผงปรุงรส',
+    groupCode: 'G001',
+    groupCodeM3: 'G01',
+    groupM3: 'ผงปรุงรสฟ้าไทย 10 กรัม -165 กรัม',
+    brand: 'ฟ้าไทย',
+    brandCode: 'A',
+    size: '10 G',
+    flavour: 'หมู',
+    flavourCode: 'PK',
+    type: 'แถม',
     weightGross: 3.12,
     weightNet: 2.4,
     statusSale: '',
@@ -246,65 +202,26 @@ const sampleProduct: Product = {
     statusRefund: '',
     image: '',
     listUnit: [
-        {
-            unit: 'CTN',
-            name: 'หีบ',
-            factor: 10,
-            price: { sale: 385, refund: 385, refundDmg: 385, change: 0 }
-        },
-        {
-            unit: 'PCS',
-            name: 'ชิ้น',
-            factor: 1,
-            price: { sale: 19.25, refund: 19.25, refundDmg: 19.25, change: 0 }
-        }
+        { unit: 'CTN', name: 'หีบ', factor: 240, price: { sale: 385, refund: 385, refundDmg: 385, change: 0 } },
+        { unit: 'PCS', name: 'ชิ้น', factor: 1, price: { sale: 1.6, refund: 1.6, refundDmg: 1.6, change: 0 } }
     ]
 }
 
 const form = reactive<Product>(structuredClone(sampleProduct))
 const submitting = ref(false)
 const errors = ref<string[]>([])
-
 const prettyForm = computed(() => JSON.stringify(form, null, 2))
 
 function addUnit() {
-    form.listUnit.push({
-        unit: '',
-        name: '',
-        factor: 1,
-        price: { sale: 0, refund: 0, refundDmg: 0, change: 0 }
-    })
+    form.listUnit.push({ unit: '', name: '', factor: 1, price: { sale: 0, refund: 0, refundDmg: 0, change: 0 } })
 }
-
-function removeUnit(index: number) {
-    form.listUnit.splice(index, 1)
-}
-
-function resetToSample() {
-    Object.assign(form, structuredClone(sampleProduct))
-}
-
+function removeUnit(index: number) { form.listUnit.splice(index, 1) }
+function resetToSample() { Object.assign(form, structuredClone(sampleProduct)) }
 function clearAll() {
     const cleared: Product = {
-        id: '',
-        name: '',
-        group: '',
-        groupCode: '',
-        groupCodeM3: '',
-        groupM3: '',
-        brand: '',
-        brandCode: '',
-        size: '',
-        flavour: '',
-        flavourCode: '',
-        type: '',
-        weightGross: 0,
-        weightNet: 0,
-        statusSale: '',
-        statusWithdraw: '',
-        statusRefund: '',
-        image: '',
-        listUnit: []
+        id: '', name: '', group: '', groupCode: '', groupCodeM3: '', groupM3: '', brand: '', brandCode: '', size: '',
+        flavour: '', flavourCode: '', type: '', weightGross: 0, weightNet: 0,
+        statusSale: '', statusWithdraw: '', statusRefund: '', image: '', listUnit: []
     }
     Object.assign(form, cleared)
 }
@@ -313,18 +230,18 @@ function validate(): boolean {
     errors.value = []
     if (!form.id) errors.value.push('Product ID is required.')
     if (!form.name) errors.value.push('Name is required.')
-    if (form.weightGross < 0) errors.value.push('Weight Gross must be \u2265 0.')
-    if (form.weightNet < 0) errors.value.push('Weight Net must be \u2265 0.')
+    if (form.weightGross < 0) errors.value.push('Weight Gross must be ≥ 0.')
+    if (form.weightNet < 0) errors.value.push('Weight Net must be ≥ 0.')
     if (!form.listUnit.length) errors.value.push('At least one unit is required.')
 
     form.listUnit.forEach((u, i) => {
         if (!u.unit) errors.value.push(`Unit code at row ${i + 1} is required.`)
         if (u.factor == null || u.factor < 1 || !Number.isFinite(u.factor))
-            errors.value.push(`Factor at row ${i + 1} must be an integer \u2265 1.`)
+            errors.value.push(`Factor at row ${i + 1} must be an integer ≥ 1.`)
                 ; (['sale', 'refund', 'refundDmg', 'change'] as const).forEach((k) => {
                     const val = u.price[k]
                     if (val == null || val < 0 || !Number.isFinite(val))
-                        errors.value.push(`${k} price at row ${i + 1} must be \u2265 0.`)
+                        errors.value.push(`${k} price at row ${i + 1} must be ≥ 0.`)
                 })
     })
 
@@ -335,22 +252,8 @@ async function onSubmit() {
     if (!validate()) return
     try {
         submitting.value = true
-
-        // Adjust the endpoint and headers to match your backend
-        const res = await fetch('/api/products', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(form)
-        })
-
-        if (!res.ok) {
-            const msg = await res.text()
-            throw new Error(msg || 'Failed to save')
-        }
-
+        productStore.addNewProduct('cash', JSON.stringify(form))
         alert('Product saved successfully!')
-        // Optionally clear form or keep values
-        // clearAll()
     } catch (err: any) {
         alert(`Error: ${err.message || err}`)
     } finally {
@@ -371,6 +274,81 @@ async function onSubmit() {
     font-size: 1.5rem;
 }
 
+/* Horizontal scroll container */
+.table-container-x {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+}
+
+/* Wide table */
+.units-table {
+    width: max(100%, 1200px);
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.units-table thead th {
+    position: sticky;
+    top: 0;
+    background: #f9fafb;
+    z-index: 1;
+}
+
+.units-table th,
+.units-table td {
+    white-space: nowrap;
+    padding: .5rem;
+    border-bottom: 1px solid #e5e7eb;
+    border-right: 1px solid #f3f4f6;
+}
+
+.units-table td>input {
+    width: 100%;
+    min-width: 110px;
+    box-sizing: border-box;
+}
+
+.units-table th:nth-child(1),
+.units-table td:nth-child(1) {
+    min-width: 140px;
+}
+
+.units-table th:nth-child(2),
+.units-table td:nth-child(2) {
+    min-width: 160px;
+}
+
+.units-table th:nth-child(3),
+.units-table td:nth-child(3) {
+    min-width: 100px;
+}
+
+.units-table th:nth-child(4),
+.units-table td:nth-child(4),
+.units-table th:nth-child(5),
+.units-table td:nth-child(5),
+.units-table th:nth-child(6),
+.units-table td:nth-child(6),
+.units-table th:nth-child(7),
+.units-table td:nth-child(7) {
+    min-width: 120px;
+}
+
+.units-table th:nth-child(8),
+.units-table td:nth-child(8) {
+    min-width: 80px;
+}
+
+/* Remove old tiny width rule */
+.units table {
+    width: auto;
+}
+
+/* General form styles */
 .section {
     margin: 1rem 0;
     border: 1px solid #e5e7eb;
@@ -423,17 +401,6 @@ input[type="number"] {
 
 .errors ul {
     margin: .25rem 0 0 1rem;
-}
-
-.units table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.units th,
-.units td {
-    border: 1px solid #e5e7eb;
-    padding: .5rem;
 }
 
 .units .actions {

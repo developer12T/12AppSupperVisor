@@ -46,7 +46,7 @@
 
             <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
         </label>
-        <button class="btn btn-primary text-white" @click="exportExcel">เพิ่มสินค้า</button>
+        <button class="btn btn-primary text-white" @click="goToAddProduct">เพิ่มสินค้า</button>
     </div>
 
     <div v-for="product in filteredProducts" :key="product.id"
@@ -117,6 +117,10 @@ const selectedBrand = ref(route.query.brand || '')
 const selectedGroup = ref(route.query.group || '')
 const selectedFlavour = ref(route.query.flavour || '')
 const selectedSize = ref(route.query.size || '')
+
+function goToAddProduct() {
+    router.push('/admin/addNewProduct')
+}
 
 function onImgError(id) {
     // เพิ่ม id ลง array ถ้ายังไม่มี (Vue detect ได้แน่นอน)

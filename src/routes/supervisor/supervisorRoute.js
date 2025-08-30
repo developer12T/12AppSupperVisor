@@ -112,6 +112,14 @@ const supervisorRoutes = [
       {
         path: 'give/:orderId',
         component: () => import('../../views/supervisor/GiveOrderDetail.vue')
+      },
+      {
+        path: 'refundtable',
+        component: () => import('../../views/supervisor/RefundTable.vue')
+      },
+      {
+        path: 'withdrawtable',
+        component: () => import('../../views/supervisor/WithdrawTable.vue')
       }
     ]
   }

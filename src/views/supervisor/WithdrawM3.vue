@@ -31,7 +31,7 @@
 
             <!-- <input type="date" v-model="startDate" class="input input-bordered w-full" /> -->
 
-            <div class="mx-3" v-if="userRole != 'supervisor'">
+            <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedStatus">
                     <option disabled value="">Select Status</option>
                     <option value="pending">Pending</option>
@@ -39,12 +39,6 @@
                     <option value="canceled">Cancel</option>
                 </select>
             </div>
-            <div class="ms-3">
-
-                <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-
-            </div>
-
             <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
@@ -83,7 +77,6 @@
             </div> -->
 
         </div>
-
         <div class="overflow-x-auto rounded-xl" style="max-height: 480px; max-width: 90vw; overflow-y: auto;">
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
@@ -214,15 +207,6 @@ const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 const zone = localStorage.getItem('zone')
 
-const startday = computed(() => startDate.value.split('-')[2])
-const startmonth = computed(() => startDate.value.split('-')[1])
-const startyear = computed(() => startDate.value.split('-')[0])
-
-const endday = computed(() => endDate.value.split('-')[2])
-const endmonth = computed(() => endDate.value.split('-')[1])
-const endyear = computed(() => endDate.value.split('-')[0])
-
-
 // const month = computed(() => startDate.value.split('-')[1])
 // const year = computed(() => startDate.value.split('-')[0])
 
@@ -268,8 +252,6 @@ const filteredOrders = computed(() => {
 })
 
 async function exportExcel() {
-
-    await useOrderStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
 
     // await reportStore.downloadExcel(
     //     formatDate2(selectedDateStart.value),

@@ -18,12 +18,12 @@ export const useRouteStore = defineStore('checkin', {
     message: ''
   }),
   actions: {
-    async getPolyLine (period, area) {
+    async getPolyLine (period, area, startDate, endDate) {
       try {
         const response = await api.get(
           `${
             import.meta.env.VITE_API_URL
-          }/api/cash/route/polylineRoute?area=${area}&period=${period}`
+          }/api/cash/route/polylineRoute?area=${area}&period=${period}&startDate=${startDate}&endDate=${endDate}`
         )
         console.log('polyline', response.data)
         this.polyline = response.data.data
