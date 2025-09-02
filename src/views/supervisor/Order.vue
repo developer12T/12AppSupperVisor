@@ -40,11 +40,8 @@
                 </select>
             </div>
             <div class="ms-3">
-
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-
             </div>
-
             <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
@@ -296,12 +293,14 @@ async function onMonthChange() {
 
     // console.log('startDate:', startDate.value)
     // console.log('endDate:', endDate.value)
-    // if (startDate.value && endDate.value) {
-    //     isLoading.value = true
-    //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
-    //     cardData.value = useOrderStore.order.data
-    //     isLoading.value = false
-    // }
+    if (startDate.value && endDate.value) {
+        isLoading.value = true
+        await useOrderStore.fetchOrder('',`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+
+        //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
+        //     cardData.value = useOrderStore.order.data
+        isLoading.value = false
+    }
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกปี:', year.value)
@@ -368,8 +367,8 @@ onMounted(async () => {
     // await filter.getArea(period, zone, '');
     await filter.getZone(period);
     await useOrderStore.fetchOrder(period, '', '')
-    console.log(useOrderStore.order)
-    cardData.value = useOrderStore.order.data
+    // console.log(useOrderStore.order)
+    // cardData.value = useOrderStore.order.data
     isLoading.value = false
 
 })

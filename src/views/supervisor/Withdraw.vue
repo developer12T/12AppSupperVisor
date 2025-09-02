@@ -58,7 +58,7 @@
                     </div>
                     <div class="flex justify-between">
                         <div class="text-sm text-gray-500">วันที่เบิก: <span class="font-semibold">{{
-                            item.createdAt.slice(0,16)
+                            item.createdAt.slice(0, 16)
                                 }}</span></div>
                         <div class="text-sm text-gray-500">วันที่ส่ง: <span class="font-semibold">{{
                             formatDate(item.sendDate)
@@ -134,7 +134,7 @@ onMounted(async () => {
 
     }
     await filter.getZone(period);
-    await withdrawStore.getWithdraw('cash', period, selectedZone.value, selectedArea.value, selectedTeam.value, '', '') // fetch from API
+    await withdrawStore.getWithdraw('cash', period, selectedZone.value, selectedArea.value, selectedTeam.value, '', '', '', '') // fetch from API
     cardData.value = withdrawStore.withdraw
     isLoading.value = false
 })
@@ -184,7 +184,7 @@ watch(selectedZone, async (newVal) => {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
         await filter.getTeam(newVal);
-        await withdrawStore.getWithdraw('cash', period, newVal, selectedArea.value, selectedTeam.value, '', '')
+        await withdrawStore.getWithdraw('cash', period, newVal, selectedArea.value, selectedTeam.value, '', '', '', '')
         cardData.value = withdrawStore.withdraw
         isLoading.value = false
     }
@@ -204,7 +204,7 @@ watch(selectedTeam, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, selectedZone.value, newVal);
-        await withdrawStore.getWithdraw('cash', period, selectedZone.value, selectedArea.value, newVal, '', '')
+        await withdrawStore.getWithdraw('cash', period, selectedZone.value, selectedArea.value, newVal, '', '', '', '')
         cardData.value = withdrawStore.withdraw
         isLoading.value = false
     }
@@ -222,7 +222,7 @@ watch(selectedArea, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         console.log(selectedZone.value, newVal, selectedTeam.value)
-        await withdrawStore.getWithdraw('cash', period, selectedZone.value, newVal, selectedTeam.value, '', '')
+        await withdrawStore.getWithdraw('cash', period, selectedZone.value, newVal, selectedTeam.value, '', '', '', '')
         cardData.value = withdrawStore.withdraw
         isLoading.value = false
     }

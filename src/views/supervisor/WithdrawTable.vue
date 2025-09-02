@@ -99,7 +99,8 @@
                         <th class="p-2 border">รายการ</th>
                         <th class="p-2 border">รายการใน M3</th>
                         <th class="p-2 border">สถานะ</th>
-                        <th class="p-2 border">ยอดรวม</th>
+                        <th class="p-2 border">น้ำหนักรวม</th>
+                        <th class="p-2 border">น้ำหนักรวมสุทธิ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -145,7 +146,10 @@
                                 {{ prod.status }}</div>
                         </td>
                         <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ formatCurrency(prod.total) }}</div>
+                            <div class="">{{ prod.totalWeightGross }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.totalWeightGross }}</div>
                         </td>
                     </tr>
 
@@ -298,12 +302,12 @@ async function onMonthChange() {
 
     // console.log('startDate:', startDate.value)
     // console.log('endDate:', endDate.value)
-    // if (startDate.value && endDate.value) {
-    //     isLoading.value = true
-    //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
-    //     cardData.value = useOrderStore.order.data
-    //     isLoading.value = false
-    // }
+    if (startDate.value && endDate.value) {
+        isLoading.value = true
+        await withdrawStore.getWithdrawTable('cash', '', '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+
+        isLoading.value = false
+    }
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกปี:', year.value)
@@ -369,7 +373,7 @@ onMounted(async () => {
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
     await filter.getZone(period);
-    await withdrawStore.getWithdraw('cash', period, '', '', '', '', '')
+    await withdrawStore.getWithdrawTable('cash', period, '', '', '', '', '')
     console.log(withdrawStore.withdraw)
     // cardData.value = withdrawStore.withdraw.data
     isLoading.value = false

@@ -24,14 +24,14 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async getWithdraw (
+    async getWithdrawTable (
       channel,
       period,
       selectZone,
       selectArea,
       team,
-      year,
-      month
+      start,
+      end
     ) {
       try {
         // setChannel(channel)
@@ -51,13 +51,56 @@ export const useWithdrawStore = defineStore('withdraws', {
         }
 
         const response = await api.get(
-          `/api/cash/distribution/get?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}`
+          `/api/cash/distribution/get?period=${period}&zone=${zone}&team=${team}&area=${area}&start=${start}1&end=${end}`
         )
 
         socket.on('store-updated', data => {
           console.log('store updated', data)
         })
-        
+
+        this.withdraw = response.data.data
+        console.log('withdraw', this.withdraw)
+      } catch (error) {
+        this.withdraw = []
+        console.log(error)
+      }
+    },
+    async getWithdraw (
+      channel,
+      period,
+      selectZone,
+      selectArea,
+      team,
+      year,
+      month,
+      start,
+      end
+    ) {
+      try {
+        // setChannel(channel)
+
+        let zone = ''
+        let area = ''
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+
+        const response = await api.get(
+          `/api/cash/distribution/get?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}&start=${start}1&end=${end}`
+        )
+
+        socket.on('store-updated', data => {
+          console.log('store updated', data)
+        })
+
         this.withdraw = response.data.data
         console.log('withdraw', this.withdraw)
       } catch (error) {
