@@ -36,7 +36,7 @@ const menuItems = ref([
             { icon: 'mdi:box-clock-outline', name: 'รายการใบเบิก', link: '/supervisor/withdrawtable' },
 
         ],
-        roles: ['admin', 'area_manager', 'sale_manager']
+        roles: ['admin', 'area_manager', 'sale_manager', 'dc']
     },
     {
         name: 'รายงานต่างๆ',
@@ -51,13 +51,13 @@ const menuItems = ref([
             { icon: 'mdi:box-clock-outline', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute' },
 
         ],
-        roles: ['admin', 'supervisor', 'area_manager', 'sale_manager']
+        roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'dc']
     },
     {
         name: 'เช็ครายการใน M3',
         icon: 'mdi:error',
         link: '#',
-        roles: ['admin'],
+        roles: ['admin', 'dc'],
         submenu: [
             { icon: 'mdi:warehouse', name: 'เช็ครายการเบิก', link: '/supervisor/withdrawm3' },
             { icon: 'mdi:cart', name: 'เช็ครายการออเดอร์', link: '/supervisor/orderm3' },

@@ -39,6 +39,15 @@
                 <router-link :to="`/supervisor/withdraw/${item.orderId}`">
                     <div class="flex justify-between items-center mb-2">
                         <span class="font-bold text-lg text-gray-700">เลขใบเบิก</span>
+                        <div>
+                            <span class="inline-block rounded px-3 py-1 text-xs font-bold" :class="{
+                                'bg-yellow-100 text-yellow-700': item.status === 'pending',
+                                'bg-green-100 text-green-700': item.status === 'approved',
+                                'bg-red-100 text-red-700': item.status === 'rejected'
+                            }">
+                                {{ statusTH(item.status) }}
+                            </span>
+                        </div>
                         <span class="text-sm text-gray-500">{{ item.orderId }}</span>
                     </div>
                     <div class="flex justify-between">
