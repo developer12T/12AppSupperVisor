@@ -10,8 +10,12 @@ export const useOrder = defineStore('order', {
   actions: {
     async fetchOrder (period, start, end) {
       try {
+        let area = localStorage.getItem('area')
+        // if (area != '') {
+
+        // }
         const response = await api.get(
-          `api/cash/order/all?type=sale&period=${period}&start=${start}&end=${end}`
+          `api/cash/order/all?type=sale&period=${period}&start=${start}&end=${end}&area=${area}`
         )
         this.order = response.data
         console.log('response', this.order)

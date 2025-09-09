@@ -43,6 +43,52 @@ export const useRefundStock = defineStore('refund', {
         }
       }
     },
+    async getRefundAll2 (
+      channel,
+      period,
+      selectZone,
+      team,
+      selectArea,
+      start,
+      end
+    ) {
+      try {
+        setChannel(channel)
+        // let area = localStorage.getItem('area')
+
+        if (!/^\d{8}$/.test(start)) {
+          const nowTH = new Date(
+            new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+          )
+          const y = nowTH.getFullYear()
+          const m = String(nowTH.getMonth() + 1).padStart(2, '0')
+          const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
+          start = `${y}${m}${d}` // YYYYMMDD
+          end = `${y}${m}${d}` // YYYYMMDD
+        }
+
+        const response = await api.get(
+          `/api/cash/refund/all?type=refund&zone=${zone}&team=${team}&area=${area}&period=${period}&start=${start}&end=${end}`
+        )
+        this.refund = response.data.data
+        this.message = response.data.message
+        console.log('refund', this.refund)
+        // console.log('refund', this.refund)
+        // console.log(
+        //   `/api/cash/refund/all?type=refund&zone=${zone}&team=${team}&area=${area}&period=${period}&start=${start}&end=${end}`
+        // )
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          // กรณี 404 - ไม่พบข้อมูล
+          this.refund = []
+          this.message = 'ไม่พบข้อมูลการคืนเงิน'
+        } else {
+          // กรณี error อื่นๆ
+          this.refund = []
+          this.message = 'เกิดข้อผิดพลาดในการดึงข้อมูล'
+        }
+      }
+    },
 
     async approveRefund (channel, orderId, status) {
       try {

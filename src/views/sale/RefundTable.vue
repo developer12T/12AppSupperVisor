@@ -3,7 +3,7 @@
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">รายการคืนสินค้า</h2>
+            <h2 class="text-2xl font-bold mb-6">รายการคืนสินค้า dawda</h2>
             <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
                 <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -104,7 +104,7 @@
                 </thead>
                 <tbody>
 
-                    <tr @click="$router.push(`/supervisor/refund/${prod.orderId}`)" v-for="(prod, i) in filteredOrders"
+                    <tr @click="$router.push(`/sale/refund/${prod.orderId}`)" v-for="(prod, i) in filteredOrders"
                         :key="prod.orderId" class="align-top">
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.orderNo }}</div>
@@ -189,7 +189,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
 import { ref, computed, onMounted, watch } from 'vue'
-// import { useOrder } from '../../store/modules/order'
+import { useOrder } from '../../store/modules/order'
 import { useRefundStock } from '../../store/modules/refund'
 import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
@@ -204,7 +204,7 @@ const endDate = ref('') // format: YYYY-MM
 const searchQuery = ref('');
 
 const cardData = ref([]);
-// const useOrderStore = useOrder()
+const useOrderStore = useOrder()
 const refundStore = useRefundStock()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
@@ -292,18 +292,26 @@ function endOfDay(d) {
     return x
 }
 
+
 async function onMonthChange() {
+    // isLoading.value = true
     // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
     // ตัวอย่าง:
+    // await refundStore.getRefundAll2('cash', '', '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
 
     // console.log('startDate:', startDate.value)
     // console.log('endDate:', endDate.value)
+    // // isLoading.value = true
+    // // await refundStore.getRefundAll2('cash', period, '', '', '')
+    // // isLoading.value = false
+    // await refundStore.getRefundAll2('cash', period, '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+
     // if (startDate.value && endDate.value) {
     //     isLoading.value = true
-    //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
-    //     cardData.value = useOrderStore.order.data
+    //     await refundStore.getRefundAll2('cash', period, '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
     //     isLoading.value = false
     // }
+
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกปี:', year.value)
@@ -370,9 +378,8 @@ onMounted(async () => {
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
     // await filter.getZone(period);
-    await refundStore.getRefundAll2('cash', period, '', '', '')
+    // await refundStore.getRefundAll2('cash', period, '', '', '','20250809','20250908')
     console.log(refundStore.refund)
-    cardData.value = refundStore.refund.data
     isLoading.value = false
 
 })

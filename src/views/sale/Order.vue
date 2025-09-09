@@ -3,7 +3,7 @@
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">รายการคืนสินค้า</h2>
+            <h2 class="text-2xl font-bold mb-6">รายการขาย</h2>
             <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
                 <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -40,11 +40,8 @@
                 </select>
             </div>
             <div class="ms-3">
-
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-
             </div>
-
             <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
@@ -104,7 +101,7 @@
                 </thead>
                 <tbody>
 
-                    <tr @click="$router.push(`/supervisor/refund/${prod.orderId}`)" v-for="(prod, i) in filteredOrders"
+                    <tr @click="$router.push(`/supervisor/order/${prod.orderId}`)" v-for="(prod, i) in filteredOrders"
                         :key="prod.orderId" class="align-top">
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.orderNo }}</div>
@@ -189,8 +186,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
 import { ref, computed, onMounted, watch } from 'vue'
-// import { useOrder } from '../../store/modules/order'
-import { useRefundStock } from '../../store/modules/refund'
+import { useOrder } from '../../store/modules/order'
 import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
 
@@ -204,8 +200,7 @@ const endDate = ref('') // format: YYYY-MM
 const searchQuery = ref('');
 
 const cardData = ref([]);
-// const useOrderStore = useOrder()
-const refundStore = useRefundStock()
+const useOrderStore = useOrder()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
@@ -230,7 +225,7 @@ const endyear = computed(() => endDate.value.split('-')[0])
 
 
 const filteredOrders = computed(() => {
-    let data = refundStore.refund;
+    let data = useOrderStore.order.data;
     // Search filter (text input)
     const query = searchQuery.value.trim().toLowerCase();
     if (query) {
@@ -271,7 +266,7 @@ const filteredOrders = computed(() => {
 
 async function exportExcel() {
 
-    await refundStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+    await useOrderStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
 
     // await reportStore.downloadExcel(
     //     formatDate2(selectedDateStart.value),
@@ -298,12 +293,14 @@ async function onMonthChange() {
 
     // console.log('startDate:', startDate.value)
     // console.log('endDate:', endDate.value)
-    // if (startDate.value && endDate.value) {
-    //     isLoading.value = true
-    //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
-    //     cardData.value = useOrderStore.order.data
-    //     isLoading.value = false
-    // }
+    if (startDate.value && endDate.value) {
+        isLoading.value = true
+        await useOrderStore.fetchOrder('',`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+
+        //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
+        //     cardData.value = useOrderStore.order.data
+        isLoading.value = false
+    }
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกปี:', year.value)
@@ -364,15 +361,14 @@ function formatDate(dateStr) {
     const year = d.getFullYear()
     return `${day}-${month}-${year}`
 }
-
 onMounted(async () => {
     isLoading.value = true
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
-    // await filter.getZone(period);
-    await refundStore.getRefundAll2('cash', period, '', '', '')
-    console.log(refundStore.refund)
-    cardData.value = refundStore.refund.data
+    await filter.getZone(period);
+    await useOrderStore.fetchOrder(period, '', '')
+    // console.log(useOrderStore.order)
+    // cardData.value = useOrderStore.order.data
     isLoading.value = false
 
 })

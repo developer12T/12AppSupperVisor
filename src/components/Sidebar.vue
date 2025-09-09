@@ -38,6 +38,11 @@ const menuItems = ref([
         ],
         roles: ['admin', 'area_manager', 'sale_manager', 'dc']
     },
+    { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/sale/order', submenu: null, roles: ['sale'] },
+    { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/sale/give', submenu: null, roles: ['sale'] },
+    { name: 'รายการคืนสินค้า', icon: 'mdi:autorenew', link: '/sale/refundtable', submenu: null, roles: ['sale'] },
+    { name: 'รายการใบเบิก', icon: 'mdi:box-clock-outline', link: '/sale/withdrawtable', submenu: null, roles: ['sale'] },
+
     {
         name: 'รายงานต่างๆ',
         icon: 'mdi:chart-areaspline',

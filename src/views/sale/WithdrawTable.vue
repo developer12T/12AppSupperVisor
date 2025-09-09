@@ -3,7 +3,7 @@
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">รายการคืนสินค้า</h2>
+            <h2 class="text-2xl font-bold mb-6">รายการใบเบิก</h2>
             <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
                 <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -88,27 +88,25 @@
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
-                        <th class="p-2 border">Order</th>
-                        <th class="p-2 border">Invoice</th>
+                        <th class="p-2 border">Order ID</th>
                         <th class="p-2 border">Low Status</th>
                         <th class="p-2 border">Heigh Status</th>
                         <th class="p-2 border">เขต</th>
-                        <th class="p-2 border">รหัสร้าน</th>
-                        <th class="p-2 border">ชื่อร้าน</th>
+                        <th class="p-2 border">ประเภท</th>
+                        <th class="p-2 border">ชื่อประเภท</th>
                         <th class="p-2 border">วันที่สั่ง</th>
+                        <th class="p-2 border">วันที่รับ</th>
                         <th class="p-2 border">รายการ</th>
                         <th class="p-2 border">รายการใน M3</th>
                         <th class="p-2 border">สถานะ</th>
-                        <th class="p-2 border">ยอดรวม</th>
+                        <th class="p-2 border">น้ำหนักรวม</th>
+                        <th class="p-2 border">น้ำหนักรวมสุทธิ</th>
                     </tr>
                 </thead>
                 <tbody>
 
-                    <tr @click="$router.push(`/supervisor/refund/${prod.orderId}`)" v-for="(prod, i) in filteredOrders"
-                        :key="prod.orderId" class="align-top">
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.orderNo }}</div>
-                        </td>
+                    <tr @click="$router.push(`/sale/withdraw/${prod.orderId}`)"
+                        v-for="(prod, i) in filteredOrders" :key="prod.orderId" class="align-top">
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.orderId }}</div>
                         </td>
@@ -122,13 +120,16 @@
                             <div class="">{{ prod.area }}</div>
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.storeId }}</div>
+                            <div class="">{{ prod.orderType }}</div>
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.storeName }}</div>
+                            <div class="">{{ prod.orderTypeName }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
-                            <div class="">{{ formatDate(prod.createdAt) }}</div>
+                            <div class="">{{ prod.createdAt }}</div>
+                        </td>
+                        <td class="border p-2 text-left whitespace-pre">
+                            <div class="">{{ prod.sendDate }}</div>
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.listProduct + prod.listPromotion }}</div>
@@ -145,7 +146,10 @@
                                 {{ prod.status }}</div>
                         </td>
                         <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ formatCurrency(prod.total) }}</div>
+                            <div class="">{{ prod.totalWeightGross }}</div>
+                        </td>
+                        <td class="border p-2 text-right whitespace-pre">
+                            <div class="">{{ prod.totalWeightGross }}</div>
                         </td>
                     </tr>
 
@@ -190,7 +194,7 @@ import { useRouter, useRoute } from 'vue-router'
 import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
 import { ref, computed, onMounted, watch } from 'vue'
 // import { useOrder } from '../../store/modules/order'
-import { useRefundStock } from '../../store/modules/refund'
+import { useWithdrawStore } from '../../store/modules/withdraw'
 import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
 
@@ -205,7 +209,7 @@ const searchQuery = ref('');
 
 const cardData = ref([]);
 // const useOrderStore = useOrder()
-const refundStore = useRefundStock()
+const withdrawStore = useWithdrawStore()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
@@ -230,7 +234,7 @@ const endyear = computed(() => endDate.value.split('-')[0])
 
 
 const filteredOrders = computed(() => {
-    let data = refundStore.refund;
+    let data = withdrawStore.withdraw;
     // Search filter (text input)
     const query = searchQuery.value.trim().toLowerCase();
     if (query) {
@@ -271,7 +275,7 @@ const filteredOrders = computed(() => {
 
 async function exportExcel() {
 
-    await refundStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+    // await refundStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
 
     // await reportStore.downloadExcel(
     //     formatDate2(selectedDateStart.value),
@@ -298,12 +302,12 @@ async function onMonthChange() {
 
     // console.log('startDate:', startDate.value)
     // console.log('endDate:', endDate.value)
-    // if (startDate.value && endDate.value) {
-    //     isLoading.value = true
-    //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
-    //     cardData.value = useOrderStore.order.data
-    //     isLoading.value = false
-    // }
+    if (startDate.value && endDate.value) {
+        isLoading.value = true
+        await withdrawStore.getWithdrawTable('cash', '', '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+
+        isLoading.value = false
+    }
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกปี:', year.value)
@@ -364,15 +368,14 @@ function formatDate(dateStr) {
     const year = d.getFullYear()
     return `${day}-${month}-${year}`
 }
-
 onMounted(async () => {
     isLoading.value = true
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
-    // await filter.getZone(period);
-    await refundStore.getRefundAll2('cash', period, '', '', '')
-    console.log(refundStore.refund)
-    cardData.value = refundStore.refund.data
+    await filter.getZone(period);
+    await withdrawStore.getWithdrawTable('cash', period, '', '', '', '', '')
+    console.log(withdrawStore.withdraw)
+    // cardData.value = withdrawStore.withdraw.data
     isLoading.value = false
 
 })
