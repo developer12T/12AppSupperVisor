@@ -126,7 +126,7 @@
                             <div class="">{{ prod.orderTypeName }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
-                            <div class="">{{ prod.createdAt }}</div>
+                            <div class="">{{ prod.formmatDate }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
                             <div class="">{{ prod.sendDate }}</div>

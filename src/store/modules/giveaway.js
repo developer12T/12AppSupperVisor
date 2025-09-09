@@ -22,10 +22,21 @@ export const useGiveAway = defineStore('giveaway', {
       }
     },
 
-    async giveOrder (period) {
+    async giveOrder (period, start, end) {
       try {
+        const area = localStorage.getItem('area')
+        if (!/^\d{8}$/.test(start)) {
+          const nowTH = new Date(
+            new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+          )
+          const y = nowTH.getFullYear()
+          const m = String(nowTH.getMonth() + 1).padStart(2, '0')
+          const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
+          start = `${y}${m}${d}` // YYYYMMDD
+          end = `${y}${m}${d}` // YYYYMMDD
+        }
         const response = await api.get(
-          `/api/cash/give/all?type=give&period=${period}`
+          `/api/cash/give/all?type=give&period=${period}&area=${area}&start=${start}&end=${end}`
         )
 
         this.give = response.data

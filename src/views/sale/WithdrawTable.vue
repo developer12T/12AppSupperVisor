@@ -39,11 +39,11 @@
                     <option value="canceled">Cancel</option>
                 </select>
             </div>
-            <div class="ms-3">
+            <!-- <div class="ms-3">
 
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
 
-            </div>
+            </div> -->
 
             <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
@@ -105,8 +105,8 @@
                 </thead>
                 <tbody>
 
-                    <tr @click="$router.push(`/sale/withdraw/${prod.orderId}`)"
-                        v-for="(prod, i) in filteredOrders" :key="prod.orderId" class="align-top">
+                    <tr @click="$router.push(`/sale/withdraw/${prod.orderId}`)" v-for="(prod, i) in filteredOrders"
+                        :key="prod.orderId" class="align-top">
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.orderId }}</div>
                         </td>
@@ -126,7 +126,7 @@
                             <div class="">{{ prod.orderTypeName }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
-                            <div class="">{{ prod.createdAt }}</div>
+                            <div class="">{{ prod.formmatDate }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
                             <div class="">{{ prod.sendDate }}</div>
@@ -253,7 +253,7 @@ const filteredOrders = computed(() => {
     if (selectedStatus.value) {
         data = data.filter(order => order.status === selectedStatus.value);
     }
-    // --- Date range filter (client-side) ---
+    // --- Date range filter(client - side)-- -
     const s = toDateOrNull(startDate.value)   // expects 'YYYY-MM-DD' from <input type="date">
     const e = toDateOrNull(endDate.value) ? endOfDay(endDate.value) : null
 
@@ -268,8 +268,8 @@ const filteredOrders = computed(() => {
     }
 
     // newest first
-    // data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-
+    data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    console.log(data);
     return data;
 })
 
@@ -305,7 +305,7 @@ async function onMonthChange() {
     if (startDate.value && endDate.value) {
         isLoading.value = true
         await withdrawStore.getWithdrawTable('cash', '', '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-
+        console.log("withdrawStore.withdraw", withdrawStore.withdraw);
         isLoading.value = false
     }
     // console.log('เลือกเดือน:', month.value)

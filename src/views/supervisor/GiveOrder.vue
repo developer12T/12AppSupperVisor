@@ -41,7 +41,7 @@
                 </div>
             </div>
             <div class="flex justify-end">
-    
+
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
 
             </div>
@@ -181,8 +181,8 @@ const filteredOrders = computed(() => {
         data = data.filter(order =>
             (order.orderId || '').toLowerCase().includes(query) ||
             (order.area || '').toLowerCase().includes(query) ||
-            (order.storeId || '').toLowerCase().includes(query) 
-            
+            (order.storeId || '').toLowerCase().includes(query)
+
         );
     }
 
@@ -214,7 +214,7 @@ const filteredOrders = computed(() => {
 })
 
 async function exportExcel() {
-    await giveStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`,`${endyear.value}${endmonth.value}${endday.value}`)
+    await giveStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
 }
 
 function toDateOrNull(val) {
@@ -231,13 +231,10 @@ function endOfDay(d) {
 }
 
 async function onMonthChange() {
-    if(exportDate.value){
-        isLoading.value = true;
-      console.log(day.value,"day")  
-      console.log(month.value,"month")  
-      console.log(year.value,"year")  
-        
-        isLoading.value = false;
+    if (startDate.value && endDate.value) {
+        isLoading.value = true
+        await giveStore.giveOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+        isLoading.value = false
     }
 }
 

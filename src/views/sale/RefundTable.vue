@@ -3,7 +3,7 @@
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">รายการคืนสินค้า dawda</h2>
+            <h2 class="text-2xl font-bold mb-6">รายการคืนสินค้า</h2>
             <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
                 <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -39,11 +39,9 @@
                     <option value="canceled">Cancel</option>
                 </select>
             </div>
-            <div class="ms-3">
-
+            <!-- <div class="ms-3">
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-
-            </div>
+            </div> -->
 
             <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
@@ -294,28 +292,13 @@ function endOfDay(d) {
 
 
 async function onMonthChange() {
-    // isLoading.value = true
-    // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
-    // ตัวอย่าง:
-    // await refundStore.getRefundAll2('cash', '', '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-
-    // console.log('startDate:', startDate.value)
-    // console.log('endDate:', endDate.value)
-    // // isLoading.value = true
-    // // await refundStore.getRefundAll2('cash', period, '', '', '')
-    // // isLoading.value = false
-    // await refundStore.getRefundAll2('cash', period, '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-
-    // if (startDate.value && endDate.value) {
-    //     isLoading.value = true
-    //     await refundStore.getRefundAll2('cash', period, '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-    //     isLoading.value = false
-    // }
-
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกปี:', year.value)
-
+    console.log('startDate:', startDate.value)
+    console.log('endDate:', endDate.value)
+    if (startDate.value && endDate.value) {
+        isLoading.value = true
+        await refundStore.getRefundStartEnd('cash', '', '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+        isLoading.value = false
+    }
 }
 
 
@@ -378,7 +361,7 @@ onMounted(async () => {
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
     // await filter.getZone(period);
-    // await refundStore.getRefundAll2('cash', period, '', '', '','20250809','20250908')
+    await refundStore.getRefundStartEnd('cash', period, '', '', '', '', '')
     console.log(refundStore.refund)
     isLoading.value = false
 

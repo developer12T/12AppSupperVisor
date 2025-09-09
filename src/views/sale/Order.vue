@@ -39,9 +39,9 @@
                     <option value="canceled">Cancel</option>
                 </select>
             </div>
-            <div class="ms-3">
+            <!-- <div class="ms-3">
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-            </div>
+            </div> -->
             <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
@@ -101,7 +101,7 @@
                 </thead>
                 <tbody>
 
-                    <tr @click="$router.push(`/supervisor/order/${prod.orderId}`)" v-for="(prod, i) in filteredOrders"
+                    <tr @click="$router.push(`/sale/order/${prod.orderId}`)" v-for="(prod, i) in filteredOrders"
                         :key="prod.orderId" class="align-top">
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.orderNo }}</div>

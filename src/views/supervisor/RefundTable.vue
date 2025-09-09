@@ -298,12 +298,12 @@ async function onMonthChange() {
 
     // console.log('startDate:', startDate.value)
     // console.log('endDate:', endDate.value)
-    // if (startDate.value && endDate.value) {
-    //     isLoading.value = true
-    //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
-    //     cardData.value = useOrderStore.order.data
-    //     isLoading.value = false
-    // }
+    if (startDate.value && endDate.value) {
+        isLoading.value = true
+        await refundStore.getRefundStartEnd('cash', '', '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+        // cardData.value = useOrderStore.order.data
+        isLoading.value = false
+    }
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกเดือน:', month.value)
     // console.log('เลือกปี:', year.value)
@@ -370,7 +370,7 @@ onMounted(async () => {
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
     // await filter.getZone(period);
-    await refundStore.getRefundAll2('cash', period, '', '', '')
+    await refundStore.getRefundStartEnd('cash', period, '', '', '')
     console.log(refundStore.refund)
     cardData.value = refundStore.refund.data
     isLoading.value = false
