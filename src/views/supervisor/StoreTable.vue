@@ -1,9 +1,8 @@
 <template>
     <div class="p-6 bg-gray-50 min-h-screen">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
-
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">รายการขาย</h2>
+            <h2 class="text-2xl font-bold mb-6">รายการร้านค้าเปิดใหม่</h2>
             <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
                 <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -28,9 +27,6 @@
                     <p>เลือกวันที่: {{ formatDate(endDate) }}</p>
                 </div>
             </div>
-
-            <!-- <input type="date" v-model="startDate" class="input input-bordered w-full" /> -->
-
             <div class="mx-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedStatus">
                     <option disabled value="">Select Status</option>
@@ -85,54 +81,39 @@
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
-                        <th class="p-2 border">Order</th>
-                        <th class="p-2 border">Invoice</th>
-                        <th class="p-2 border">Low Status</th>
-                        <th class="p-2 border">Heigh Status</th>
                         <th class="p-2 border">เขต</th>
                         <th class="p-2 border">รหัสร้าน</th>
                         <th class="p-2 border">ชื่อร้าน</th>
-                        <th class="p-2 border">วันที่สั่ง</th>
-                        <th class="p-2 border">รายการ</th>
-                        <th class="p-2 border">รายการใน M3</th>
+                        <th class="p-2 border">ประเภท</th>
+                        <th class="p-2 border">รูท</th>
+                        <th class="p-2 border">วันที่สร้าง</th>
                         <th class="p-2 border">สถานะ</th>
-                        <th class="p-2 border">ยอดรวม</th>
                     </tr>
                 </thead>
                 <tbody>
 
-                    <tr @click="$router.push(`/supervisor/order/${prod.orderId}`)" v-for="(prod, i) in filteredOrders"
+                    <tr @click="$router.push(`/supervisor/storedetail/${prod.storeId}`)" v-for="(prod, i) in filteredOrders"
                         :key="prod.orderId" class="align-top">
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.orderNo }}</div>
-                        </td>
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.orderId }}</div>
-                        </td>
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.lowStatus }}</div>
-                        </td>
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.heightStatus }}</div>
-                        </td>
+
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.area }}</div>
                         </td>
-                        <td class="border p-2 text-center whitespace-pre">
+                        <td class="border p-2 text-left whitespace-pre">
                             <div class="">{{ prod.storeId }}</div>
                         </td>
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.storeName }}</div>
+                        <td class="border p-2 text-left whitespace-pre">
+                            <div class="">{{ prod.name }}</div>
+                        </td>
+                        <td class="border p-2 text-left whitespace-pre">
+                            <div class="">{{ prod.typeName }}</div>
+                        </td>
+                        <td class="border p-2 text-left whitespace-pre">
+                            <div class="">{{ prod.route }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
                             <div class="">{{ formatDate(prod.createdAt) }}</div>
                         </td>
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.listProduct + prod.listPromotion }}</div>
-                        </td>
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.lineM3 }}</div>
-                        </td>
+
                         <td class="border p-2 text-center whitespace-pre">
                             <div :class="{
                                 'text-warning': prod.status === 'pending',
@@ -141,44 +122,13 @@
                             }">
                                 {{ prod.status }}</div>
                         </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ formatCurrency(prod.total) }}</div>
-                        </td>
+
+
                     </tr>
 
                 </tbody>
             </table>
         </div>
-
-        <!-- <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
-            <div v-for="item in cardData" :key="item.orderId"
-                class="bg-white rounded-xl shadow p-6 border flex flex-col gap-2">
-                <router-link :to="`/supervisor/withdraw/${item.orderId}`">
-                    <div class="flex justify-end">
-                        <div class="text-sm text-gray-500">วันที่สั่ง: <span class="font-semibold">{{
-                            formatDate(item.createdAt)
-                                }}</span></div>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-lg text-gray-700">Order</span>
-                        <span class="text-sm text-gray-500">{{ item.orderId }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <div class="text-sm text-gray-500">เขต: <span class="font-semibold">{{ item.area }}</span>
-                        </div>
-                        <div class="text-sm text-gray-500">ร้าน: <span class="font-semibold">{{ item.storeId
-                                }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end">
-                        <div class="text-sm text-green-500">ยอดรวม: <span class="text-xl font-semibold">{{ item.total
-                                }}</span>
-                        </div>
-                    </div>
-                </router-link>
-            </div>
-        </div> -->
     </div>
 </template>
 
@@ -188,6 +138,7 @@ import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตา�
 import { ref, computed, onMounted, watch } from 'vue'
 import { useOrder } from '../../store/modules/order'
 import { useFilter } from '../../store/modules/filter'
+import { useStoresStore } from '../../store/modules/store'
 import { Icon } from '@iconify/vue'
 
 const filter = useFilter()
@@ -201,6 +152,7 @@ const searchQuery = ref('');
 
 const cardData = ref([]);
 const useOrderStore = useOrder()
+const store = useStoresStore()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
@@ -226,13 +178,12 @@ const endyear = computed(() => endDate.value.split('-')[0])
 
 const filteredOrders = computed(() => {
     // let data = useOrderStore.order.data;
-    let data = Array.isArray(useOrderStore.order?.data) ? [...useOrderStore.order.data] : []
-
+    let data = store.storeNew.data
     // Search filter (text input)
     const query = searchQuery.value.trim().toLowerCase();
     if (query) {
         data = data.filter(order =>
-            (order.orderId || '').toLowerCase().includes(query) ||
+            (order.name || '').toLowerCase().includes(query) ||
             (order.area || '').toLowerCase().includes(query) ||
             (order.storeId || '').toLowerCase().includes(query) ||
             (order.createdAt || '').toLowerCase().includes(query)
@@ -363,12 +314,14 @@ function formatDate(dateStr) {
     const year = d.getFullYear()
     return `${day}-${month}-${year}`
 }
+
 onMounted(async () => {
     isLoading.value = true
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
     await filter.getZone(period);
-    await useOrderStore.fetchOrder(period, '', '')
+    // await useOrderStore.fetchOrder(period, '', '')
+    await store.getCustomerAll('', '', '', '', '')
     // console.log(useOrderStore.order)
     // cardData.value = useOrderStore.order.data
     isLoading.value = false

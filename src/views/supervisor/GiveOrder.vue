@@ -174,7 +174,9 @@ const endyear = computed(() => endDate.value.split('-')[0])
 
 
 const filteredOrders = computed(() => {
-    let data = giveStore.give.data
+    // let data = giveStore.give.data
+    let data = Array.isArray(giveStore.give?.data) ? [...giveStore.give.data] : []
+
     // Search filter (text input)
     const query = searchQuery.value.trim().toLowerCase();
     if (query) {

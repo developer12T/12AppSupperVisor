@@ -34,6 +34,7 @@ const menuItems = ref([
             { icon: 'mdi:gift', name: 'รายการแจกสินค้า', link: '/supervisor/give' },
             { icon: 'mdi:autorenew', name: 'รายการคืนสินค้า', link: '/supervisor/refundtable' },
             { icon: 'mdi:box-clock-outline', name: 'รายการใบเบิก', link: '/supervisor/withdrawtable' },
+            { icon: 'mdi:store', name: 'รายการร้านค้าเปิดใหม่', link: '/supervisor/storenewtable' },
 
         ],
         roles: ['admin', 'area_manager', 'sale_manager', 'dc']
@@ -42,6 +43,8 @@ const menuItems = ref([
     { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/sale/give', submenu: null, roles: ['sale'] },
     { name: 'รายการคืนสินค้า', icon: 'mdi:autorenew', link: '/sale/refundtable', submenu: null, roles: ['sale'] },
     { name: 'รายการใบเบิก', icon: 'mdi:box-clock-outline', link: '/sale/withdrawtable', submenu: null, roles: ['sale'] },
+    // { name: 'รายการใบเบิก', icon: 'mdi:box-clock-outline', link: '/sale/withdrawtable', submenu: null, roles: ['sale'] },
+    { name: 'เป้าหมาย', icon: 'mdi:target-arrow', link: '/sale/target', submenu: null, roles: ['sale'] },
 
     {
         name: 'รายงานต่างๆ',

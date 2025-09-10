@@ -54,6 +54,10 @@ const saleRoutes = [
       {
         path: 'withdraw/:id',
         component: () => import('../views/sale/WithdrawDetail.vue')
+      },
+      {
+        path: 'target',
+        component: () => import('../views/sale/TargetSale.vue')
       }
     ]
   }

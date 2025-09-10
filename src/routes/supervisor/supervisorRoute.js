@@ -120,6 +120,14 @@ const supervisorRoutes = [
       {
         path: 'withdrawtable',
         component: () => import('../../views/supervisor/WithdrawTable.vue')
+      },
+      {
+        path: 'storenewtable',
+        component: () => import('../../views/supervisor/StoreTable.vue')
+      },
+      {
+        path: 'storedetail/:storeid',
+        component: () => import('../../views/supervisor/StoreDetailAll.vue')
       }
     ]
   }

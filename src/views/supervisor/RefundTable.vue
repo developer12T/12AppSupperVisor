@@ -230,7 +230,9 @@ const endyear = computed(() => endDate.value.split('-')[0])
 
 
 const filteredOrders = computed(() => {
-    let data = refundStore.refund;
+    // let data = refundStore.refund;
+    let data = Array.isArray(refundStore?.refund) ? [...refundStore.refund] : []
+
     // Search filter (text input)
     const query = searchQuery.value.trim().toLowerCase();
     if (query) {

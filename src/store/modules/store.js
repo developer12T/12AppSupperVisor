@@ -4,6 +4,8 @@ import api from '../../utils/axios'
 export const useStoresStore = defineStore('stores', {
   state: () => ({
     newstoreId: '',
+    statusCode: 0,
+    message: '',
     storeAll: [],
     storeDetail: {},
     storeMap: [],
@@ -173,6 +175,18 @@ export const useStoresStore = defineStore('stores', {
         link.click()
         document.body.removeChild(link)
         window.URL.revokeObjectURL(url)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async insertToM3 (storeId) {
+      try {
+        const response = await api.post(`/api/cash/store/insertStoreToM3`, {
+          storeId: storeId
+        })
+        this.message = response.data.message
+        this.statusCode = response.status
+        console.log('message', this.message)
       } catch (error) {
         console.error(error)
       }
