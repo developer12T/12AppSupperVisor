@@ -174,15 +174,15 @@ const endyear = computed(() => endDate.value.split('-')[0])
 
 
 const filteredOrders = computed(() => {
-    let data = giveStore.give.data
+    let data = Array.isArray(giveStore.give?.data) ? [...giveStore.give.data] : []
     // Search filter (text input)
     const query = searchQuery.value.trim().toLowerCase();
     if (query) {
         data = data.filter(order =>
             (order.orderId || '').toLowerCase().includes(query) ||
             (order.area || '').toLowerCase().includes(query) ||
-            (order.storeId || '').toLowerCase().includes(query)
-
+            (order.storeId || '').toLowerCase().includes(query) ||
+            (order.createdAt || '').toLowerCase().includes(query)
         );
     }
 
@@ -236,7 +236,6 @@ async function onMonthChange() {
         await giveStore.giveOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
         isLoading.value = false
     }
-
 }
 
 
