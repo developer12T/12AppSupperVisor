@@ -1,10 +1,11 @@
 <template>
-    <div class="p-6 bg-gray-50 min-h-screen">
+    <div class="p-6 bg-gray-50">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
         <div class="flex justify-between">
+            <!-- <h2 class="text-2xl font-bold mb-6">รายการตัดแจก</h2> -->
             <div class="flex justify-start">
-                <h2 class="text-2xl font-bold mb-6">รายการแจก</h2>
+
                 <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
                     <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -15,7 +16,11 @@
                     </svg>
                     <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
                 </label>
-                <div class="flex justify-start ms-2">
+                <div class="w-65 ms-3">
+                    <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" range :enable-time-picker="false"
+                        @update:model-value="onMonthChange" />
+                </div>
+                <!-- <div class="flex justify-start ms-2">
                     <div>
                         <input type="date" v-model="startDate" @change="onMonthChange" class="border p-2 rounded" />
                         <p>เลือกวันที่: {{ formatDate(startDate) }}</p>
@@ -27,6 +32,32 @@
                         <input type="date" v-model="endDate" @change="onMonthChange" class="border p-2 rounded" />
                         <p>เลือกวันที่: {{ formatDate(endDate) }}</p>
                     </div>
+                </div> -->
+                <div class="ms-3" v-if="userRole != 'supervisor'">
+                    <select class="select select-info ms-3 text-center" v-model="selectedGiveId">
+                        <option disabled value="">Select Zone</option>
+                        <option v-for="giveType in giveStore.giveType" :key="giveType" :value="giveType.type">{{ giveType.name }}</option>
+                    </select>
+                </div>
+                <div class="ms-3" v-if="userRole != 'supervisor'">
+                    <select class="select select-info ms-3 text-center" v-model="selectedZone">
+                        <option disabled value="">Select Zone</option>
+                        <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+                    </select>
+                </div>
+                <div class="ms-3">
+                    <select class="select select-info ms-3 text-center" v-model="selectedTeam">
+                        <option disabled value="">Select Team</option>
+                        <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
+                            }}
+                        </option>
+                    </select>
+                </div>
+                <div class="ms-3">
+                    <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                        <option disabled value="">Select Area</option>
+                        <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                    </select>
                 </div>
 
                 <!-- <input type="date" v-model="startDate" class="input input-bordered w-full" /> -->
@@ -40,14 +71,10 @@
                     </select>
                 </div>
             </div>
-            <div class="flex justify-end">
 
-                <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-
-            </div>
         </div>
 
-        <div class="overflow-x-auto rounded-xl" style="max-height: 480px; overflow-y: auto;">
+        <div class="overflow-x-auto rounded-xl mt-5" style="max-height: 450px; overflow-y: auto;">
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
@@ -99,36 +126,19 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
-            <div v-for="item in cardData" :key="item.orderId"
-                class="bg-white rounded-xl shadow p-6 border flex flex-col gap-2">
-                <router-link :to="`/supervisor/withdraw/${item.orderId}`">
-                    <div class="flex justify-end">
-                        <div class="text-sm text-gray-500">วันที่สั่ง: <span class="font-semibold">{{
-                            formatDate(item.createdAt)
-                                }}</span></div>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-lg text-gray-700">Order</span>
-                        <span class="text-sm text-gray-500">{{ item.orderId }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <div class="text-sm text-gray-500">เขต: <span class="font-semibold">{{ item.area }}</span>
-                        </div>
-                        <div class="text-sm text-gray-500">ร้าน: <span class="font-semibold">{{ item.storeId
-                                }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end">
-                        <div class="text-sm text-green-500">ยอดรวม: <span class="text-xl font-semibold">{{ item.total
-                                }}</span>
-                        </div>
-                    </div>
-                </router-link>
+        <div class="flex justify-start mt-2">
+            <button @click="clearFilter"
+                class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
+                <Icon icon="mdi:broom" width="24" height="24" />
+                เคลีย
+            </button>
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel To M3</button>
             </div>
-        </div> -->
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel Item</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -140,6 +150,8 @@ import { useOrder } from '../../store/modules/order'
 import { useGiveAway } from '../../store/modules/giveaway'
 import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const filter = useFilter()
 const userRole = localStorage.getItem('role')
@@ -157,7 +169,7 @@ const giveStore = useGiveAway()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
-
+const selectedGiveId = ref('')
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
@@ -171,6 +183,8 @@ const startyear = computed(() => startDate.value.split('-')[0])
 const endday = computed(() => endDate.value.split('-')[2])
 const endmonth = computed(() => endDate.value.split('-')[1])
 const endyear = computed(() => endDate.value.split('-')[0])
+
+const dateRange = ref();
 
 
 const filteredOrders = computed(() => {
@@ -195,9 +209,19 @@ const filteredOrders = computed(() => {
     if (selectedStatus.value) {
         data = data.filter(order => order.status === selectedStatus.value);
     }
+
     // --- Date range filter (client-side) ---
-    const s = toDateOrNull(startDate.value)   // expects 'YYYY-MM-DD' from <input type="date">
-    const e = toDateOrNull(endDate.value) ? endOfDay(endDate.value) : null
+    const startDateRange = dateRange.value?.[0]
+        ? formatDateToYYYYMMDD(dateRange.value[0])
+        : null
+
+    const endDateRange = dateRange.value?.[1]
+        ? formatDateToYYYYMMDD(dateRange.value[1])
+        : null
+
+
+    const s = toDateOrNull(startDateRange)   // expects 'YYYY-MM-DD' from <input type="date">
+    const e = toDateOrNull(endDateRange) ? endOfDay(endDateRange) : null
 
     if (s || e) {
         data = data.filter(order => {
@@ -233,20 +257,33 @@ function endOfDay(d) {
 }
 
 async function onMonthChange() {
-    if (startDate.value && endDate.value) {
-        isLoading.value = true
-        await giveStore.giveOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-        isLoading.value = false
-    }
+    isLoading.value = true
+    await giveStore.giveOrder('', `${formatDateToYYYYMMDD(dateRange.value[0])}`, `${formatDateToYYYYMMDD(dateRange.value[1])}`)
+    isLoading.value = false
+
+}
+function formatDateToYYYYMMDD(date) {
+    if (!(date instanceof Date)) return ''
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}${month}${day}`
 }
 
 
-
-function clearFilter() {
+async function clearFilter() {
+    isLoading.value = true;
+    dateRange.value = ''
+    startDate.value = ''
+    endDate.value = ''
     selectedZone.value = ''
     selectedArea.value = ''
     selectedTeam.value = ''
+    selectedStatus.value = ''
+    await useOrderStore.fetchOrder(period, '', '')
+    isLoading.value = false;
 }
+
 
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
@@ -299,6 +336,7 @@ onMounted(async () => {
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
     await filter.getZone(period);
+    await giveStore.getGiveType();
     // await useOrderStore.fetchOrder(period, '', '')
 
     await giveStore.giveOrder('202508')

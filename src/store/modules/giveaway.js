@@ -4,6 +4,7 @@ import api from '../../utils/axios'
 export const useGiveAway = defineStore('giveaway', {
   state: () => ({
     giveaways: [],
+    giveType: [],
     give: [],
     giveDetail: {},
     giveawaysDetail: {},
@@ -52,6 +53,16 @@ export const useGiveAway = defineStore('giveaway', {
 
         console.log('response', response.data)
         this.giveDetail = response.data.data[0]
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async getGiveType () {
+      try {
+        const response = await api.get(`/api/cash/give/getGiveType`)
+        this.giveType = response.data.data
+        console.log('giveType', this.giveType)
       } catch (error) {
         console.error(error)
       }

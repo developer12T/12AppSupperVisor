@@ -31,9 +31,10 @@ const menuItems = ref([
         link: '#',
         submenu: [
             { icon: 'mdi:receipt-text', name: 'รายการออเดอร์', link: '/supervisor/order' },
-            { icon: 'mdi:gift', name: 'รายการแจกสินค้า', link: '/supervisor/give' },
-            { icon: 'mdi:autorenew', name: 'รายการคืนสินค้า', link: '/supervisor/refundtable' },
+            { icon: 'mdi:gift', name: 'รายการตัดแจก', link: '/supervisor/give' },
+            { icon: 'mdi:autorenew', name: 'รายการเปลี่ยนสินค้า', link: '/supervisor/refundtable' },
             { icon: 'mdi:box-clock-outline', name: 'รายการใบเบิก', link: '/supervisor/withdrawtable' },
+            { icon: 'mdi:credit-card-refund', name: 'รายการโอนจากเครดิต', link: '/supervisor/credit' },
             { icon: 'mdi:store', name: 'รายการร้านค้าเปิดใหม่', link: '/supervisor/storenewtable' },
 
         ],

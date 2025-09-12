@@ -39,7 +39,7 @@ const saleRoutes = [
       },
       {
         path: 'order/:orderId',
-        name: 'OrderDetail',
+        // name: 'OrderDetail',
         component: () => import('../views/sale/OrderDetail.vue'),
         props: true // allows useRoute().params.route OR `props: true` to bind as prop
       },

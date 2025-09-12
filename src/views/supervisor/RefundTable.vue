@@ -14,22 +14,31 @@
                 </svg>
                 <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
             </label>
-            <div class="flex justify-start ms-2">
-                <div>
-                    <input type="date" v-model="startDate" @change="onMonthChange" class="border p-2 rounded" />
-                    <p>เลือกวันที่: {{ formatDate(startDate) }}</p>
-                </div>
-            </div>
-            <div class="ms-2 pt-2">ถึง</div>
-            <div class="flex justify-start ms-2">
-                <div>
 
-                    <input type="date" v-model="endDate" @change="onMonthChange" class="border p-2 rounded" />
-                    <p>เลือกวันที่: {{ formatDate(endDate) }}</p>
-                </div>
-            </div>
 
-            <!-- <input type="date" v-model="startDate" class="input input-bordered w-full" /> -->
+            <div class="w-65 ms-3">
+                <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" range :enable-time-picker="false"
+                    @update:model-value="onMonthChange" />
+            </div>
+            <div class="ms-3" v-if="userRole != 'supervisor'">
+                <select class="select select-info ms-3 text-center" v-model="selectedZone">
+                    <option disabled value="">Select Zone</option>
+                    <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+                </select>
+            </div>
+            <div class="ms-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedTeam">
+                    <option disabled value="">Select Team</option>
+                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
+                    </option>
+                </select>
+            </div>
+            <div class="ms-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                    <option disabled value="">Select Area</option>
+                    <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                </select>
+            </div>
 
             <div class="mx-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedStatus">
@@ -39,11 +48,7 @@
                     <option value="canceled">Cancel</option>
                 </select>
             </div>
-            <div class="ms-3">
 
-                <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-
-            </div>
 
             <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
@@ -84,7 +89,7 @@
 
         </div>
 
-        <div class="overflow-x-auto rounded-xl" style="max-height: 480px; max-width: 90vw; overflow-y: auto;">
+        <div class="overflow-x-auto rounded-xl" style="min-width: 450px; max-height: 480px; max-width: 90vw; overflow-y: auto;">
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
@@ -152,6 +157,19 @@
                 </tbody>
             </table>
         </div>
+        <div class="flex justify-start mt-2">
+            <button @click="clearFilter"
+                class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
+                <Icon icon="mdi:broom" width="24" height="24" />
+                เคลีย
+            </button>
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel To M3</button>
+            </div>
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel Item</button>
+            </div>
+        </div>
 
         <!-- <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
             <div v-for="item in cardData" :key="item.orderId"
@@ -193,6 +211,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRefundStock } from '../../store/modules/refund'
 import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const filter = useFilter()
 const userRole = localStorage.getItem('role')

@@ -180,15 +180,44 @@ export const useStoresStore = defineStore('stores', {
       }
     },
     async insertToM3 (storeId) {
+      this.isLoading = true
+      this.message = ''
+      this.statusCode = null
+
       try {
-        const response = await api.post(`/api/cash/store/insertStoreToM3`, {
-          storeId: storeId
-        })
-        this.message = response.data.message
-        this.statusCode = response.status
-        console.log('message', this.message)
+        const { data, status } = await api.post(
+          '/api/cash/store/insertStoreToM3',
+          { storeId }
+        )
+
+        this.message = data?.message ?? 'Success'
+        this.statusCode = status
+
+        console.log('message:', this.message)
+        console.log('statusCode:', this.statusCode)
+
+        return { ok: true, data, status }
       } catch (error) {
-        console.error(error)
+        const status = error?.response?.status ?? 0
+        const message =
+          error?.response?.data?.message ?? error?.message ?? 'Unexpected error'
+
+        this.message = message
+        this.statusCode = status
+
+        console.error('[insertToM3] failed', {
+          storeId,
+          status,
+          message,
+          details: error?.response?.data ?? String(error)
+        })
+
+        return {
+          ok: false,
+          error: { status, message, data: error?.response?.data }
+        }
+      } finally {
+        this.isLoading = false
       }
     }
   }

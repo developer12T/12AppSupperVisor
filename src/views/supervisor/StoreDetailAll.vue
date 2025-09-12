@@ -232,17 +232,25 @@ const openGoogleMap = (latitude, longitude) => {
 
 const insertStoreToM3 = async () => {
     await store.insertToM3(route.params.storeid);
-
     if (store.statusCode == 201) {
-
+        toast(`นำเข้าสำเร็จ!`, {
+            "theme": toast.THEME.COLORED,
+            "type": toast.TYPE.SUCCESS,
+            "dangerouslyHTMLString": true
+        })
+    } else if (store.statusCode == 400) {
+        toast(`มีร้านค้าอยู่แล้วใน M3`, {
+            "theme": toast.THEME.COLORED,
+            "type": toast.TYPE.ERROR,
+            "dangerouslyHTMLString": true
+        })
     } else {
-        toast(`${productStore.message}!`, {
+        toast(`Error ${store.message}`, {
             "theme": toast.THEME.COLORED,
             "type": toast.TYPE.ERROR,
             "dangerouslyHTMLString": true
         })
     }
-    // alert('Export ยังไม่ได้ implement');
 };
 
 const cancelAction = () => {

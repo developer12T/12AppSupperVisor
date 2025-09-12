@@ -1,9 +1,9 @@
 <template>
-    <div class="p-6 bg-gray-50 min-h-screen">
+    <div class="p-6 bg-gray-50  overflow-y-hidden">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">รายการขาย</h2>
+            <h2 class="text-2xl font-bold ">รายการขาย</h2>
             <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
                 <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -14,7 +14,7 @@
                 </svg>
                 <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
             </label>
-            <div class="flex justify-start ms-2">
+            <!-- <div class="flex justify-start ms-2">
                 <div>
                     <input type="date" v-model="startDate" @change="onMonthChange" class="border p-2 rounded" />
                     <p>เลือกวันที่: {{ formatDate(startDate) }}</p>
@@ -27,22 +27,11 @@
                     <input type="date" v-model="endDate" @change="onMonthChange" class="border p-2 rounded" />
                     <p>เลือกวันที่: {{ formatDate(endDate) }}</p>
                 </div>
+            </div> -->
+            <div class="w-65 ms-3">
+                <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" range :enable-time-picker="false"
+                    @update:model-value="onMonthChange" />
             </div>
-
-            <!-- <input type="date" v-model="startDate" class="input input-bordered w-full" /> -->
-
-            <div class="mx-3" v-if="userRole != 'supervisor'">
-                <select class="select select-info ms-3 text-center" v-model="selectedStatus">
-                    <option disabled value="">Select Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
-                    <option value="canceled">Cancel</option>
-                </select>
-            </div>
-            <div class="ms-3">
-                <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-            </div>
-            <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
@@ -52,8 +41,7 @@
             <div class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
-                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
-                    }}
+                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
                     </option>
                 </select>
             </div>
@@ -62,26 +50,20 @@
                     <option disabled value="">Select Area</option>
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
-            </div> -->
-            <!-- <div class="ms-3">
-                <button @click="clearFilter"
-                    class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
-                    <Icon icon="mdi:broom" width="24" height="24" />
-                    เคลีย
-                </button>
-            </div> -->
+            </div>
+            <div class="mx-3" v-if="userRole != 'supervisor'">
+                <select class="select select-info ms-3 text-center" v-model="selectedStatus">
+                    <option disabled value="">Select Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                    <option value="canceled">Cancel</option>
+                </select>
+            </div>
 
-            <!-- <div class="ms-3">
-                <button @click="exportExcel"
-                    class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
-                    <Icon icon="mdi:file-excel" style="color: #00912f" width="24" height="24" />
-                    Excel
-                </button>
-            </div> -->
 
         </div>
-
-        <div class="overflow-x-auto rounded-xl" style="max-height: 480px; max-width: 90vw; overflow-y: auto;">
+        <div class="overflow-x-auto rounded-xl mt-5"
+            style="min-width: 450px; max-height: 450px; max-width: 90vw; overflow-y: auto;">
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
@@ -147,38 +129,29 @@
                     </tr>
 
                 </tbody>
+                <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
+                    <tr class="bg-gray-300 font-bold ">
+                        <td colspan="5" class="border p-2 text-center">รวมยอดขาย</td>
+                        <td colspan="7" class="border p-2 text-center">{{ formatCurrency(totalOrderAmount) }}</td>
+                    </tr>
+
+                </tfoot>
             </table>
         </div>
+        <div class="flex justify-start mt-2">
 
-        <!-- <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
-            <div v-for="item in cardData" :key="item.orderId"
-                class="bg-white rounded-xl shadow p-6 border flex flex-col gap-2">
-                <router-link :to="`/supervisor/withdraw/${item.orderId}`">
-                    <div class="flex justify-end">
-                        <div class="text-sm text-gray-500">วันที่สั่ง: <span class="font-semibold">{{
-                            formatDate(item.createdAt)
-                                }}</span></div>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-lg text-gray-700">Order</span>
-                        <span class="text-sm text-gray-500">{{ item.orderId }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <div class="text-sm text-gray-500">เขต: <span class="font-semibold">{{ item.area }}</span>
-                        </div>
-                        <div class="text-sm text-gray-500">ร้าน: <span class="font-semibold">{{ item.storeId
-                                }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end">
-                        <div class="text-sm text-green-500">ยอดรวม: <span class="text-xl font-semibold">{{ item.total
-                                }}</span>
-                        </div>
-                    </div>
-                </router-link>
+            <button @click="clearFilter"
+                class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
+                <Icon icon="mdi:broom" width="24" height="24" />
+                เคลีย
+            </button>
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel To M3</button>
             </div>
-        </div> -->
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel Item</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -189,6 +162,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useOrder } from '../../store/modules/order'
 import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const filter = useFilter()
 const userRole = localStorage.getItem('role')
@@ -198,6 +173,8 @@ const isLoading = ref(false)
 const startDate = ref('') // format: YYYY-MM
 const endDate = ref('') // format: YYYY-MM
 const searchQuery = ref('');
+
+const dateRange = ref();
 
 const cardData = ref([]);
 const useOrderStore = useOrder()
@@ -239,16 +216,40 @@ const filteredOrders = computed(() => {
         );
     }
 
+    if (selectedZone.value) {
+        data = data.filter(order =>
+            (order.area || '').startsWith(selectedZone.value)
+        )
+    }
+
     if (selectedArea.value) {
         data = data.filter(order => order.area === selectedArea.value);
+    }
+
+    if (selectedTeam.value) {
+        console.log()
+        data = data.filter(order =>
+            getTeam3(order.area) === selectedTeam.value
+        )
     }
 
     if (selectedStatus.value) {
         data = data.filter(order => order.status === selectedStatus.value);
     }
+
     // --- Date range filter (client-side) ---
-    const s = toDateOrNull(startDate.value)   // expects 'YYYY-MM-DD' from <input type="date">
-    const e = toDateOrNull(endDate.value) ? endOfDay(endDate.value) : null
+
+    const startDateRange = dateRange.value?.[0]
+        ? formatDateToYYYYMMDD(dateRange.value[0])
+        : null
+
+    const endDateRange = dateRange.value?.[1]
+        ? formatDateToYYYYMMDD(dateRange.value[1])
+        : null
+
+
+    const s = toDateOrNull(startDateRange)   // expects 'YYYY-MM-DD' from <input type="date">
+    const e = toDateOrNull(endDateRange) ? endOfDay(endDateRange) : null
 
     if (s || e) {
         data = data.filter(order => {
@@ -260,16 +261,28 @@ const filteredOrders = computed(() => {
         })
     }
 
-    // newest first
-    // data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-
     return data;
 })
 
+function getTeam3(area = '') {
+    const firstTwo = area.substring(0, 2)  // index 0–1
+    const thirdChar = area.substring(3, 4) // index 3
+    return firstTwo + thirdChar
+}
+
+// ✅ คำนวณผลรวม total ของทุก order หลัง filter
+const totalOrderAmount = computed(() => {
+    return filteredOrders.value.reduce((sum, order) => {
+        if (order.status !== "canceled") {
+            return sum + (Number(order.total) || 0)
+        }
+        return sum
+        //   return sum + (Number(order.total) || 0)
+    }, 0)
+})
+
 async function exportExcel() {
-
     await useOrderStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-
     // await reportStore.downloadExcel(
     //     formatDate2(selectedDateStart.value),
     //     formatDate2(selectedDateEnd.value)
@@ -289,32 +302,52 @@ function endOfDay(d) {
     return x
 }
 
-async function onMonthChange() {
-    // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
-    // ตัวอย่าง:
-
-    // console.log('startDate:', startDate.value)
-    // console.log('endDate:', endDate.value)
-    if (startDate.value && endDate.value) {
-        isLoading.value = true
-        await useOrderStore.fetchOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-
-        //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
-        //     cardData.value = useOrderStore.order.data
-        isLoading.value = false
-    }
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกปี:', year.value)
-
+function formatDateToYYYYMMDD(date) {
+    if (!(date instanceof Date)) return ''
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}${month}${day}`
 }
 
 
 
-function clearFilter() {
+async function onMonthChange() {
+    // console.log('เลือกวันที่ใหม่:', newDate)
+    // console.log('startDate:', formatDateToYYYYMMDD(dateRange.value[0]))
+    // console.log('endDate:', formatDateToYYYYMMDD(dateRange.value[1]))
+    isLoading.value = true
+    await useOrderStore.fetchOrder('', `${formatDateToYYYYMMDD(dateRange.value[0])}`, `${formatDateToYYYYMMDD(dateRange.value[1])}`)
+    isLoading.value = false
+    // newDate จะเป็น array ถ้าใช้ range [start, end]
+    // เช่น ["2025-09-12", "2025-09-19"]
+
+    // ✅ ตัวอย่าง Action: เรียก API ส่งช่วงวัน
+    // if (newDate && newDate.length === 2) {
+    //     // const [start, end] = newDate
+    //     // await fetch(`/api/orders?start=${start}&end=${end}`)
+    //     //     .then(res => res.json())
+    //     //     .then(data => {
+    //     //         console.log('API result:', data)
+    //     //     })
+    //     //     .catch(err => console.error(err))
+    // }
+}
+
+
+
+
+async function clearFilter() {
+    isLoading.value = true;
+    dateRange.value = ''
+    startDate.value = ''
+    endDate.value = ''
     selectedZone.value = ''
     selectedArea.value = ''
     selectedTeam.value = ''
+    selectedStatus.value = ''
+    await useOrderStore.fetchOrder(period, '', '')
+    isLoading.value = false;
 }
 
 watch(selectedZone, async (newVal) => {

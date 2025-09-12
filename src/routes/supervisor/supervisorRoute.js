@@ -35,13 +35,13 @@ const supervisorRoutes = [
       },
       {
         path: 'checkin/:route/orderDetail/:orderId',
-        name: 'OrderDetail',
+        // name: 'OrderDetail',
         component: () => import('../../views/supervisor/OrderDetail.vue'),
         props: true // allows useRoute().params.route OR `props: true` to bind as prop
       },
       {
         path: 'order/:orderId',
-        name: 'OrderDetail',
+        // name: 'OrderDetail',
         component: () => import('../../views/supervisor/OrderDetail.vue'),
         props: true // allows useRoute().params.route OR `props: true` to bind as prop
       },
@@ -128,6 +128,10 @@ const supervisorRoutes = [
       {
         path: 'storedetail/:storeid',
         component: () => import('../../views/supervisor/StoreDetailAll.vue')
+      },
+      {
+        path: 'credit',
+        component: () => import('../../views/supervisor/CreditWithdraw.vue')
       }
     ]
   }
