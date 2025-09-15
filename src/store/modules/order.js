@@ -11,9 +11,17 @@ export const useOrder = defineStore('order', {
     async fetchOrder (period, start, end) {
       try {
         let area = localStorage.getItem('area')
-        // if (area != '') {
+        if (!/^\d{8}$/.test(start)) {
+          const nowTH = new Date(
+            new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+          )
+          const y = nowTH.getFullYear()
+          const m = String(nowTH.getMonth() + 1).padStart(2, '0')
+          const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
+          start = `${y}${m}${d}` // YYYYMMDD
+          end = `${y}${m}${d}` // YYYYMMDD
+        }
 
-        // }
         const response = await api.get(
           `api/cash/order/all?type=sale&period=${period}&start=${start}&end=${end}&area=${area}`
         )
@@ -33,7 +41,7 @@ export const useOrder = defineStore('order', {
         console.error(error)
       }
     },
-    async downloadExcel (start, end) {
+    async downloadExcel (start, end, area, team, zone) {
       try {
         // ถ้าไม่ได้ส่งมา หรือฟอร์แมตไม่ใช่ YYYYMMDD ให้ใช้ "วันนี้" ตามเวลาไทย
         if (!/^\d{8}$/.test(start)) {
@@ -48,7 +56,7 @@ export const useOrder = defineStore('order', {
         }
 
         const response = await api.get(
-          `/api/cash/order/ordertoexcel?channel=cash&startDate=${start}&endDate=${end}&status=pending,approved,completed`,
+          `/api/cash/order/ordertoexcel?channel=cash&startDate=${start}&endDate=${end}&status=pending,approved,completed&area=${area}&team=${team}&zone=${zone}`,
           { responseType: 'blob' } // สำคัญมาก!
         )
         // สร้าง URL ให้ browser โหลดไฟล์

@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 bg-gray-50 min-h-screen">
+    <div class="p-6 bg-gray-50">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <div class="flex justify-start">
             <h2 class="text-2xl font-bold mb-6">รายการร้านค้าเปิดใหม่</h2>
@@ -13,32 +13,10 @@
                 </svg>
                 <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
             </label>
-            <div class="flex justify-start ms-2">
-                <div>
-                    <input type="date" v-model="startDate" @change="onMonthChange" class="border p-2 rounded" />
-                    <p>เลือกวันที่: {{ formatDate(startDate) }}</p>
-                </div>
+            <div class="w-65 ms-3">
+                <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" range :enable-time-picker="false"
+                    @update:model-value="onMonthChange" />
             </div>
-            <div class="ms-2 pt-2">ถึง</div>
-            <div class="flex justify-start ms-2">
-                <div>
-
-                    <input type="date" v-model="endDate" @change="onMonthChange" class="border p-2 rounded" />
-                    <p>เลือกวันที่: {{ formatDate(endDate) }}</p>
-                </div>
-            </div>
-            <div class="mx-3" v-if="userRole != 'supervisor'">
-                <select class="select select-info ms-3 text-center" v-model="selectedStatus">
-                    <option disabled value="">Select Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
-                    <option value="canceled">Cancel</option>
-                </select>
-            </div>
-            <div class="ms-3">
-                <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-            </div>
-            <!-- 
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
@@ -48,8 +26,7 @@
             <div class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
-                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
-                    }}
+                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
                     </option>
                 </select>
             </div>
@@ -58,26 +35,20 @@
                     <option disabled value="">Select Area</option>
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
-            </div> -->
-            <!-- <div class="ms-3">
-                <button @click="clearFilter"
-                    class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
-                    <Icon icon="mdi:broom" width="24" height="24" />
-                    เคลีย
-                </button>
-            </div> -->
-
-            <!-- <div class="ms-3">
-                <button @click="exportExcel"
-                    class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
-                    <Icon icon="mdi:file-excel" style="color: #00912f" width="24" height="24" />
-                    Excel
-                </button>
-            </div> -->
+            </div>
+            <div class="mx-3" v-if="userRole != 'supervisor'">
+                <select class="select select-info ms-3 text-center" v-model="selectedStatus">
+                    <option disabled value="">Select Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                    <option value="canceled">Cancel</option>
+                </select>
+            </div>
 
         </div>
 
-        <div class="overflow-x-auto rounded-xl" style="max-height: 480px; max-width: 90vw; overflow-y: auto;">
+        <div class="overflow-x-auto rounded-xl"
+            style="min-width: 450px; max-height: 450px; max-width: 90vw; overflow-y: auto;">
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
@@ -91,9 +62,8 @@
                     </tr>
                 </thead>
                 <tbody>
-
-                    <tr @click="$router.push(`/supervisor/storedetail/${prod.storeId}`)" v-for="(prod, i) in filteredOrders"
-                        :key="prod.orderId" class="align-top">
+                    <tr @click="$router.push(`/supervisor/storedetail/${prod.storeId}`)"
+                        v-for="(prod, i) in filteredOrders" :key="prod.orderId" class="align-top">
 
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.area }}</div>
@@ -129,6 +99,20 @@
                 </tbody>
             </table>
         </div>
+        <div class="flex justify-start mt-2">
+
+            <button @click="clearFilter"
+                class="flex items-center gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
+                <Icon icon="mdi:broom" width="24" height="24" />
+                เคลีย
+            </button>
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel To M3</button>
+            </div>
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel Item</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -140,14 +124,16 @@ import { useOrder } from '../../store/modules/order'
 import { useFilter } from '../../store/modules/filter'
 import { useStoresStore } from '../../store/modules/store'
 import { Icon } from '@iconify/vue'
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+import { formatDate, formatCurrency, formatDateToYYYYMMDD, toDateOrNull, endOfDay, getTeam3, } from '../../utils/format'
+
 
 const filter = useFilter()
 const userRole = localStorage.getItem('role')
 const router = useRouter()
 const route = useRoute()
 const isLoading = ref(false)
-const startDate = ref('') // format: YYYY-MM
-const endDate = ref('') // format: YYYY-MM
 const searchQuery = ref('');
 
 const cardData = ref([]);
@@ -163,17 +149,9 @@ const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 const zone = localStorage.getItem('zone')
 
-const startday = computed(() => startDate.value.split('-')[2])
-const startmonth = computed(() => startDate.value.split('-')[1])
-const startyear = computed(() => startDate.value.split('-')[0])
-
-const endday = computed(() => endDate.value.split('-')[2])
-const endmonth = computed(() => endDate.value.split('-')[1])
-const endyear = computed(() => endDate.value.split('-')[0])
-
-
-// const month = computed(() => startDate.value.split('-')[1])
-// const year = computed(() => startDate.value.split('-')[0])
+const dateRange = ref();
+const startDate = computed(() => formatDateToYYYYMMDD(dateRange.value[0]))
+const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
 
 
 const filteredOrders = computed(() => {
@@ -197,9 +175,19 @@ const filteredOrders = computed(() => {
     if (selectedStatus.value) {
         data = data.filter(order => order.status === selectedStatus.value);
     }
-    // --- Date range filter (client-side) ---
-    const s = toDateOrNull(startDate.value)   // expects 'YYYY-MM-DD' from <input type="date">
-    const e = toDateOrNull(endDate.value) ? endOfDay(endDate.value) : null
+ // --- Date range filter (client-side) ---
+
+    const startDateRange = dateRange.value?.[0]
+        ? formatDateToYYYYMMDD(dateRange.value[0])
+        : null
+
+    const endDateRange = dateRange.value?.[1]
+        ? formatDateToYYYYMMDD(dateRange.value[1])
+        : null
+
+
+    const s = toDateOrNull(startDateRange)   // expects 'YYYY-MM-DD' from <input type="date">
+    const e = toDateOrNull(endDateRange) ? endOfDay(endDateRange) : null
 
     if (s || e) {
         data = data.filter(order => {
@@ -219,7 +207,7 @@ const filteredOrders = computed(() => {
 
 async function exportExcel() {
 
-    await useOrderStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+    await useOrderStore.downloadExcel(`${startDate.value}`, `${endDate.value}`)
 
     // await reportStore.downloadExcel(
     //     formatDate2(selectedDateStart.value),
@@ -227,18 +215,6 @@ async function exportExcel() {
     // )
 }
 
-function toDateOrNull(val) {
-    if (!val) return null
-    const d = new Date(val)
-    return isNaN(d.getTime()) ? null : d
-}
-
-// make end-of-day inclusive for comparisons
-function endOfDay(d) {
-    const x = new Date(d)
-    x.setHours(23, 59, 59, 999)
-    return x
-}
 
 async function onMonthChange() {
     // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
@@ -246,18 +222,11 @@ async function onMonthChange() {
 
     // console.log('startDate:', startDate.value)
     // console.log('endDate:', endDate.value)
-    if (startDate.value && endDate.value) {
-        isLoading.value = true
-        await useOrderStore.fetchOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-
-        //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
-        //     cardData.value = useOrderStore.order.data
-        isLoading.value = false
-    }
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกปี:', year.value)
-
+    // if (startDate.value && endDate.value) {
+    //     isLoading.value = true
+    //     await useOrderStore.fetchOrder('', `${startDate.value}`, `${endDate.value}`)
+    //     isLoading.value = false
+    // }
 }
 
 
@@ -290,30 +259,6 @@ watch(selectedTeam, async (newVal) => {
         filter.getArea(period, selectedZone.value, newVal);
     }
 });
-
-
-
-
-function formatCurrency(value) {
-    return new Intl.NumberFormat('th-TH', {
-        style: 'currency',
-        currency: 'THB',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-
-    }).format(value || 0)
-}
-
-
-
-function formatDate(dateStr) {
-    if (!dateStr) return ''
-    const d = new Date(dateStr)
-    const day = String(d.getDate()).padStart(2, '0')
-    const month = String(d.getMonth() + 1).padStart(2, '0')
-    const year = d.getFullYear()
-    return `${day}-${month}-${year}`
-}
 
 onMounted(async () => {
     isLoading.value = true

@@ -20,23 +20,11 @@
                     <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" range :enable-time-picker="false"
                         @update:model-value="onMonthChange" />
                 </div>
-                <!-- <div class="flex justify-start ms-2">
-                    <div>
-                        <input type="date" v-model="startDate" @change="onMonthChange" class="border p-2 rounded" />
-                        <p>เลือกวันที่: {{ formatDate(startDate) }}</p>
-                    </div>
-                </div>
-                <div class="ms-2 pt-2">ถึง</div>
-                <div class="flex justify-start ms-2">
-                    <div>
-                        <input type="date" v-model="endDate" @change="onMonthChange" class="border p-2 rounded" />
-                        <p>เลือกวันที่: {{ formatDate(endDate) }}</p>
-                    </div>
-                </div> -->
                 <div class="ms-3" v-if="userRole != 'supervisor'">
                     <select class="select select-info ms-3 text-center" v-model="selectedGiveId">
-                        <option disabled value="">Select Zone</option>
-                        <option v-for="giveType in giveStore.giveType" :key="giveType" :value="giveType.type">{{ giveType.name }}</option>
+                        <option disabled value="">เลือกประเภทตัดแจก</option>
+                        <option v-for="giveType in giveStore.giveType" :key="giveType" :value="giveType.name">{{
+                            giveType.name }}</option>
                     </select>
                 </div>
                 <div class="ms-3" v-if="userRole != 'supervisor'">
@@ -74,7 +62,7 @@
 
         </div>
 
-        <div class="overflow-x-auto rounded-xl mt-5" style="max-height: 450px; overflow-y: auto;">
+        <div class="overflow-x-auto rounded-xl mt-5" style="min-width: 450px; max-height: 450px; overflow-y: auto;">
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
@@ -82,6 +70,7 @@
                         <th class="p-2 border">เขต</th>
                         <th class="p-2 border">รหัสร้าน</th>
                         <th class="p-2 border">ชื่อร้าน</th>
+                        <th class="p-2 border">ชื่อตัดแจก</th>
                         <th class="p-2 border">วันที่สั่ง</th>
                         <th class="p-2 border">รายการ</th>
                         <th class="p-2 border">สถานะ</th>
@@ -103,6 +92,9 @@
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.storeName }}</div>
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            <div class="">{{ prod.giveName }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
                             <div class="">{{ formatDate(prod.createAt) }}</div>
@@ -152,14 +144,14 @@ import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import { formatDate, formatCurrency, formatDateToYYYYMMDD, toDateOrNull, endOfDay, getTeam3, } from '../../utils/format'
+
 
 const filter = useFilter()
 const userRole = localStorage.getItem('role')
 const router = useRouter()
 const route = useRoute()
 const isLoading = ref(false)
-const startDate = ref('') // format: YYYY-MM
-const endDate = ref('') // format: YYYY-MM
 const exportDate = ref('') // format: YYYY-MM
 const searchQuery = ref('');
 
@@ -176,13 +168,8 @@ const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 const zone = localStorage.getItem('zone')
 
-const startday = computed(() => startDate.value.split('-')[2])
-const startmonth = computed(() => startDate.value.split('-')[1])
-const startyear = computed(() => startDate.value.split('-')[0])
-
-const endday = computed(() => endDate.value.split('-')[2])
-const endmonth = computed(() => endDate.value.split('-')[1])
-const endyear = computed(() => endDate.value.split('-')[0])
+const startDate = computed(() => formatDateToYYYYMMDD(dateRange.value[0]))
+const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
 
 const dateRange = ref();
 
@@ -202,12 +189,25 @@ const filteredOrders = computed(() => {
         );
     }
 
+    if (selectedZone.value) {
+        data = data.filter(order =>
+            (order.area || '').startsWith(selectedZone.value)
+        )
+    }
+    if (selectedTeam.value) {
+        console.log()
+        data = data.filter(order =>
+            getTeam3(order.area) === selectedTeam.value
+        )
+    }
+
     if (selectedArea.value) {
         data = data.filter(order => order.area === selectedArea.value);
     }
 
-    if (selectedStatus.value) {
-        data = data.filter(order => order.status === selectedStatus.value);
+
+    if (selectedGiveId.value) {
+        data = data.filter(order => order.giveInfo.name === selectedGiveId.value);
     }
 
     // --- Date range filter (client-side) ---
@@ -240,36 +240,15 @@ const filteredOrders = computed(() => {
 })
 
 async function exportExcel() {
-    await giveStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-}
-
-function toDateOrNull(val) {
-    if (!val) return null
-    const d = new Date(val)
-    return isNaN(d.getTime()) ? null : d
-}
-
-// make end-of-day inclusive for comparisons
-function endOfDay(d) {
-    const x = new Date(d)
-    x.setHours(23, 59, 59, 999)
-    return x
+    await giveStore.downloadExcel(`${startDate.value}`, `${endDate.value}`, `${selectedGiveId.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
 }
 
 async function onMonthChange() {
     isLoading.value = true
-    await giveStore.giveOrder('', `${formatDateToYYYYMMDD(dateRange.value[0])}`, `${formatDateToYYYYMMDD(dateRange.value[1])}`)
+    await giveStore.giveOrder('', `${startDate.value}`, `${endDate.value}`)
     isLoading.value = false
 
 }
-function formatDateToYYYYMMDD(date) {
-    if (!(date instanceof Date)) return ''
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}${month}${day}`
-}
-
 
 async function clearFilter() {
     isLoading.value = true;
@@ -308,40 +287,11 @@ watch(selectedTeam, async (newVal) => {
     }
 });
 
-
-
-
-function formatCurrency(value) {
-    return new Intl.NumberFormat('th-TH', {
-        style: 'currency',
-        currency: 'THB',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-
-    }).format(value || 0)
-}
-
-
-
-function formatDate(dateStr) {
-    if (!dateStr) return ''
-    const d = new Date(dateStr)
-    const day = String(d.getDate()).padStart(2, '0')
-    const month = String(d.getMonth() + 1).padStart(2, '0')
-    const year = d.getFullYear()
-    return `${day}-${month}-${year}`
-}
 onMounted(async () => {
     isLoading.value = true
-    // await filter.getTeam(selectedZone.value);
-    // await filter.getArea(period, zone, '');
     await filter.getZone(period);
     await giveStore.getGiveType();
-    // await useOrderStore.fetchOrder(period, '', '')
-
-    await giveStore.giveOrder('202508')
-    // console.log(giveStore.give)
-    // cardData.value = giveStore.give.data
+    await giveStore.giveOrder(period, '', '')
     isLoading.value = false
 
 })

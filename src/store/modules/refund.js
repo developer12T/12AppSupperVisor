@@ -116,7 +116,7 @@ export const useRefundStock = defineStore('refund', {
         console.log(error)
       }
     },
-    async downloadExcel (start, end) {
+    async downloadExcel (start, end, area, team, zone) {
       try {
         // ถ้าไม่ได้ส่งมา หรือฟอร์แมตไม่ใช่ YYYYMMDD ให้ใช้ "วันนี้" ตามเวลาไทย
         if (!/^\d{8}$/.test(start)) {
@@ -131,7 +131,7 @@ export const useRefundStock = defineStore('refund', {
         }
 
         const response = await api.get(
-          `/api/cash/refund/refundExcel?channel=cash&startDate=${start}&endDate=${end}`,
+          `/api/cash/refund/refundExcel?channel=cash&startDate=${start}&endDate=${end}&area=${area}&team=${team}&zone=${zone}`,
           { responseType: 'blob' } // สำคัญมาก!
         )
         // สร้าง URL ให้ browser โหลดไฟล์
@@ -172,16 +172,16 @@ export const useRefundStock = defineStore('refund', {
           area = localStorage.getItem('area')
         }
 
-        if (!/^\d{8}$/.test(start)) {
-          const nowTH = new Date(
-            new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
-          )
-          const y = nowTH.getFullYear()
-          const m = String(nowTH.getMonth() + 1).padStart(2, '0')
-          const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
-          start = `${y}${m}${d}` // YYYYMMDD
-          end = `${y}${m}${d}` // YYYYMMDD
-        }
+        // if (!/^\d{8}$/.test(start)) {
+        //   const nowTH = new Date(
+        //     new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+        //   )
+        //   const y = nowTH.getFullYear()
+        //   const m = String(nowTH.getMonth() + 1).padStart(2, '0')
+        //   const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
+        //   start = `${y}${m}${d}` // YYYYMMDD
+        //   end = `${y}${m}${d}` // YYYYMMDD
+        // }
         const response = await api.get(
           `/api/cash/refund/all?type=refund&zone=${zone}&team=${team}&area=${area}&period=${period}&start=${start}&end=${end}`
         )

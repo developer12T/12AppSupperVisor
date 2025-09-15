@@ -42,7 +42,7 @@
                         <Icon icon="mdi:google" width="24" height="24" />
                         Google Map
                     </button>
-                    <button class="btn btn-primary" @click="insertStoreToM3()">
+                    <button v-if="storeDetail.status == '20'" class="btn btn-primary" @click="insertStoreToM3()">
                         <Icon icon="mdi:store-plus" width="24" height="24" />
                         นำเข้า M3
                     </button>

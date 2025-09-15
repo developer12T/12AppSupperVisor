@@ -24,6 +24,47 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
+    async getWithdrawCreditTable (
+      channel,
+      period,
+      selectZone,
+      selectArea,
+      team,
+      start,
+      end
+    ) {
+      try {
+        // setChannel(channel)
+
+        let zone = ''
+        let area = ''
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+
+        const response = await api.get(
+          `/api/cash/distribution/getCredit?period=${period}&zone=${zone}&team=${team}&area=${area}&start=${start}1&end=${end}`
+        )
+
+        socket.on('store-updated', data => {
+          console.log('store updated', data)
+        })
+
+        this.withdraw = response.data.data
+        console.log('withdraw', this.withdraw)
+      } catch (error) {
+        this.withdraw = []
+        console.log(error)
+      }
+    },
     async getWithdrawTable (
       channel,
       period,

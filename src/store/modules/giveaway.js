@@ -26,16 +26,16 @@ export const useGiveAway = defineStore('giveaway', {
     async giveOrder (period, start, end) {
       try {
         const area = localStorage.getItem('area')
-        if (!/^\d{8}$/.test(start)) {
-          const nowTH = new Date(
-            new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
-          )
-          const y = nowTH.getFullYear()
-          const m = String(nowTH.getMonth() + 1).padStart(2, '0')
-          const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
-          start = `${y}${m}${d}` // YYYYMMDD
-          end = `${y}${m}${d}` // YYYYMMDD
-        }
+        // if (!/^\d{8}$/.test(start)) {
+        //   const nowTH = new Date(
+        //     new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+        //   )
+        //   const y = nowTH.getFullYear()
+        //   const m = String(nowTH.getMonth() + 1).padStart(2, '0')
+        //   const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
+        //   start = `${y}${m}${d}` // YYYYMMDD
+        //   end = `${y}${m}${d}` // YYYYMMDD
+        // }
         const response = await api.get(
           `/api/cash/give/all?type=give&period=${period}&area=${area}&start=${start}&end=${end}`
         )
@@ -88,7 +88,7 @@ export const useGiveAway = defineStore('giveaway', {
         console.error(error)
       }
     },
-    async downloadExcel (start, end) {
+    async downloadExcel (start, end, giveName, area, team, zone) {
       try {
         // ถ้าไม่ได้ส่งมา หรือฟอร์แมตไม่ใช่ YYYYMMDD ให้ใช้ "วันนี้" ตามเวลาไทย
         if (!/^\d{8}$/.test(start)) {
@@ -103,7 +103,7 @@ export const useGiveAway = defineStore('giveaway', {
         }
 
         const response = await api.get(
-          `/api/cash/give/giveToExcel?channel=cash&startDate=${start}&endDate=${end}`,
+          `/api/cash/give/giveToExcel?channel=cash&startDate=${start}&endDate=${end}&giveName=${giveName}&area=${area}&team=${team}&zone=${zone}`,
           { responseType: 'blob' } // สำคัญมาก!
         )
         // สร้าง URL ให้ browser โหลดไฟล์

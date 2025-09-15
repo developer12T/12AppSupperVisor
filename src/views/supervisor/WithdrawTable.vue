@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 bg-gray-50 min-h-screen">
+    <div class="p-6 bg-gray-50">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
         <div class="flex justify-start">
@@ -14,19 +14,28 @@
                 </svg>
                 <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
             </label>
-            <div class="flex justify-start ms-2">
-                <div>
-                    <input type="date" v-model="startDate" @change="onMonthChange" class="border p-2 rounded" />
-                    <p>เลือกวันที่: {{ formatDate(startDate) }}</p>
-                </div>
+            <div class="w-65 ms-3">
+                <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" range :enable-time-picker="false"
+                    @update:model-value="onMonthChange" />
             </div>
-            <div class="ms-2 pt-2">ถึง</div>
-            <div class="flex justify-start ms-2">
-                <div>
-
-                    <input type="date" v-model="endDate" @change="onMonthChange" class="border p-2 rounded" />
-                    <p>เลือกวันที่: {{ formatDate(endDate) }}</p>
-                </div>
+            <div class="ms-3" v-if="userRole != 'supervisor'">
+                <select class="select select-info ms-3 text-center" v-model="selectedZone">
+                    <option disabled value="">Select Zone</option>
+                    <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+                </select>
+            </div>
+            <div class="ms-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedTeam">
+                    <option disabled value="">Select Team</option>
+                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
+                    </option>
+                </select>
+            </div>
+            <div class="ms-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                    <option disabled value="">Select Area</option>
+                    <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                </select>
             </div>
 
             <!-- <input type="date" v-model="startDate" class="input input-bordered w-full" /> -->
@@ -39,65 +48,25 @@
                     <option value="canceled">Cancel</option>
                 </select>
             </div>
-            <div class="ms-3">
 
-                <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
-
-            </div>
-
-            <!-- 
-            <div class="ms-3" v-if="userRole != 'supervisor'">
-                <select class="select select-info ms-3 text-center" v-model="selectedZone">
-                    <option disabled value="">Select Zone</option>
-                    <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
-                </select>
-            </div>
-            <div class="ms-3">
-                <select class="select select-info ms-3 text-center" v-model="selectedTeam">
-                    <option disabled value="">Select Team</option>
-                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
-                    }}
-                    </option>
-                </select>
-            </div>
-            <div class="ms-3">
-                <select class="select select-info ms-3 text-center" v-model="selectedArea">
-                    <option disabled value="">Select Area</option>
-                    <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
-                </select>
-            </div> -->
-            <!-- <div class="ms-3">
-                <button @click="clearFilter"
-                    class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
-                    <Icon icon="mdi:broom" width="24" height="24" />
-                    เคลีย
-                </button>
-            </div> -->
-
-            <!-- <div class="ms-3">
-                <button @click="exportExcel"
-                    class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
-                    <Icon icon="mdi:file-excel" style="color: #00912f" width="24" height="24" />
-                    Excel
-                </button>
-            </div> -->
 
         </div>
 
-        <div class="overflow-x-auto rounded-xl" style="max-height: 480px; max-width: 90vw; overflow-y: auto;">
+        <div class="overflow-x-auto rounded-xl" style="min-height: 450px; max-height: 450px; max-width: 90vw; overflow-y: auto;">
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
                         <th class="p-2 border">Order ID</th>
-                        <th class="p-2 border">Low Status</th>
-                        <th class="p-2 border">Heigh Status</th>
+                        <!-- <th class="p-2 border">Low Status</th>
+                        <th class="p-2 border">Heigh Status</th> -->
                         <th class="p-2 border">เขต</th>
                         <th class="p-2 border">ประเภท</th>
                         <th class="p-2 border">ชื่อประเภท</th>
                         <th class="p-2 border">วันที่สั่ง</th>
                         <th class="p-2 border">วันที่รับ</th>
-                        <th class="p-2 border">รายการ</th>
-                        <th class="p-2 border">รายการใน M3</th>
+
+                        <!-- <th class="p-2 border">รายการ</th>
+                        <th class="p-2 border">รายการใน M3</th> -->
                         <th class="p-2 border">สถานะ</th>
                         <th class="p-2 border">น้ำหนักรวม</th>
                         <th class="p-2 border">น้ำหนักรวมสุทธิ</th>
@@ -110,12 +79,7 @@
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.orderId }}</div>
                         </td>
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.lowStatus }}</div>
-                        </td>
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.heightStatus }}</div>
-                        </td>
+
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.area }}</div>
                         </td>
@@ -132,12 +96,6 @@
                             <div class="">{{ prod.sendDate }}</div>
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.listProduct + prod.listPromotion }}</div>
-                        </td>
-                        <td class="border p-2 text-center whitespace-pre">
-                            <div class="">{{ prod.lineM3 }}</div>
-                        </td>
-                        <td class="border p-2 text-center whitespace-pre">
                             <div :class="{
                                 'text-warning': prod.status === 'pending',
                                 'text-green-700': prod.status === 'completed',
@@ -146,46 +104,36 @@
                                 {{ prod.status }}</div>
                         </td>
                         <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.totalWeightGross }}</div>
+                            <div class="">{{ formatNumber(prod.totalWeightNet) }}</div>
                         </td>
                         <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.totalWeightGross }}</div>
+                            <div class="">{{ formatNumber(prod.totalWeightGross) }}</div>
                         </td>
                     </tr>
-
                 </tbody>
+                <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
+                    <tr class="bg-gray-300 font-bold ">
+                        <td colspan="7" class="border p-2 text-center">รวมน้ำหนัก</td>
+                        <td class="border p-2 text-center">{{ formatNumber(totalOrderNet) }}</td>
+                        <td class="border p-2 text-center">{{ formatNumber(totalOrderGross) }}</td>
+                    </tr>
+
+                </tfoot>
             </table>
         </div>
-
-        <!-- <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
-            <div v-for="item in cardData" :key="item.orderId"
-                class="bg-white rounded-xl shadow p-6 border flex flex-col gap-2">
-                <router-link :to="`/supervisor/withdraw/${item.orderId}`">
-                    <div class="flex justify-end">
-                        <div class="text-sm text-gray-500">วันที่สั่ง: <span class="font-semibold">{{
-                            formatDate(item.createdAt)
-                                }}</span></div>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-lg text-gray-700">Order</span>
-                        <span class="text-sm text-gray-500">{{ item.orderId }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <div class="text-sm text-gray-500">เขต: <span class="font-semibold">{{ item.area }}</span>
-                        </div>
-                        <div class="text-sm text-gray-500">ร้าน: <span class="font-semibold">{{ item.storeId
-                                }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end">
-                        <div class="text-sm text-green-500">ยอดรวม: <span class="text-xl font-semibold">{{ item.total
-                                }}</span>
-                        </div>
-                    </div>
-                </router-link>
+        <div class="flex justify-start mt-2">
+            <button @click="clearFilter"
+                class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
+                <Icon icon="mdi:broom" width="24" height="24" />
+                เคลีย
+            </button>
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel To M3</button>
             </div>
-        </div> -->
+            <div class="ms-2">
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel Item</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -197,16 +145,18 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useWithdrawStore } from '../../store/modules/withdraw'
 import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+import { formatDate, formatDateToYYYYMMDD, formatNumber, toDateOrNull, endOfDay, getTeam3, } from '../../utils/format'
+
 
 const filter = useFilter()
 const userRole = localStorage.getItem('role')
 const router = useRouter()
 const route = useRoute()
 const isLoading = ref(false)
-const startDate = ref('') // format: YYYY-MM
-const endDate = ref('') // format: YYYY-MM
 const searchQuery = ref('');
-
+const dateRange = ref();
 const cardData = ref([]);
 // const useOrderStore = useOrder()
 const withdrawStore = useWithdrawStore()
@@ -220,13 +170,8 @@ const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 const zone = localStorage.getItem('zone')
 
-const startday = computed(() => startDate.value.split('-')[2])
-const startmonth = computed(() => startDate.value.split('-')[1])
-const startyear = computed(() => startDate.value.split('-')[0])
-
-const endday = computed(() => endDate.value.split('-')[2])
-const endmonth = computed(() => endDate.value.split('-')[1])
-const endyear = computed(() => endDate.value.split('-')[0])
+const startDate = computed(() => formatDateToYYYYMMDD(dateRange.value[0]))
+const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
 
 
 // const month = computed(() => startDate.value.split('-')[1])
@@ -247,16 +192,35 @@ const filteredOrders = computed(() => {
         );
     }
 
+    if (selectedZone.value) {
+        data = data.filter(order =>
+            (order.area || '').startsWith(selectedZone.value)
+        )
+    }
+
     if (selectedArea.value) {
         data = data.filter(order => order.area === selectedArea.value);
     }
 
-    if (selectedStatus.value) {
-        data = data.filter(order => order.status === selectedStatus.value);
+    if (selectedTeam.value) {
+        console.log()
+        data = data.filter(order =>
+            getTeam3(order.area) === selectedTeam.value
+        )
     }
     // --- Date range filter (client-side) ---
-    const s = toDateOrNull(startDate.value)   // expects 'YYYY-MM-DD' from <input type="date">
-    const e = toDateOrNull(endDate.value) ? endOfDay(endDate.value) : null
+
+    const startDateRange = dateRange.value?.[0]
+        ? formatDateToYYYYMMDD(dateRange.value[0])
+        : null
+
+    const endDateRange = dateRange.value?.[1]
+        ? formatDateToYYYYMMDD(dateRange.value[1])
+        : null
+
+
+    const s = toDateOrNull(startDateRange)   // expects 'YYYY-MM-DD' from <input type="date">
+    const e = toDateOrNull(endDateRange) ? endOfDay(endDateRange) : null
 
     if (s || e) {
         data = data.filter(order => {
@@ -269,9 +233,31 @@ const filteredOrders = computed(() => {
     }
 
     // newest first
-    // data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
     return data;
+})
+
+// ✅ คำนวณผลรวม total ของทุก order หลัง filter
+const totalOrderGross = computed(() => {
+    return filteredOrders.value.reduce((sum, order) => {
+        if (order.status !== "canceled") {
+            return sum + (Number(order.totalWeightGross) || 0)
+        }
+        return sum
+        //   return sum + (Number(order.total) || 0)
+    }, 0)
+})
+
+// ✅ คำนวณผลรวม total ของทุก order หลัง filter
+const totalOrderNet = computed(() => {
+    return filteredOrders.value.reduce((sum, order) => {
+        if (order.status !== "canceled") {
+            return sum + (Number(order.totalWeightNet) || 0)
+        }
+        return sum
+        //   return sum + (Number(order.total) || 0)
+    }, 0)
 })
 
 async function exportExcel() {
@@ -284,54 +270,25 @@ async function exportExcel() {
     // )
 }
 
-function toDateOrNull(val) {
-    if (!val) return null
-    const d = new Date(val)
-    return isNaN(d.getTime()) ? null : d
-}
-
-// make end-of-day inclusive for comparisons
-function endOfDay(d) {
-    const x = new Date(d)
-    x.setHours(23, 59, 59, 999)
-    return x
-}
-
 async function onMonthChange() {
-    // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
-    // ตัวอย่าง:
-
-    // console.log('startDate:', startDate.value)
-    // console.log('endDate:', endDate.value)
-    if (startDate.value && endDate.value) {
-        isLoading.value = true
-        await withdrawStore.getWithdrawTable('cash', '', '', '', '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
-
-        isLoading.value = false
-    }
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกเดือน:', month.value)
-    // console.log('เลือกปี:', year.value)
-
+    isLoading.value = true
+    await withdrawStore.getWithdrawTable('cash', period, '', '', '', `${startDate.value}`, `${endDate.value}`)
+    isLoading.value = false
 }
 
-
-
-function clearFilter() {
+async function clearFilter() {
+    isLoading.value = true;
+    dateRange.value = ''
     selectedZone.value = ''
     selectedArea.value = ''
     selectedTeam.value = ''
+    selectedStatus.value = ''
+    await withdrawStore.getWithdrawTable('cash', period, '', '', '', '', '')
+    isLoading.value = false;
 }
 
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
-    // router.replace({
-    //     query: {
-    //         ...route.query,
-    //         zone: newVal,
-    //         area: '' // clear old area
-    //     }
-    // });
     if (newVal) {
         filter.getArea(period, newVal, selectedTeam.value);
         filter.getTeam(newVal);
@@ -346,29 +303,6 @@ watch(selectedTeam, async (newVal) => {
     }
 });
 
-
-
-
-function formatCurrency(value) {
-    return new Intl.NumberFormat('th-TH', {
-        style: 'currency',
-        currency: 'THB',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-
-    }).format(value || 0)
-}
-
-
-
-function formatDate(dateStr) {
-    if (!dateStr) return ''
-    const d = new Date(dateStr)
-    const day = String(d.getDate()).padStart(2, '0')
-    const month = String(d.getMonth() + 1).padStart(2, '0')
-    const year = d.getFullYear()
-    return `${day}-${month}-${year}`
-}
 onMounted(async () => {
     isLoading.value = true
     // await filter.getTeam(selectedZone.value);
