@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '../../utils/axios'
 
-export const useSale = defineStore('filters', {
+export const useSale = defineStore('targetSale', {
   state: () => ({
     target: {},
     targetProduct: [],
