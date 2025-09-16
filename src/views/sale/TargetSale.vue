@@ -1,12 +1,16 @@
 <template>
     <div class="target-page">
+        <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <!-- Header -->
         <header class="header">
-            <h1>🎯 Target / เป้าหมายยอดขาย</h1>
+            <h1>🎯 Target / เป้าหมายยอดขาย เขต: {{ area }}</h1>
             <!-- <div class="header-actions">
                 <button class="btn primary" @click="onAddRow">+ New Target</button>
                 <button class="btn" @click="exportCSV">Export CSV</button>
             </div> -->
+            <div class="w-65 ms-3">
+                <VueDatePicker v-model="monthPick" month-picker @update:model-value="onMonthChange" />
+            </div>
         </header>
 
         <!-- Filters -->
@@ -54,24 +58,42 @@
         <!-- Metrics Summary -->
         <section class="summary">
             <div class="card">
-                <div class="label">Total Target</div>
-                <div class="value">{{ formatNum(totalTarget, unitDisplay) }}</div>
+                <div class="label">เป้าหมายยอดขาย</div>
+                <div class="value">{{ formatNum(saleStore.target.target, unitDisplay) }}</div>
             </div>
             <div class="card">
-                <div class="label">Total Actual</div>
-                <div class="value">{{ formatNum(totalActual, unitDisplay) }}</div>
+                <div class="label">ยอดขาย</div>
+                <div class="value">{{ formatNum(saleStore.target.sale, unitDisplay) }}</div>
             </div>
             <div class="card">
-                <div class="label">Achievement</div>
+                <div class="label">ความสำเร็จ</div>
                 <div class="value"
                     :class="{ good: overallAttainment >= 1, warn: overallAttainment >= 0.8 && overallAttainment < 1, bad: overallAttainment < 0.8 }">
                     {{ (overallAttainment * 100).toFixed(1) }}%
                 </div>
             </div>
             <div class="card">
-                <div class="label">Variance (Actual - Target)</div>
+                <div class="label">ผลต่าง (ยอดขาย - เป้าหมาย)</div>
                 <div class="value" :class="{ good: variance >= 0, bad: variance < 0 }">{{ formatNum(variance,
                     unitDisplay) }}</div>
+            </div>
+        </section>
+        <section class="summary">
+            <div class="card">
+                <div class="label">ยอดเปลี่ยน</div>
+                <div class="value">{{ formatNum(saleStore.target.change, unitDisplay) }}</div>
+            </div>
+            <div class="card">
+                <div class="label">ยอดคืนดี</div>
+                <div class="value">{{ formatNum(saleStore.target.good, unitDisplay) }}</div>
+            </div>
+            <div class="card">
+                <div class="label">ยอดเสีย</div>
+                <div class="value">{{ formatNum(saleStore.target.damaged, unitDisplay) }}</div>
+            </div>
+            <div class="card">
+                <div class="label">ยอดตัดแจก</div>
+                <div class="value">{{ formatNum(saleStore.target.give, unitDisplay) }}</div>
             </div>
         </section>
 
@@ -85,17 +107,14 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th @click="setSort('period')">Period</th>
-                        <!-- <th @click="setSort('zone')">Zone</th>
-                        <th @click="setSort('area')">Area</th> -->
-                        <th @click="setSort('productGroup')">Group</th>
-                        <!-- <th @click="setSort('storeId')">Store</th> -->
-                        <th class="num" @click="setSort('target')">Target</th>
-                        <th class="num" @click="setSort('actual')">Actual</th>
-                        <th class="num" @click="setSort('attainment')">Achv%</th>
-                        <th class="num" @click="setSort('variance')">Variance</th>
-                        <th @click="setSort('unit')">Unit</th>
-                        <!-- <th>Actions</th> -->
+                        <th @click="setSort('period')">เดือน</th>
+                        <th @click="setSort('productGroup')">กลุ่ม</th>
+                        <!-- <th @click="setSort('productGroup')">Group Code</th> -->
+                        <th class="num" @click="setSort('target')">เป้าหมาย</th>
+                        <th class="num" @click="setSort('actual')">ยอดขาย</th>
+                        <th class="num" @click="setSort('attainment')">เปอร์เซ็น%</th>
+                        <th class="num" @click="setSort('variance')">ผลต่าง</th>
+                        <!-- <th @click="setSort('unit')">Unit</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -103,41 +122,43 @@
                         <td>{{ formatPeriod(r.period) }}</td>
                         <!-- <td>{{ r.zone }}</td>
                         <td>{{ r.area }}</td> -->
-                        <td>{{ r.productGroup || '-' }}</td>
+                        <td>{{ r.group || '-' }}</td>
+                        <!-- <td>{{ r.groupCode || '-' }}</td>  -->
                         <!-- <td>{{ r.storeId || '-' }}</td> -->
-                        <td class="num" :title="String(r.target)">
+                        <td class="num" :title="String(r.targetQty)">
                             <template v-if="editingId === r.id">
                                 <input class="input-num" type="number" min="0" step="0.01"
-                                    v-model.number="editBuffer.target" />
+                                    v-model.number="editBuffer.targetQty" />
                             </template>
                             <template v-else>
-                                {{ formatNum(r.target, r.unit) }}
+                                {{ r.targetQty + " หีบ" }}
                             </template>
                         </td>
-                        <td class="num" :title="String(r.actual)">
+                        <td class="num" :title="String(r.actualCtn)">
                             <template v-if="editingId === r.id">
                                 <input class="input-num" type="number" min="0" step="0.01"
-                                    v-model.number="editBuffer.actual" />
+                                    v-model.number="editBuffer.actualCtn" />
                             </template>
                             <template v-else>
-                                {{ formatNum(r.actual, r.unit) }}
+                                {{ r.actualCtn + " หีบ" }}
                             </template>
                         </td>
                         <td class="num">
                             <span class="badge" :class="attainmentClass(r)">{{ attainment(r).toFixed(1) }}%</span>
                         </td>
-                        <td class="num" :class="{ neg: (r.actual - r.target) < 0, pos: (r.actual - r.target) >= 0 }">{{
-                            formatNum(r.actual -
-                                r.target, r.unit) }}</td>
+                        <td class="num"
+                            :class="{ neg: (r.actualCtn - r.targetQty) < 0, pos: (r.actualCtn - r.targetQty) >= 0 }">{{
+                                r.actualCtn -
+                                r.targetQty + " หีบ" }}</td>
                         <td>
                             <template v-if="editingId === r.id">
                                 <select v-model="editBuffer.unit">
                                     <option v-for="u in unitOptions" :key="u" :value="u">{{ u }}</option>
                                 </select>
                             </template>
-                            <template v-else>
+                            <!-- <template v-else>
                                 {{ r.unit }}
-                            </template>
+                            </template> -->
                         </td>
                         <!-- <td class="actions">
                             <template v-if="editingId === r.id">
@@ -155,7 +176,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="table-footer">
+            <!-- <div class="table-footer">
                 <div class="rows">Rows: {{ visibleRows.length }}</div>
                 <div class="spacer"></div>
                 <div class="paging">
@@ -163,15 +184,21 @@
                     <span>Page {{ page }}</span>
                     <button class="btn sm" :disabled="endIndex >= sortedRows.length" @click="page++">Next</button>
                 </div>
-            </div>
+            </div> -->
         </section>
     </div>
 </template>
 
 <script lang="ts" setup>
+
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 import { computed, onMounted, reactive, ref } from 'vue'
-import { Bar } from 'vue-chartjs'
+import { useSale } from '../../store/modules/sale'
 import 'chart.js/auto'
+import { formatToYYYYMM, normalizeMonth, pad2 } from '../../utils/format'
+import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
+
 
 // --- Types ---
 export type Unit = 'THB' | 'PCS' | 'CTN'
@@ -181,30 +208,29 @@ export interface TargetRow {
     zone: string
     area: string
     storeId?: string
-    productGroup?: string
-    target: number
-    actual: number
+    group?: string
+    targetAll: number
+    actualCtn: number
     unit: Unit
 }
 
+const saleStore = useSale();
+
 // ---- Demo Data (replace with API results) ----
-const rows = ref<TargetRow[]>([
-    { id : '1', period: '202508', groupCode: "G01", productGroup: 'ผงปรุงรสฟ้าไทย 10 กรัม -165 กรัม', target: 250000, targetQty: 40, targetAll: 40, actual: 225400, unit: 'THB' },
-    { id: '2', period: '202508', groupCode: "G02", productGroup: 'ผงปรุงรสฟ้าไทย 425 กรัม - 20 kg', target: 150000, targetQty: 40, actual: 162000, unit: 'THB' },
-    { id: '3', period: '202508', groupCode: "G03", productGroup: 'ผงปรุงรสเติมทิพ (ทุกขนาด)', target: 120000, targetQty: 40, actual: 98000, unit: 'THB' },
-    // { id: '4', period: '202509', zone: 'NE', area: 'NE236', storeId: 'VNE2500901', productGroup: 'CHILI', target: 180000, actual: 210000, unit: 'THB' },
-    // { id: '5', period: '202509', zone: 'IT', area: 'IT211', storeId: 'VIT2500102', productGroup: 'HERB', target: 95000, actual: 72000, unit: 'THB' },
-    // { id: '6', period: '202509', zone: 'IT', area: 'IT211', storeId: 'VIT2500133', productGroup: 'HERB', target: 4000, actual: 4200, unit: 'PCS' },
-    // { id: '7', period: '202509', zone: 'BE', area: 'BE211', storeId: 'VMB2401201', productGroup: 'LIME', target: 3600, actual: 3300, unit: 'CTN' },
-])
+const rows = ref<TargetRow[]>([])
 
 // ---- Filters ----
 const search = ref('')
 const period = ref('')
 const zone = ref('')
-const area = ref('')
 const unit = ref('')
 const onlyBelow = ref(false)
+const monthPick = ref();
+const startDate = ref('') // e.g. "20250801"
+const endDate = ref('') // e.g. "20250831"
+const isLoading = ref(false)
+
+let area = localStorage.getItem('area')
 
 const unitOptions = ['THB', 'PCS', 'CTN'] as const
 const periodOptions = computed(() => Array.from(new Set(rows.value.map(r => r.period))).sort())
@@ -213,7 +239,7 @@ const areaOptions = computed(() => Array.from(new Set(rows.value.map(r => r.area
 
 // ---- Sorting ----
 // keys: period | zone | area | productGroup | storeId | target | actual | unit | attainment | variance
-const sortKey = ref<'period' | 'zone' | 'area' | 'productGroup' | 'storeId' | 'target' | 'actual' | 'unit' | 'attainment' | 'variance'>('period')
+const sortKey = ref<'period' | 'zone' | 'area' | 'group' | 'storeId' | 'target' | 'actual' | 'unit' | 'attainment' | 'variance'>('period')
 const sortDir = ref<1 | -1>(-1) // default newest first for period
 
 function setSort(key: typeof sortKey.value) {
@@ -272,13 +298,13 @@ const page = ref(1)
 const pageSize = ref(10)
 const startIndex = computed(() => (page.value - 1) * pageSize.value)
 const endIndex = computed(() => page.value * pageSize.value)
-const visibleRows = computed(() => sortedRows.value.slice(startIndex.value, endIndex.value))
+const visibleRows = computed(() => sortedRows.value)
 
 // ---- Summary ----
-const totalTarget = computed(() => filteredRows.value.reduce((s, r) => s + (r.unit === unitDisplay.value || unitDisplay.value === 'THB' ? r.target : r.target), 0))
-const totalActual = computed(() => filteredRows.value.reduce((s, r) => s + (r.unit === unitDisplay.value || unitDisplay.value === 'THB' ? r.actual : r.actual), 0))
-const overallAttainment = computed(() => totalTarget.value > 0 ? totalActual.value / totalTarget.value : 0)
-const variance = computed(() => totalActual.value - totalTarget.value)
+const totalTarget = computed(() => filteredRows.value.reduce((s, r) => s + (r.unit === unitDisplay.value || unitDisplay.value === 'THB' ? r.targetQty : r.targetQty), 0))
+const totalActual = computed(() => filteredRows.value.reduce((s, r) => s + (r.unit === unitDisplay.value || unitDisplay.value === 'THB' ? r.actualCtn : r.actualCtn), 0))
+const overallAttainment = computed(() => saleStore.target.target > 0 ? saleStore.target.sale / saleStore.target.target : 0)
+const variance = computed(() => saleStore.target.sale - saleStore.target.target)
 
 // display unit heuristic: if filter fixed use it, otherwise THB if present else first
 const unitDisplay = computed<Unit>(() => {
@@ -369,7 +395,7 @@ const barOptions = {
 
 // ---- Utils ----
 function attainment(r: TargetRow) {
-    return r.target > 0 ? (r.actual / r.target) * 100 : 0
+    return r.targetQty > 0 ? (r.actualCtn / r.targetQty) * 100 : 0
 }
 function attainmentClass(r: TargetRow) {
     const a = attainment(r)
@@ -379,6 +405,7 @@ function formatPeriod(p: string) {
     if (!/^\d{6}$/.test(p)) return p
     return `${p.slice(0, 4)}-${p.slice(4, 6)}`
 }
+
 function formatNum(n: number, u: Unit) {
     if (u === 'THB') return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 2 }).format(n)
     return new Intl.NumberFormat('th-TH', { maximumFractionDigits: 2 }).format(n)
@@ -390,6 +417,32 @@ function formatShort(n: number) {
     if (abs >= 1_000) return `${(n / 1_000).toFixed(1)}K`
     return String(n)
 }
+
+async function onMonthChange() {
+    isLoading.value = true
+    console.log(monthPick.value)
+    console.log(formatToYYYYMM(monthPick.value))
+
+    const { year, month } = normalizeMonth(monthPick.value)
+    const firstDay = 1
+    const lastDay = new Date(year, month, 0).getDate() // handles 28/29/30/31 correctly
+
+    // console.log(year)
+    // console.log(month)
+    // console.log(firstDay)
+    // console.log(lastDay)
+
+    startDate.value = `${year}${pad2(month)}${pad2(firstDay)}`
+    endDate.value = `${year}${pad2(month)}${pad2(lastDay)}`
+
+    await saleStore.getTarget(startDate.value, endDate.value, area)
+    await saleStore.getTargetProduct(formatToYYYYMM(monthPick.value), area, '', '')
+    rows.value = saleStore.targetProduct
+
+    // await useOrderStore.fetchOrder('', `${startDate.value}`, `${endDate.value}`)
+    isLoading.value = false
+}
+
 
 function exportCSV() {
     const header = ['id', 'period', 'zone', 'area', 'storeId', 'productGroup', 'target', 'actual', 'unit']
@@ -407,8 +460,12 @@ function exportCSV() {
     URL.revokeObjectURL(url)
 }
 
-onMounted(() => {
-    // Reset to first page when filters change
+onMounted(async () => {
+    await saleStore.getTarget('', '', area)
+    await saleStore.getTargetProduct(period, area, '', '')
+    rows.value = saleStore.targetProduct
+
+    console.log(rows.value);
 })
 </script>
 

@@ -6,6 +6,20 @@ export function formatDateToYYYYMMDD (date) {
   return `${year}${month}${day}`
 }
 
+export function formatToYYYYMM (date) {
+  if (!date) return ''
+  // เคส 1: โหมด month-picker ของบางเวอร์ชันจะให้ { year: 2025, month: 7 } (month เริ่มที่ 0)
+  if (typeof date === 'object' && 'year' in date && 'month' in date) {
+    const m = Number(date.month) + 1
+    return `${date.year}${String(m).padStart(2, '0')}`
+  }
+  // เคส 2: บางเวอร์ชันคืนเป็น Date
+  const d = new Date(date)
+  const y = d.getFullYear()
+  const m = d.getMonth() + 1
+  return `${y}${String(m).padStart(2, '0')}`
+}
+
 export function formatCurrency (value) {
   return new Intl.NumberFormat('th-TH', {
     style: 'currency',
@@ -42,7 +56,14 @@ export function getTeam3 (area = '') {
   return firstTwo + thirdChar
 }
 
-export function formatNumber(num) {
+export function formatNumber (num) {
   return num.toLocaleString('en-US')
 }
 
+export function normalizeMonth (val) {
+  return { year: Number(val.year), month: Number(val.month) + 1 }
+}
+
+export function pad2 (n) {
+  return String(n).padStart(2, '0')
+}
