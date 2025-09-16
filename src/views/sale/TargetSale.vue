@@ -59,11 +59,11 @@
         <section class="summary">
             <div class="card">
                 <div class="label">เป้าหมายยอดขาย</div>
-                <div class="value">{{ formatNum(saleStore.target.target, unitDisplay) }}</div>
+                <div class="value">{{ formatNum(saleStore.target?.target ?? 0, unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดขาย</div>
-                <div class="value">{{ formatNum(saleStore.target.sale, unitDisplay) }}</div>
+                <div class="value">{{ formatNum(saleStore.target?.sale ?? 0, unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ความสำเร็จ</div>
@@ -81,19 +81,19 @@
         <section class="summary">
             <div class="card">
                 <div class="label">ยอดเปลี่ยน</div>
-                <div class="value">{{ formatNum(saleStore.target.change, unitDisplay) }}</div>
+                <div class="value">{{ formatNum(saleStore.target?.change ?? 0, unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดคืนดี</div>
-                <div class="value">{{ formatNum(saleStore.target.good, unitDisplay) }}</div>
+                <div class="value">{{ formatNum(saleStore.target?.good ?? 0, unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดเสีย</div>
-                <div class="value">{{ formatNum(saleStore.target.damaged, unitDisplay) }}</div>
+                <div class="value">{{ formatNum(saleStore.target?.damaged ?? 0, unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดตัดแจก</div>
-                <div class="value">{{ formatNum(saleStore.target.give, unitDisplay) }}</div>
+                <div class="value">{{ formatNum(saleStore.target?.give ?? 0, unitDisplay) }}</div>
             </div>
         </section>
 
