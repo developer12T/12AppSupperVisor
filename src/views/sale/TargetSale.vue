@@ -221,7 +221,9 @@ const rows = ref<TargetRow[]>([])
 
 // ---- Filters ----
 const search = ref('')
-const period = ref('')
+const today = new Date();
+const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
+
 const zone = ref('')
 const unit = ref('')
 const onlyBelow = ref(false)
