@@ -461,11 +461,12 @@ function exportCSV() {
 }
 
 onMounted(async () => {
+    isLoading.value = true
     await saleStore.getTarget('', '', area)
     await saleStore.getTargetProduct(period, area, '', '')
     rows.value = saleStore.targetProduct
-
     console.log(rows.value);
+    isLoading.value = false
 })
 </script>
 
