@@ -8,8 +8,14 @@
                 <button class="btn primary" @click="onAddRow">+ New Target</button>
                 <button class="btn" @click="exportCSV">Export CSV</button>
             </div> -->
-            <div class="w-65 ms-3">
-                <VueDatePicker v-model="monthPick" month-picker @update:model-value="onMonthChange" />
+            <div class="flex justify-end">
+                <select class="select select-info ms-3 text-center" v-model="selectedStatus">
+                    <option value="vat">รวม VAT</option>
+                    <option value="novat">ไม่รวม VAT</option>
+                </select>
+                <div class="w-65 ms-3">
+                    <VueDatePicker v-model="monthPick" month-picker @update:model-value="onMonthChange" />
+                </div>
             </div>
         </header>
 
@@ -59,11 +65,17 @@
         <section class="summary">
             <div class="card">
                 <div class="label">เป้าหมายยอดขาย</div>
-                <div class="value">{{ formatNum(saleStore.target?.target ?? 0, unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.target / 1.07 ?? 0,
+                    unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.target ?? 0,
+                    unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดขาย</div>
-                <div class="value">{{ formatNum(saleStore.target?.sale ?? 0, unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.sale / 1.07 ?? 0,
+                    unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.sale ?? 0,
+                    unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ความสำเร็จ</div>
@@ -74,26 +86,43 @@
             </div>
             <div class="card">
                 <div class="label">ผลต่าง (ยอดขาย - เป้าหมาย)</div>
-                <div class="value" :class="{ good: variance >= 0, bad: variance < 0 }">{{ formatNum(variance,
-                    unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'novat'" class="value"
+                    :class="{ good: variance >= 0, bad: variance < 0 }">{{ formatNum(variance / 1.07,
+                        unitDisplay) }}</div>
+
+                <div v-if="selectedStatus === 'vat'" class="value" :class="{ good: variance >= 0, bad: variance < 0 }">
+                    {{ formatNum(variance,
+                        unitDisplay) }}</div>
             </div>
         </section>
         <section class="summary">
             <div class="card">
                 <div class="label">ยอดเปลี่ยน</div>
-                <div class="value">{{ formatNum(saleStore.target?.change ?? 0, unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.change / 1.07 ?? 0,
+                    unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.change ?? 0,
+                    unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดคืนดี</div>
-                <div class="value">{{ formatNum(saleStore.target?.good ?? 0, unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.good / 1.07 ?? 0,
+                    unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.good ?? 0,
+                    unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดเสีย</div>
-                <div class="value">{{ formatNum(saleStore.target?.damaged ?? 0, unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.damaged / 1.07 ?? 0,
+                    unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.damaged ?? 0,
+                    unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดตัดแจก</div>
-                <div class="value">{{ formatNum(saleStore.target?.give ?? 0, unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.give / 1.07 ?? 0,
+                    unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.give ?? 0,
+                    unitDisplay) }}</div>
             </div>
         </section>
 
@@ -233,6 +262,7 @@ const endDate = ref('') // e.g. "20250831"
 const isLoading = ref(false)
 
 let area = localStorage.getItem('area')
+const selectedStatus = ref('vat')
 
 const unitOptions = ['THB', 'PCS', 'CTN'] as const
 const periodOptions = computed(() => Array.from(new Set(rows.value.map(r => r.period))).sort())
@@ -709,6 +739,134 @@ onMounted(async () => {
 
     .summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* ===== Tablet tuning: Galaxy Tab A7 Lite (~800px) ===== */
+
+/* 0) ปรับกล่องหลักให้ยืดหยุ่นขึ้น */
+@media (max-width: 1024px) {
+    .target-page {
+        max-width: 100%;
+        padding: 12px;
+    }
+
+    .header {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .header h1 {
+        font-size: 18px;
+        line-height: 1.25;
+    }
+}
+
+/* 1) ช่วง tablet กว้าง (<= 900px): สรุป 2 คอลัมน์, ช่องตารางกระชับขึ้น */
+@media (max-width: 900px) {
+    .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .filters {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .table thead th,
+    .table td {
+        padding: 8px 10px;
+    }
+}
+
+/* 2) ระดับ Galaxy Tab A7 Lite (<= 820px): 
+      - Header เรียงเป็นคอลัมน์ 
+      - สรุป 2 คอลัมน์ 
+      - ตารางเลื่อนแนวนอนได้ (สำคัญกับจอ ~800px) */
+@media (max-width: 820px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* เปิด horizontal scroll ให้ตาราง */
+    .table-wrap {
+        overflow-x: auto;
+        /* <-- เดิมเป็น hidden ให้เปลี่ยนเป็น auto */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* กันหัวตารางหายเวลาเลื่อน */
+    .table {
+        min-width: 720px;
+        /* ป้องกันตารางบีบเกินไปบนจอ ~800px */
+    }
+
+    /* กระชับ card summary */
+    .card .value {
+        font-size: 16px;
+    }
+}
+
+/* 3) จอแคบกว่า (<= 600px): สรุปเป็นคอลัมน์เดียว, ตารางยังเลื่อนข้างได้ */
+@media (max-width: 600px) {
+    .summary {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .table {
+        min-width: 640px;
+    }
+
+    .header h1 {
+        font-size: 16px;
+    }
+}
+
+/* 4) คุณภาพชีวิต: ให้หัวตารางอยู่เหนือเนื้อหาตอนเลื่อนแนวขวาง */
+.table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+/* 5) ปุ่ม/อินพุตให้กดง่ายขึ้นบนแท็บเล็ต */
+@media (max-width: 900px) {
+
+    .btn,
+    .filter input,
+    .filter select,
+    .table td .input-num,
+    .select {
+        min-height: 40px;
+    }
+}
+
+/* 6) ปรับส่วนเลือกเดือน/สถานะให้ชิดขวาบน desktop และเรียงลงบนแท็บเล็ต */
+@media (max-width: 900px) {
+    .header .flex {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .header .flex>* {
+        flex: 1 1 auto;
+    }
+
+    .header .flex .w-65 {
+        width: auto;
+        /* กันความกว้าง fix ทำให้ล้น */
     }
 }
 </style>

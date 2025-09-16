@@ -34,13 +34,13 @@
                         <th class="p-2 border">ชื่อ</th>
                         <th class="p-2 border">ต้นทริป</th>
                         <th class="p-2 border">เบิก</th>
-                        <th class="p-2 border">คืนดี</th>
-                        <th class="p-2 border">คืนเสีย</th>
-                        <th class="p-2 border">ขาย</th>
-                        <th class="p-2 border">แถม</th>
-                        <th class="p-2 border">เปลี่ยน</th>
-                        <th class="p-2 border">ปรับ</th>
-                        <th class="p-2 border">แจก</th>
+                        <th class="p-2 border">คืนดี (A34 CS0001)</th>
+                        <th class="p-2 border">คืนเสีย (A34 CS0002)</th>
+                        <th class="p-2 border">ขาย (A31)</th>
+                        <th class="p-2 border">แถม (A31)</th>
+                        <th class="p-2 border">เปลี่ยน (B31)</th>
+                        <th class="p-2 border">คืนสต๊อก</th>
+                        <th class="p-2 border">ตัดแจก</th>
                         <th class="p-2 border">คงเหลือ</th>
                     </tr>
                 </thead>
