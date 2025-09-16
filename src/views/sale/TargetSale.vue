@@ -303,8 +303,14 @@ const visibleRows = computed(() => sortedRows.value)
 // ---- Summary ----
 const totalTarget = computed(() => filteredRows.value.reduce((s, r) => s + (r.unit === unitDisplay.value || unitDisplay.value === 'THB' ? r.targetQty : r.targetQty), 0))
 const totalActual = computed(() => filteredRows.value.reduce((s, r) => s + (r.unit === unitDisplay.value || unitDisplay.value === 'THB' ? r.actualCtn : r.actualCtn), 0))
-const overallAttainment = computed(() => saleStore.target.target > 0 ? saleStore.target.sale / saleStore.target.target : 0)
-const variance = computed(() => saleStore.target.sale - saleStore.target.target)
+const overallAttainment = computed(() => {
+    const t = saleStore.target?.target ?? 0
+    const s = saleStore.target?.sale ?? 0
+    return t > 0 ? s / t : 0
+})
+const variance = computed(() =>
+    (saleStore.target?.sale ?? 0) - (saleStore.target?.target ?? 0)
+)
 
 // display unit heuristic: if filter fixed use it, otherwise THB if present else first
 const unitDisplay = computed<Unit>(() => {
