@@ -37,7 +37,7 @@
                     <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                         <option disabled value="">Select Team</option>
                         <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
-                            }}
+                        }}
                         </option>
                     </select>
                 </div>
@@ -274,6 +274,8 @@ watch(selectedZone, async (newVal) => {
     //     }
     // });
     if (newVal) {
+        selectedTeam.value = ''
+        selectedArea.value = ''
         filter.getArea(period, newVal, selectedTeam.value);
         filter.getTeam(newVal);
     }

@@ -94,7 +94,7 @@ export const useOrder = defineStore('order', {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `GET_${start}_${end}.xlsx`) // ชื่อไฟล์
+        link.setAttribute('download', `Item_${start}_${end}.xlsx`) // ชื่อไฟล์
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

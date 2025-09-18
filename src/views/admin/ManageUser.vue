@@ -1,7 +1,19 @@
 <template>
     <div class="p-6 max-full mx-auto">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold">จัดการผู้ใช้</h1>
+            <div class="flex justify-start">
+                <h1 class="text-2xl font-bold">จัดการผู้ใช้</h1>
+                <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
+                    <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
+                            stroke="currentColor">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.3-4.3"></path>
+                        </g>
+                    </svg>
+                    <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
+                </label>
+            </div>
             <div class="flex justify-between items-center mb-4">
                 <button class="btn btn-primary me-5" @click="openAddUserModal">+ เพิ่มผู้ใช้</button>
                 <router-link to="/admin/checklist" class="flex items-center ml-3">
@@ -15,25 +27,32 @@
                 <tr>
                     <th>No</th>
                     <th>ชื่อผู้ใช้</th>
-                    <th>userName</th>
+                    <th>Area</th>
+                    <th>Sale Code</th>
+                    <th>Sale Payer</th>
+                    <th>Phone</th>
+                    <th>UserName</th>
+                    <th>Password</th>
                     <th>Ware House</th>
                     <th>อีเมล</th>
                     <th>สิทธิ์</th>
-                    <th>การจัดการ</th>
+
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(user, index) in users" :key="user.salePayer">
+                <tr v-for="(user, index) in filteredUser" :key="user.username">
                     <td>{{ index + 1 }}</td>
                     <td>{{ user.firstName }} {{ user.surName }}</td>
+                    <td>{{ user.area }}</td>
+                    <td>{{ user.saleCode }}</td>
+                    <td>{{ user.salePayer }}</td>
+                    <td>{{ user.tel }}</td>
                     <td>{{ user.username }}</td>
+                    <td>{{ user.password }}</td>
                     <td>{{ user.warehouse }}</td>
                     <td>{{ user.area }}</td>
                     <td>{{ user.role }}</td>
-                    <td class="space-x-2">
-                        <button class="btn btn-sm btn-info" @click="editUser(user)">แก้ไข</button>
-                        <button class="btn btn-sm btn-error" @click="deleteUser(user.id)">ลบ</button>
-                    </td>
+
                 </tr>
             </tbody>
         </table>
@@ -69,11 +88,26 @@ import { useUser } from '../../store/modules/user';
 
 const userStore = useUser()
 const users = ref([])
+const searchQuery = ref('');
 
-// const users = ref([
-//     { id: 1, name: 'นที', email: 'natee@example.com', role: 'admin' },
-//     { id: 2, name: 'ศิริพร', email: 'siri@example.com', role: 'staff' },
-// ])
+const filteredUser = computed(() => {
+    let data = Array.isArray(userStore?.user) ? [...userStore?.user] : []
+    const query = searchQuery.value.trim().toLowerCase();
+    if (query) {
+        data = data.filter(user =>
+            (user.firstName || '').toLowerCase().includes(query) ||
+            (user.surName || '').toLowerCase().includes(query) ||
+            (user.username || '').toLowerCase().includes(query) ||
+            (user.area || '').toLowerCase().includes(query) ||
+            (user.zone || '').toLowerCase().includes(query) ||
+            (user.tel || '').toLowerCase().includes(query) ||
+            (user.salePayer || '').toLowerCase().includes(query) ||
+            (user.saleCode || '').toLowerCase().includes(query)
+        );
+    }
+    return data;
+})
+
 
 const showModal = ref(false)
 const isEditMode = ref(false)

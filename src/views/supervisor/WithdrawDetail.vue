@@ -42,6 +42,8 @@
         </div>
         <!-- Info Section -->
         <div class="grid md:grid-cols-2 gap-5 mb-8">
+            <Info label="ประเภท" :value="statusTH(data.withdrawType) ?? '-'" />
+            <Info label="เบิกต้นทริป" :value="statusTH(data.newTrip)" />
             <Info label="Order Type" :value="data.orderTypeName ?? '-'" />
             <Info label="Area" :value="data.area ?? '-'" />
             <Info label="จากคลัง" :value="data.fromWarehouse ?? '-'" />
@@ -85,7 +87,7 @@
                             <td class="border-t p-2">{{ idx + 1 }}</td>
                             <td class="border-t p-2">{{ item.name ?? '-' }}</td>
                             <td class="border-t p-2 text-right">{{ item.qty ?? 0 }}</td>
-                            <td class="border-t p-2">{{ 'หีบ' }}</td>
+                            <td class="border-t p-2">{{ item.unit }}</td>
                             <td class="border-t p-2 text-right">{{ item.qtyPcs ?? 0 }}</td>
                             <td class="border-t p-2 text-right">{{ formatNumber(item.price) }}</td>
                             <td class="border-t p-2 text-right">{{ formatNumber(item.total) }}</td>
@@ -153,6 +155,22 @@ function onApproveClick() {
 const goBack = () => {
     router.back()
 }
+
+function statusTH(status) {
+    switch (status) {
+        case 'pending': return 'รอดำเนินการ'
+        case 'approved': return 'อนุมัติ'
+        case 'rejected': return 'ไม่อนุมัติ'
+        case 'true': return 'เบิกต้นทริป'
+        case 'false': return 'เบิกระหว่างทริป'
+        case 'normal': return 'เบิกปกติ'
+        case 'clearance': return 'ระบาย'
+        case 'credit': return 'รับโอนจากเครดิต'
+        default: return status
+    }
+}
+
+
 
 function formatDate(dateStr) {
     if (!dateStr) return ''

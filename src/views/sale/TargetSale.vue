@@ -65,9 +65,9 @@
         <section class="summary">
             <div class="card">
                 <div class="label">เป้าหมายยอดขาย</div>
-                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.target / 1.07 ?? 0,
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.target ?? 0,
                     unitDisplay) }}</div>
-                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.target ?? 0,
+                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.target * 1.07 ?? 0,
                     unitDisplay) }}</div>
             </div>
             <div class="card">
@@ -87,11 +87,11 @@
             <div class="card">
                 <div class="label">ผลต่าง (ยอดขาย - เป้าหมาย)</div>
                 <div v-if="selectedStatus === 'novat'" class="value"
-                    :class="{ good: variance >= 0, bad: variance < 0 }">{{ formatNum(variance / 1.07,
+                    :class="{ good: variance >= 0, bad: variance < 0 }">{{ formatNum(variance,
                         unitDisplay) }}</div>
 
                 <div v-if="selectedStatus === 'vat'" class="value" :class="{ good: variance >= 0, bad: variance < 0 }">
-                    {{ formatNum(variance,
+                    {{ formatNum(variance * 1.07,
                         unitDisplay) }}</div>
             </div>
         </section>
@@ -341,7 +341,7 @@ const overallAttainment = computed(() => {
     return t > 0 ? s / t : 0
 })
 const variance = computed(() =>
-    (saleStore.target?.sale ?? 0) - (saleStore.target?.target ?? 0)
+    (saleStore.target?.sale / 1.07 ?? 0) - (saleStore.target?.target ?? 0)
 )
 
 // display unit heuristic: if filter fixed use it, otherwise THB if present else first

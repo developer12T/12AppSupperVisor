@@ -63,6 +63,8 @@
                         <th class="p-2 border">เขต</th>
                         <th class="p-2 border">ประเภท</th>
                         <th class="p-2 border">ชื่อประเภท</th>
+                        <th class="p-2 border">ประเภทเบิก</th>
+                        <th class="p-2 border">ต้นทริป</th>
                         <th class="p-2 border">วันที่สั่ง</th>
                         <th class="p-2 border">วันที่รับ</th>
 
@@ -90,6 +92,12 @@
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.orderTypeName }}</div>
                         </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            <div class="">{{ statusTH(prod.withdrawType) }}</div>
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            <div class="">{{ statusTH(prod.newTrip) }}</div>
+                        </td>
                         <td class="border p-2 text-left whitespace-pre">
                             <div class="">{{ prod.formmatDate }}</div>
                         </td>
@@ -114,7 +122,7 @@
                 </tbody>
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                     <tr class="bg-gray-300 font-bold ">
-                        <td colspan="7" class="border p-2 text-center">รวมน้ำหนัก</td>
+                        <td colspan="9" class="border p-2 text-center">รวมน้ำหนัก</td>
                         <td class="border p-2 text-center">{{ formatNumber(totalOrderNet) }}</td>
                         <td class="border p-2 text-center">{{ formatNumber(totalOrderGross) }}</td>
                     </tr>
@@ -239,6 +247,21 @@ const filteredOrders = computed(() => {
     return data;
 })
 
+
+function statusTH(status) {
+    switch (status) {
+        case 'pending': return 'รอดำเนินการ'
+        case 'approved': return 'อนุมัติ'
+        case 'rejected': return 'ไม่อนุมัติ'
+        case 'true': return 'เบิกต้นทริป'
+        case 'false': return 'เบิกระหว่างทริป'
+        case 'normal': return 'เบิกปกติ'
+        case 'clearance': return 'ระบาย'
+        case 'credit': return 'รับโอนจากเครดิต'
+        default: return status
+    }
+}
+
 // ✅ คำนวณผลรวม total ของทุก order หลัง filter
 const totalOrderGross = computed(() => {
     return filteredOrders.value.reduce((sum, order) => {
@@ -291,6 +314,8 @@ async function clearFilter() {
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
     if (newVal) {
+        selectedTeam.value = ''
+        selectedArea.value = ''
         filter.getArea(period, newVal, selectedTeam.value);
         filter.getTeam(newVal);
     }

@@ -245,6 +245,10 @@ const totalOrderAmount = computed(() => {
 async function exportExcel() {
     await useOrderStore.downloadExcel(`${startDate.value}`, `${endDate.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
 }
+async function exportExcel() {
+    await useOrderStore.downloadExcelProduct(`${startDate.value}`, `${endDate.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
+}
+
 
 async function onMonthChange() {
     isLoading.value = true
@@ -265,14 +269,9 @@ async function clearFilter() {
 
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
-    // router.replace({
-    //     query: {
-    //         ...route.query,
-    //         zone: newVal,
-    //         area: '' // clear old area
-    //     }
-    // });
     if (newVal) {
+        selectedTeam.value = ''
+        selectedArea.value = ''
         filter.getArea(period, newVal, selectedTeam.value);
         filter.getTeam(newVal);
     }

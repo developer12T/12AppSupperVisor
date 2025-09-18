@@ -1,4 +1,6 @@
 <template>
+    <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
+
     <div class="max-w-7xl mx-auto mt-6 bg-white rounded-2xl shadow-lg p-4">
         <div class="flex justify-between flex-wrap gap-3 items-center mb-4">
             <div class="flex gap-3 ">
@@ -42,6 +44,7 @@
                         <th class="p-2 border">คืนสต๊อก</th>
                         <th class="p-2 border">ตัดแจก</th>
                         <th class="p-2 border">คงเหลือ</th>
+                        <th class="p-2 border">คงเหลือ (PCS)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -114,22 +117,27 @@
                                     unit.unit }}</div>
                             </template>
                         </td>
+                        <!-- BAL -->
+                        <td class="border p-2">
+                            <div class="text-center font-semibold">{{ prod?.summaryPcsPerProduct?.balance ?? 0 }}</div>
+                        </td>
                     </tr>
                 </tbody>
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                     <!-- Summary row (PCS) -->
                     <tr class="bg-gray-300 font-bold ">
                         <td class="border p-2 text-center">รวมจำนวน (PCS)</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStockPcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryWithdrawPcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryGoodPcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryDamagedPcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summarySalePcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryPromotionPcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryChangePcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryAdjustPcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryGivePcs) }}</td>
-                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStockBalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.stockTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.withdrawTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.goodTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.damagedTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.saleTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.promotionTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.changeTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.adjustTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.giveTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.balTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.balTotalPcs) }}</td>
                     </tr>
                     <!-- Summary row (Baht) -->
                     <tr class="bg-gray-300  font-bold">
@@ -144,194 +152,190 @@
                         <td class="border p-2 text-right">{{ formatNumber(data.summaryAdjust) }}</td>
                         <td class="border p-2 text-right">{{ formatNumber(data.summaryGive) }}</td>
                         <td class="border p-2 text-right">{{ formatNumber(data.summaryStockBal) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStockBal) }}</td>
                     </tr>
                 </tfoot>
             </table>
             <table v-else-if="selectedType === 'In'" class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
-                        <th class="p-2 border">รหัส</th>
-                        <th class="p-2 border">ชื่อสินค้า</th>
-                        <th class="p-2 border">ยอดยกมา</th>
-                        <th class="p-2 border">เบิกระหว่างทริป</th>
-                        <th class="p-2 border">รับคืนดี</th>
-                        <th class="p-2 border">รับคืนเสีย</th>
-                        <th class="p-2 border">รับโอนจากเครดิต</th>
-                        <th class="p-2 border">รวมจำนวนรับเข้า</th>
-                        <th class="p-2 border">รวมมูลค่ารับเข้า</th>
+                        <th class="p-2 border">ชื่อ</th>
+                        <th class="p-2 border">ต้นทริป</th>
+                        <th class="p-2 border">เบิก</th>
+                        <th class="p-2 border">คืนดี (A34 CS0001)</th>
+
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(prod, i) in stockIn" :key="prod.productId" class="align-top">
+
+                    <tr v-for="(prod, i) in data.data" :key="prod.productId" class="align-top">
                         <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
-                        <td class="border p-2 text-center whitespace-pre">
+                        <td class="border p-2 text-left whitespace-pre">
+                            <span class="font-bold">{{ i + 1 }}.{{ prod.productName ?? '-' }}</span>
                             <div class="">{{ prod.productId }}</div>
                         </td>
-                        <td class="border p-2 text-left whitespace-pre">
-                            <div class="">{{ prod.name }}</div>
+                        <!-- STOCK -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.stock ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
                         </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.stock }}</div>
+                        <!-- Withdraw -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.withdraw ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
                         </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.withdraw }}</div>
+                        <!-- Damaged -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.good ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
                         </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.good }}</div>
-                        </td>
-                        <td class="border p-2 text-rightwhitespace-pre">
-                            <div class="">{{ prod.damaged }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.credit }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.sumStock }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.summary }}</div>
-                        </td>
+
                     </tr>
                 </tbody>
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
-                    <tr>
-                        <th colspan="2" class="p-2 border">รวม</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockIn }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockIn }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockInGood }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockInDamaged }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockInCredit }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockInsumStock }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockInsummary }}</th>
+                    <!-- Summary row (PCS) -->
+                    <tr class="bg-gray-300 font-bold ">
+                        <td class="border p-2 text-center">รวมจำนวน (PCS)</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.stockTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.withdrawTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.goodTotalPcs) }}</td>
+
+
+                    </tr>
+                    <!-- Summary row (Baht) -->
+                    <tr class="bg-gray-300  font-bold">
+                        <td class="border p-2 text-center">รวมจำนวนเงิน (บาท)</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStock) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryWithdraw) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryGood) }}</td>
+
                     </tr>
                 </tfoot>
             </table>
             <table v-else-if="selectedType === 'Out'" class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
-                        <th class="p-2 border">รหัส</th>
-                        <th class="p-2 border">ชื่อสินค้า</th>
-                        <th class="p-2 border">จำนวนขาย</th>
-                        <th class="p-2 border">มูลค่าขาย</th>
-                        <th class="p-2 border">จำนวนแถม</th>
-                        <th class="p-2 border">มูลค่าแถม</th>
-                        <th class="p-2 border">จำนวนที่เปลี่ยนให้ร้านค้า</th>
-                        <th class="p-2 border">มูลค่าเปลี่ยนให้ร้านค้า</th>
-                        <th class="p-2 border">จำนวนแจกสินค้า</th>
-                        <th class="p-2 border">มูลค่าแจกสินค้า</th>
-                        <th class="p-2 border">แลกซอง</th>
-                        <th class="p-2 border">รวมจำนวนขาย+แถม+เปลี่ยน</th>
-                        <th class="p-2 border">รวมมูลค่าขาย+แถม+เปลี่ยน</th>
+                        <th class="p-2 border">ชื่อ</th>
+                        <th class="p-2 border">ขาย (A31)</th>
+                        <th class="p-2 border">แถม (A31)</th>
+                        <th class="p-2 border">เปลี่ยน (B31)</th>
+                        <th class="p-2 border">คืนสต๊อก</th>
+                        <th class="p-2 border">ตัดแจก</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(prod, i) in stockOut" :key="prod.productId" class="align-top">
+
+                    <tr v-for="(prod, i) in data.data" :key="prod.productId" class="align-top">
                         <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
-                        <td class="border p-2 text-center whitespace-pre">
+                        <td class="border p-2 text-left whitespace-pre">
+                            <span class="font-bold">{{ i + 1 }}.{{ prod.productName ?? '-' }}</span>
                             <div class="">{{ prod.productId }}</div>
                         </td>
-                        <td class="border p-2 text-left whitespace-pre">
-                            <div class="">{{ prod.name }}</div>
+                        <!-- Sale -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.sale ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
                         </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.sale }}</div>
+                        <!-- Promotion -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.promotion ?? 0 }} {{ unit.unitName ?? unit.unit }}
+                                </div>
+                            </template>
                         </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.summarySale }}</div>
+                        <!-- Change -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.change ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
                         </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.promotion }}</div>
+                        <!-- Adjust Stock -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.adjust ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
                         </td>
-                        <td class="border p-2 text-rightwhitespace-pre">
-                            <div class="">{{ prod.summaryPromotion }}</div>
+                        <!-- Give Aways -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.give ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
                         </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.change }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.summaryChange }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.give }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.summaryGive }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.exchange }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.summaryQtySalePromotionChange }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.summarySalePromotionChange }}</div>
-                        </td>
+
                     </tr>
                 </tbody>
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
-                    <tr>
-                        <th colspan="2" class="p-2 border">รวม</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutSale }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutSummarySale }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutPromotion }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutSummaryPromotion }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutChange }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutSummaryChange }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutGive }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutSummaryGive }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutexchange }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutSummaryQtySalePromotionChange }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumStockOutSummarySalePromotionChange }}</th>
+                    <!-- Summary row (PCS) -->
+                    <tr class="bg-gray-300 font-bold ">
+                        <td class="border p-2 text-center">รวมจำนวน (PCS)</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.saleTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.promotionTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.changeTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.adjustTotalPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.giveTotalPcs) }}</td>
+                    </tr>
+                    <!-- Summary row (Baht) -->
+                    <tr class="bg-gray-300  font-bold">
+                        <td class="border p-2 text-center">รวมจำนวนเงิน (บาท)</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summarySale) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryPromotion) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryChange) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryAdjust) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryGive) }}</td>
                     </tr>
                 </tfoot>
             </table>
             <table v-else-if="selectedType === 'Bal'" class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
-                        <th class="p-2 border">รหัส</th>
-                        <th class="p-2 border">ชื่อสินค้า</th>
-                        <th class="p-2 border">จำนวนคงเหลือดี</th>
-                        <th class="p-2 border">จำนวนคงเหลือเสีย</th>
-                        <th class="p-2 border">มูลค่าคงเหลือ</th>
+                        <th class="p-2 border">ชื่อ</th>
+                        <th class="p-2 border">ต้นทริป</th>
+                        <th class="p-2 border">คงเหลือ</th>
                     </tr>
                 </thead>
                 <tbody>
 
-                    <tr v-for="(prod, i) in balance" :key="prod.productId" class="align-top">
+                    <tr v-for="(prod, i) in data.data" :key="prod.productId" class="align-top">
                         <!-- ชื่อสินค้า (รวมรหัสและ unit) -->
-                        <td class="border p-2 text-center whitespace-pre">
+                        <td class="border p-2 text-left whitespace-pre">
+                            <span class="font-bold">{{ i + 1 }}.{{ prod.productName ?? '-' }}</span>
                             <div class="">{{ prod.productId }}</div>
                         </td>
-                        <td class="border p-2 text-left whitespace-pre">
-                            <div class="">{{ prod.productName }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.balanceGood }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.balanceDamaged }}</div>
-                        </td>
-                        <td class="border p-2 text-right whitespace-pre">
-                            <div class="">{{ prod.summary }}</div>
+                        <!-- STOCK -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center">{{ unit.stock ?? 0 }} {{ unit.unitName ?? unit.unit }}</div>
+                            </template>
                         </td>
 
-
+                        <!-- BAL -->
+                        <td class="border p-2">
+                            <template v-for="(unit, j) in prod.listUnit" :key="j">
+                                <div class="text-center font-semibold">{{ unit.balance ?? 0 }} {{ unit.unitName ??
+                                    unit.unit }}</div>
+                            </template>
+                        </td>
                     </tr>
                 </tbody>
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
-                    <tr>
-                        <th colspan="2" class="p-2 border">รวม</th>
-                        <th class="p-2 border">{{ stockSummary.sumBalanceGood }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumBalanceDamaged }}</th>
-                        <th class="p-2 border">{{ stockSummary.sumBalanceSummary }}</th>
+                    <!-- Summary row (PCS) -->
+                    <tr class="bg-gray-300 font-bold ">
+                        <td class="border p-2 text-center">รวมจำนวน (PCS)</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStockPcs) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.balTotalPcs) }}</td>
+                    </tr>
+                    <!-- Summary row (Baht) -->
+                    <tr class="bg-gray-300  font-bold">
+                        <td class="border p-2 text-center">รวมจำนวนเงิน (บาท)</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStock) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(data.summaryStockBal) }}</td>
                     </tr>
                 </tfoot>
             </table>
-        </div>
-        <div class="flex justify-end mt-4">
-            <button class="bg-blue-700 text-white rounded-xl px-6 py-2 font-semibold flex items-center gap-2">
-                <span class="material-icons">print</span> พิมพ์ Stock
-            </button>
         </div>
     </div>
 </template>
@@ -340,6 +344,8 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useStockStore } from '../../store/modules/stock';
 import { useFilter } from '../../store/modules/filter'
+import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
+
 
 const filter = useFilter()
 const selectedType = ref('Summary') // ค่า default
@@ -355,11 +361,14 @@ const stockOut = ref({})
 const balance = ref({})
 const selectedZone = ref('')
 const selectedArea = ref('')
+const isLoading = ref(false)
 
 function formatNumber(val) {
     if (val === null || val === undefined || isNaN(val)) return '-'
     return Number(val).toLocaleString()
 }
+
+
 
 
 watch(selectedZone, async (newVal) => {
@@ -382,6 +391,7 @@ async function exportExcel() {
 
 watch(selectedArea, async (newVal) => {
     if (newVal) {
+        isLoading.value = true;
         await stockStore.getStock(newVal, period)
         await stockStore.stockToExcel(newVal, period)
         data.value = stockStore.stock
@@ -390,9 +400,17 @@ watch(selectedArea, async (newVal) => {
         stockOut.value = stockStore.stockOut
         console.log('stockOut', stockOut.value)
         balance.value = stockStore.balance
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        // await new Promise(resolve => setTimeout(resolve, 2000))
+        isLoading.value = false;
     }
 });
+
+// const totalPCS = computed(() => {
+//     return data.value.reduce((sum, order) => {
+//         return sum + (Number(order?.summaryPcsPerProduct?.balance) || 0)
+//     }, 0)
+// })
+
 
 onMounted(async () => {
     // isLoading.value = true

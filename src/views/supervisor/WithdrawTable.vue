@@ -52,7 +52,8 @@
 
         </div>
 
-        <div class="overflow-x-auto rounded-xl" style="min-height: 450px; max-height: 450px; max-width: 90vw; overflow-y: auto;">
+        <div class="overflow-x-auto rounded-xl"
+            style="min-height: 450px; max-height: 450px; max-width: 90vw; overflow-y: auto;">
             <table class="min-w-full border text-center text-sm bg-white">
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
@@ -62,9 +63,10 @@
                         <th class="p-2 border">เขต</th>
                         <th class="p-2 border">ประเภท</th>
                         <th class="p-2 border">ชื่อประเภท</th>
+                        <th class="p-2 border">ประเภทเบิก</th>
+                        <th class="p-2 border">ต้นทริป</th>
                         <th class="p-2 border">วันที่สั่ง</th>
                         <th class="p-2 border">วันที่รับ</th>
-
                         <!-- <th class="p-2 border">รายการ</th>
                         <th class="p-2 border">รายการใน M3</th> -->
                         <th class="p-2 border">สถานะ</th>
@@ -88,6 +90,12 @@
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
                             <div class="">{{ prod.orderTypeName }}</div>
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            <div class="">{{ statusTH(prod.withdrawType) }}</div>
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            <div class="">{{ statusTH(prod.newTrip) }}</div>
                         </td>
                         <td class="border p-2 text-left whitespace-pre">
                             <div class="">{{ prod.formmatDate }}</div>
@@ -113,7 +121,7 @@
                 </tbody>
                 <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                     <tr class="bg-gray-300 font-bold ">
-                        <td colspan="7" class="border p-2 text-center">รวมน้ำหนัก</td>
+                        <td colspan="9" class="border p-2 text-center">รวมน้ำหนัก</td>
                         <td class="border p-2 text-center">{{ formatNumber(totalOrderNet) }}</td>
                         <td class="border p-2 text-center">{{ formatNumber(totalOrderGross) }}</td>
                     </tr>
@@ -176,6 +184,21 @@ const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
 
 // const month = computed(() => startDate.value.split('-')[1])
 // const year = computed(() => startDate.value.split('-')[0])
+
+function statusTH(status) {
+    switch (status) {
+        case 'pending': return 'รอดำเนินการ'
+        case 'approved': return 'อนุมัติ'
+        case 'rejected': return 'ไม่อนุมัติ'
+        case 'true': return 'เบิกต้นทริป'
+        case 'false': return 'เบิกระหว่างทริป'
+        case 'normal': return 'เบิกปกติ'
+        case 'clearance': return 'ระบาย'
+        case 'credit': return 'รับโอนจากเครดิต'
+        default: return status
+    }
+}
+
 
 
 const filteredOrders = computed(() => {

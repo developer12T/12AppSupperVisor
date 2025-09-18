@@ -268,7 +268,7 @@ const totalOrderAmount = computed(() => {
 })
 
 async function exportExcel() {
-    await refundStore.downloadExcel(`${startDate.value}`, `${endDate.value}`,`${selectedArea.value}`,`${selectedTeam.value}`,`${selectedZone.value}`)
+    await refundStore.downloadExcel(`${startDate.value}`, `${endDate.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
 }
 
 async function onMonthChange() {
@@ -303,6 +303,8 @@ watch(selectedZone, async (newVal) => {
     //     }
     // });
     if (newVal) {
+        selectedTeam.value = ''
+        selectedArea.value = ''
         filter.getArea(period, newVal, selectedTeam.value);
         filter.getTeam(newVal);
     }

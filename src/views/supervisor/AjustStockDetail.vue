@@ -7,6 +7,7 @@
             <template v-if="data">
                 <h1 class="text-xl font-bold mb-2">ข้อมูลรายการปรับสต็อก</h1>
                 <div class="mb-4 grid grid-cols-2 gap-3 text-sm">
+                    <div><span class="font-semibold">Withdraw ID:</span> {{ data.withdrawId }}</div>
                     <div><span class="font-semibold">Order ID:</span> {{ data.orderId }}</div>
                     <div><span class="font-semibold">สถานะ:</span> <span
                             class="inline-block rounded px-3 py-1 text-xs font-bold" :class="{
@@ -21,7 +22,8 @@
                     <div><span class="font-semibold">รอบบัญชี:</span> {{ data.period }}</div>
                     <div><span class="font-semibold">หมายเหตุ:</span> {{ data.note }}</div>
                 </div>
-                <h2 class="font-bold mt-6 mb-2">รายการสินค้า</h2>
+
+                <h2 class="font-bold mt-6 mb-2">รายการสินค้าที่ปรับออก</h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full border border-gray-300 text-sm">
                         <thead class="bg-gray-100">
@@ -65,7 +67,43 @@
                         อนุมัติ
                     </button>
                 </div>
-
+                <h2 class="font-bold mt-6 mb-2">รายการสินค้าใบเบิก {{ data.withdrawId }}</h2>
+                <div class="overflow-x-auto rounded-lg border border-gray-100 shadow">
+                    <table class="min-w-full text-sm align-middle">
+                        <thead class="sticky top-0 bg-gray-50">
+                            <tr>
+                                <th class="p-2 text-left">No</th>
+                                <th class="p-2 text-left">สินค้า</th>
+                                <th class="p-2 text-right">จำนวน</th>
+                                <th class="p-2 text-left">หน่วย</th>
+                                <th class="p-2 text-right">จำนวน (Pcs)</th>
+                                <th class="p-2 text-right">ราคา/หน่วย</th>
+                                <th class="p-2 text-right">รวม</th>
+                                <th class="p-2 text-right">น้ำหนักรวม</th>
+                                <th class="p-2 text-right">น้ำหนักสุทธิ</th>
+                                <th class="p-2 text-right">รับจริง</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, idx) in dataWithdraw.listProduct ?? []" :key="item._id ?? idx"
+                                class="hover:bg-blue-50">
+                                <td class="border-t p-2">{{ idx + 1 }}</td>
+                                <td class="border-t p-2">{{ item.name ?? '-' }}</td>
+                                <td class="border-t p-2 text-right">{{ item.qty ?? 0 }}</td>
+                                <td class="border-t p-2">{{ item.unit }}</td>
+                                <td class="border-t p-2 text-right">{{ item.qtyPcs ?? 0 }}</td>
+                                <td class="border-t p-2 text-right">{{ formatNumber(item.price) }}</td>
+                                <td class="border-t p-2 text-right">{{ formatNumber(item.total) }}</td>
+                                <td class="border-t p-2 text-right">{{ item.weightGross ?? 0 }}</td>
+                                <td class="border-t p-2 text-right">{{ item.weightNet ?? 0 }}</td>
+                                <td class="border-t p-2 text-right">{{ item.receiveQty ?? 0 }}</td>
+                            </tr>
+                            <tr v-if="!data.listProduct || data.listProduct.length === 0">
+                                <td class="border-t p-2 text-center text-gray-400" colspan="14">ไม่มีสินค้า</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </template>
             <template v-else>
                 <div class="text-center text-red-500 font-bold mt-10">ไม่พบข้อมูลปรับสต็อก</div>
@@ -79,11 +117,15 @@ import { useRoute } from 'vue-router'
 import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามจริง
 import { ref, onMounted } from 'vue'
 import { useStockStore } from '../../store/modules/stock'
+import { useWithdrawStore } from '../../store/modules/withdraw'
+
 
 const route = useRoute()
 const data = ref(null)
+const dataWithdraw = ref(null)
 const isLoading = ref(false)
 const stockStore = useStockStore()
+const withdrawStore = useWithdrawStore()
 
 async function approve(status) {
     try {
@@ -97,12 +139,21 @@ async function approve(status) {
 
 }
 
+function formatNumber(val) {
+    if (val === null || val === undefined || isNaN(val)) return '-'
+    return Number(val).toLocaleString()
+}
+
 async function loadData() {
     isLoading.value = true
     data.value = null
     try {
         await stockStore.getAdjustStockDetail('cash', route.params.orderId)
         data.value = stockStore.adjuststockDetail || null
+        console.log(data.value.withdrawId)
+        await withdrawStore.getWithdrawDetail('cash', data.value.withdrawId)
+        dataWithdraw.value = withdrawStore.withdrawDetail
+
     } catch (err) {
         data.value = null
     } finally {

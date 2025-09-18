@@ -41,11 +41,10 @@
                         <span class="font-bold text-lg text-gray-700">เลขใบเบิก</span>
                         <div>
                             <span class="inline-block rounded px-3 py-1 text-xs font-bold" :class="{
-                                'bg-yellow-100 text-yellow-700': item.status === 'pending',
-                                'bg-green-100 text-green-700': item.status === 'approved',
-                                'bg-red-100 text-red-700': item.status === 'rejected'
+                                'bg-green-100 text-green-700': item.newTrip === 'false',
+                                'bg-red-100 text-red-700': item.newTrip === 'true'
                             }">
-                                {{ statusTH(item.status) }}
+                                {{ statusTH(item.newTrip) }}
                             </span>
                         </div>
                         <span class="text-sm text-gray-500">{{ item.orderId }}</span>
@@ -77,7 +76,10 @@
 
                     <div class="text-sm text-gray-500">จำนวนทั้งหมด: <span class="font-semibold">{{ item.total }}</span>
                     </div>
-                    <div>
+                    <div class="flex justify-between">
+                        <div class="text-sm text-gray-500">ประเภทการเบิก: <span class="font-semibold">{{
+                            statusTH(item.withdrawType)
+                                }}</span></div>
                         <span class="inline-block rounded px-3 py-1 text-xs font-bold" :class="{
                             'bg-yellow-100 text-yellow-700': item.status === 'pending',
                             'bg-green-100 text-green-700': item.status === 'approved',
@@ -161,10 +163,14 @@ function statusTH(status) {
         case 'pending': return 'รอดำเนินการ'
         case 'approved': return 'อนุมัติ'
         case 'rejected': return 'ไม่อนุมัติ'
+        case 'true': return 'เบิกต้นทริป'
+        case 'false': return 'เบิกระหว่างทริป'
+        case 'normal': return 'เบิกปกติ'
+        case 'clearance': return 'ระบาย'
+        case 'credit': return 'รับโอนจากเครดิต'
         default: return status
     }
 }
-
 
 watch(() => route.query.zone, (val) => {
     selectedZone.value = val || ''
