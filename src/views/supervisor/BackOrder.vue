@@ -3,7 +3,7 @@
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">รายการใบเบิก</h2>
+            <h2 class="text-2xl font-bold mb-6">รายการ Back Order</h2>
             <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
                 <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -58,8 +58,7 @@
                 <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
                         <th class="p-2 border">Order ID</th>
-                        <!-- <th class="p-2 border">Low Status</th>
-                        <th class="p-2 border">Heigh Status</th> -->
+
                         <th class="p-2 border">เขต</th>
                         <th class="p-2 border">ประเภท</th>
                         <th class="p-2 border">ชื่อประเภท</th>
@@ -67,8 +66,7 @@
                         <th class="p-2 border">ต้นทริป</th>
                         <th class="p-2 border">วันที่สั่ง</th>
                         <th class="p-2 border">วันที่รับ</th>
-                        <!-- <th class="p-2 border">รายการ</th>
-                        <th class="p-2 border">รายการใน M3</th> -->
+
                         <th class="p-2 border">สถานะ</th>
                         <th class="p-2 border">น้ำหนักรวม</th>
                         <th class="p-2 border">น้ำหนักรวมสุทธิ</th>
@@ -139,7 +137,7 @@
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel To M3</button>
             </div>
             <div class="ms-2">
-                <button class="btn btn-success text-white" @click="exportExcelBackOrder">Export Back Order</button>
+                <button class="btn btn-success text-white" @click="exportExcel">Export Excel Item</button>
             </div>
         </div>
     </div>
@@ -285,10 +283,12 @@ const totalOrderNet = computed(() => {
 
 async function exportExcel() {
 
+    // await refundStore.downloadExcel(`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
 
-}
-async function exportExcelBackOrder() {
-    await withdrawStore.downloadExcelBackOrder(period);
+    // await reportStore.downloadExcel(
+    //     formatDate2(selectedDateStart.value),
+    //     formatDate2(selectedDateEnd.value)
+    // )
 }
 
 async function onMonthChange() {

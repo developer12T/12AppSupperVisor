@@ -14,12 +14,12 @@
                     <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
                 </label>
             </div>
-            <div class="flex justify-between items-center mb-4">
+            <!-- <div class="flex justify-between items-center mb-4">
                 <button class="btn btn-primary me-5" @click="openAddUserModal">+ เพิ่มผู้ใช้</button>
                 <router-link to="/admin/checklist" class="flex items-center ml-3">
                     <button class="btn btn-success text-white" @click="">Report Check List</button>
                 </router-link>
-            </div>
+            </div> -->
         </div>
 
         <table class="table w-full table-zebra">

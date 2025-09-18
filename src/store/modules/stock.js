@@ -160,6 +160,47 @@ export const useStockStore = defineStore('stock', {
         console.error(error)
         alert('Download failed!')
       }
+    },
+    async downloadExcelSummary (area, period) {
+      try {
+        const response = await api.post(
+          `/api/cash/stock/stockToExcelSummary`,
+          {
+            area: area,
+            period: period,
+            excel: true
+          },
+          { responseType: 'blob' }
+        )
+
+        // ดึงชื่อไฟล์จาก header ถ้ามี
+        let fileName = `stockSummary_${area}_${period}.xlsx`
+        const disposition = response.headers['content-disposition']
+        if (disposition) {
+          const match = disposition.match(/filename="?([^"]+)"?/)
+          if (match && match[1]) fileName = decodeURIComponent(match[1])
+        }
+
+        // กำหนด mime type เป็น excel
+        const blob = new Blob([response.data], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+
+        // สร้าง URL ให้ browser โหลดไฟล์
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', fileName) // ชื่อไฟล์
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        // ให้ browser ได้เริ่มดาวน์โหลดก่อน แล้วค่อย revoke (ป้องกัน bug บางตัว)
+        setTimeout(() => window.URL.revokeObjectURL(url), 200)
+      } catch (error) {
+        console.error(error)
+        alert('Download failed!')
+      }
     }
   }
 })

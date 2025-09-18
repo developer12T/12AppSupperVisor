@@ -36,6 +36,7 @@ const menuItems = ref([
             { icon: 'mdi:box-clock-outline', name: 'รายการใบเบิก', link: '/supervisor/withdrawtable' },
             { icon: 'mdi:credit-card-refund', name: 'รายการโอนจากเครดิต', link: '/supervisor/credit' },
             { icon: 'mdi:store', name: 'รายการร้านค้าเปิดใหม่', link: '/supervisor/storenewtable' },
+            // { icon: 'mdi:arrow-back-circle', name: 'รายงาน Back Order', link: '/supervisor/backorder' },
 
         ],
         roles: ['admin', 'area_manager', 'sale_manager', 'dc']
@@ -62,17 +63,17 @@ const menuItems = ref([
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'dc']
     },
-    {
-        name: 'เช็ครายการใน M3',
-        icon: 'mdi:error',
-        link: '#',
-        roles: ['admin', 'dc'],
-        submenu: [
-            { icon: 'mdi:warehouse', name: 'เช็ครายการเบิก', link: '/supervisor/withdrawm3' },
-            { icon: 'mdi:cart', name: 'เช็ครายการออเดอร์', link: '/supervisor/orderm3' },
+    // {
+    //     name: 'เช็ครายการใน M3',
+    //     icon: 'mdi:error',
+    //     link: '#',
+    //     roles: ['admin', 'dc'],
+    //     submenu: [
+    //         { icon: 'mdi:warehouse', name: 'เช็ครายการเบิก', link: '/supervisor/withdrawm3' },
+    //         { icon: 'mdi:cart', name: 'เช็ครายการออเดอร์', link: '/supervisor/orderm3' },
 
-        ],
-    },
+    //     ],
+    // },
     {
         name: 'รายการอนุมัติ',
         icon: 'mdi:approval',
@@ -133,7 +134,7 @@ watch(isSidebarOpen, (newVal) => {
                                 :class="['flex items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-base-300', isSubmenuOpen(index) ? 'bg-base-300' : '', !isSidebarOpen ? 'justify-center' : '']">
                                 <Icon :icon="item.icon" class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                 <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{ item.name
-                                }}</span>
+                                    }}</span>
                                 <Icon v-if="showText" class="w-3 h-3" icon="mdi:chevron-down" />
                             </button>
                             <ul v-show="isSidebarOpen && isSubmenuOpen(index)" class="py-2 space-y-2">
@@ -145,7 +146,7 @@ watch(isSidebarOpen, (newVal) => {
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                            }}</span>
+                                        }}</span>
                                     </router-link>
                                 </li>
                             </ul>

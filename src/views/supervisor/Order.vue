@@ -133,7 +133,7 @@
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel To M3</button>
             </div>
             <div class="ms-2">
-                <button class="btn btn-success text-white" @click="exportExcel">Export Excel Item</button>
+                <button class="btn btn-success text-white" @click="exportExcelProduct">Export Excel Item</button>
             </div>
         </div>
     </div>
@@ -245,8 +245,8 @@ const totalOrderAmount = computed(() => {
 async function exportExcel() {
     await useOrderStore.downloadExcel(`${startDate.value}`, `${endDate.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
 }
-async function exportExcel() {
-    await useOrderStore.downloadExcelProduct(`${startDate.value}`, `${endDate.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
+async function exportExcelProduct() {
+    await useOrderStore.downloadExcelProduct(`${period}`,``, ``, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
 }
 
 

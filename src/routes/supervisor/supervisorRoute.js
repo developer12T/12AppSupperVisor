@@ -132,6 +132,10 @@ const supervisorRoutes = [
       {
         path: 'credit',
         component: () => import('../../views/supervisor/CreditWithdraw.vue')
+      },
+      {
+        path: 'backorder',
+        component: () => import('../../views/supervisor/BackOrder.vue')
       }
     ]
   }

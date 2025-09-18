@@ -24,6 +24,10 @@
             <div>
                 <!-- <button class="ml-auto bg-blue-700 text-white rounded px-4 py-1 font-semibold">ล้างตัวกรอง</button> -->
                 <button @click="exportExcel"
+                    class="mx-4 ml-auto bg-blue-700 text-white rounded px-4 py-1 font-semibold">
+                    Export Excel แยก (IN,OUT,BAL) </button>
+
+                <button @click="exportExcelSummary"
                     class="ms-4 ml-auto bg-blue-700 text-white rounded px-4 py-1 font-semibold">Export
                     Excel</button>
             </div>
@@ -388,6 +392,11 @@ watch(selectedZone, async (newVal) => {
 async function exportExcel() {
     await stockStore.downloadExcel(selectedArea.value, period)
 }
+
+async function exportExcelSummary() {
+    await stockStore.downloadExcelSummary(selectedArea.value, period)
+}
+
 
 watch(selectedArea, async (newVal) => {
     if (newVal) {

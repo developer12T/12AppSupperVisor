@@ -18,6 +18,20 @@ export const useUser = defineStore('users', {
       } catch (error) {
         console.error(error)
       }
+    },
+    async patchPassword (username, password) {
+      try {
+        const response = await api.patch(`/api/cash/user/updateUserOne`, {
+          username: username,
+          password: password
+        })
+        const result = response.data.data
+
+        // this.user = result
+        console.log(result)
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 })

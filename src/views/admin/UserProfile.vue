@@ -40,8 +40,8 @@
                     <input v-model="user.employeeId" class="input input-bordered w-full" disabled />
                 </div>
             </div>
-
             <div class="mt-6 text-right">
+                <button class="mx-3 btn btn-primary" @click="changePassword = true">เปลี่ยนรหัสผ่าน</button>
                 <button class="btn btn-primary" @click="editMode = true">แก้ไขโปรไฟล์</button>
             </div>
         </div>
@@ -65,16 +65,36 @@
                 </form>
             </div>
         </div>
+
+        <div v-if="changePassword" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+                <h2 class="text-xl font-semibold mb-4">เปลี่ยนรหัสผ่าน</h2>
+                <form @submit.prevent="updatePassword">
+                    <input v-model="username" disabled class="input input-bordered w-full mb-2"
+                        placeholder="ชื่อผู้ใช้" />
+                    <input v-model="password" required class="input input-bordered w-full mb-2"
+                        placeholder="password" />
+
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" class="btn" @click="changePassword = false">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">บันทึก</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { ref, computed, onMounted } from 'vue'
+import { useUser } from '../../store/modules/user';
 
 const route = useRoute()
+const userStore = useUser()
 
 const username = computed(() => route.params.username)
+const password = ref()
 
 const defaultAvatar = `https://ui-avatars.com/api/?name=${route.params.username}&background=random`
 
@@ -95,6 +115,7 @@ const user = ref({
 })
 
 const editMode = ref(false)
+const changePassword = ref(false)
 const editForm = ref({ ...user.value })
 
 const updateProfile = () => {
@@ -102,4 +123,12 @@ const updateProfile = () => {
     editMode.value = false
     alert('✅ โปรไฟล์ได้รับการอัปเดตเรียบร้อยแล้ว')
 }
+const updatePassword = (
+) => {
+    // user.value = { ...editForm.value }
+    userStore.patchPassword(username.value, password.value)
+    changePassword.value = false
+    alert('✅ โปรไฟล์ได้รับการอัปเดตเรียบร้อยแล้ว')
+}
+
 </script>
