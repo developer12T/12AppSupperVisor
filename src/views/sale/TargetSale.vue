@@ -67,7 +67,8 @@
                 <div class="label">เป้าหมายยอดขาย</div>
                 <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.target ?? 0,
                     unitDisplay) }}</div>
-                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.target * 1.07 ?? 0,
+                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(((saleStore.target?.target ?? 0) * 1.07)
+                    ?? 0,
                     unitDisplay) }}</div>
             </div>
             <div class="card">
@@ -98,7 +99,8 @@
         <section class="summary">
             <div class="card">
                 <div class="label">ยอดเปลี่ยน</div>
-                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum((saleStore.target?.change ?? 0) / 1.07,
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum((saleStore.target?.change ?? 0) /
+                    1.07,
                     unitDisplay) }}</div>
                 <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.change ?? 0,
                     unitDisplay) }}</div>
@@ -112,7 +114,8 @@
             </div>
             <div class="card">
                 <div class="label">ยอดเสีย</div>
-                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum((saleStore.target?.damaged ?? 0) / 1.07,
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum((saleStore.target?.damaged ?? 0) /
+                    1.07,
                     unitDisplay) }}</div>
                 <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.damaged ?? 0,
                     unitDisplay) }}</div>
