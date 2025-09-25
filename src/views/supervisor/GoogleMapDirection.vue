@@ -8,7 +8,7 @@
                 <div class=" flex justify-between">
                     <div>
                         <div class="text-xl font-semibold text-green-700" v-if="distanceText">
-                            🛣️ ระยะทางประมาณ: {{ distanceText }} A = จุดเก่า, B = จุดใหม่
+                            🛣️ ระยะทางประมาณ: {{ distanceText }} A = จุดใหม่, B = จุดเก่า
                         </div>
                         <h1 class="text-xl font-bold mb-2">{{ route.query.id }} ประวัติการขอปรับ Location</h1>
                     </div>
