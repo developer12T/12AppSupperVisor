@@ -65,10 +65,9 @@
         <section class="summary">
             <div class="card">
                 <div class="label">เป้าหมายยอดขาย</div>
-                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.target ?? 0,
-                    unitDisplay) }}</div>
-                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(((saleStore.target?.target ?? 0) * 1.07)
-                    ?? 0,
+                <div v-if="selectedStatus === 'novat'" class="value">{{
+                    formatNum(saleStore.target?.target ?? 0, unitDisplay) }}</div>
+                <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(((saleStore.target?.target ?? 0) * 1.07),
                     unitDisplay) }}</div>
             </div>
             <div class="card">
