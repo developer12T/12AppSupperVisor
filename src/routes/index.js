@@ -4,11 +4,12 @@ import saleRoutes from '../routes/sale'
 import supervisorRoutes from '../routes/supervisor/supervisorRoute'
 import Dashboard from '../views/Dashboard.vue'
 // import Layout from '../Layout.vue'
+const Layout = () => import('@/Layout.vue')
 
 const routes = [
   {
-    path: '/',
-    component: () => import('@/Layout.vue'),
+    path: '/', 
+    component: Layout,
     meta: { requiresAuth: true },
     children: [{ path: '', component: Dashboard }]
   },
