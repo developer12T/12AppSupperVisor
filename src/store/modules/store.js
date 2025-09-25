@@ -242,7 +242,7 @@ export const useStoresStore = defineStore('stores', {
       try {
         let zone = ''
         let area = ''
-        
+
         if (selectZone != '') {
           zone = selectZone
         } else {
@@ -254,9 +254,12 @@ export const useStoresStore = defineStore('stores', {
         } else {
           area = localStorage.getItem('area')
         }
+        console.log(
+          `/api/cash/store/getLatLongOrder?storeId=${storeId}&zone=${zone}&area=${area}`
+        )
 
         const response = await api.get(
-          `/api/cash/store/getLatLongOrder?storeId=${storeId}`
+          `/api/cash/store/getLatLongOrder?storeId=${storeId}&zone=${zone}&area=${area}`
         )
         const result = response.data.data
         this.storeLatlong = result

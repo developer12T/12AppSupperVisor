@@ -93,9 +93,10 @@
                         <div :class="{
                             'text-warning': prod.status === 'pending',
                             'text-green-700': prod.status === 'completed',
+                            'text-green-700': prod.status === 'approved',
                             'text-red-700': prod.status === 'canceled'
                         }">
-                            {{ prod.status }}</div>
+                            {{ prod.statusTH }}</div>
                     </td>
                     <td class="border p-2 text-center whitespace-pre">
                         <div class=""> <button class="btn btn-success" @click="$router.push({
@@ -310,7 +311,7 @@ const filteredStores = computed(() => {
 
 onMounted(async () => {
     isLoading.value = true
-    await store.getStoreLatlong('')
+    await store.getStoreLatlong('', '', '')
     await filter.getZone(period);
 
     if (userRole == 'supervisor' || userRole == 'area_manager') {

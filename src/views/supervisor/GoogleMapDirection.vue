@@ -35,8 +35,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(prod, i) in filteredStores" :key="prod.orderId" class="align-top"
-                            @click="handleRowClick(prod)">
+                        <tr v-for="(prod, i) in filteredStores" :key="prod.orderId" class="align-top">
                             <td class="border p-2">{{ prod.orderId }}</td>
                             <td class="border p-2 text-left">{{ prod.storeId }}</td>
                             <td class="border p-2 text-left">{{ prod.area }}</td>
@@ -54,7 +53,7 @@
 
                             <td class="border p-2">
                                 <div :class="statusClass(prod.status)">
-                                    {{ prod.status }}
+                                    {{ prod.statusTH }}
                                 </div>
                             </td>
                         </tr>
@@ -142,6 +141,7 @@ function statusClass(status) {
     return {
         'text-warning': status === 'pending',
         'text-green-700': status === 'completed',
+        'text-green-700': status === 'approved',
         'text-red-700': status === 'canceled'
     }
 }
@@ -339,6 +339,6 @@ const showRejectionDialog = (id) => {
 onMounted(async () => {
     await loadGoogleMapsApi()
     initMap()
-    await store.getStoreLatlong(`${route.query.storeId}`)
+    await store.getStoreLatlong(`${route.query.storeId}`, '', '')
 })
 </script>
