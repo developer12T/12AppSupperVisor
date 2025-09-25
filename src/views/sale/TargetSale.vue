@@ -72,7 +72,7 @@
             </div>
             <div class="card">
                 <div class="label">ยอดขาย</div>
-                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.sale / 1.07 ?? 0,
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum((saleStore.target?.sale ?? 0) / 1.07,
                     unitDisplay) }}</div>
                 <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.sale ?? 0,
                     unitDisplay) }}</div>
@@ -98,28 +98,28 @@
         <section class="summary">
             <div class="card">
                 <div class="label">ยอดเปลี่ยน</div>
-                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.change / 1.07 ?? 0,
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum((saleStore.target?.change ?? 0) / 1.07,
                     unitDisplay) }}</div>
                 <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.change ?? 0,
                     unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดคืนดี</div>
-                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.good / 1.07 ?? 0,
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum((saleStore.target?.good ?? 0) / 1.07,
                     unitDisplay) }}</div>
                 <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.good ?? 0,
                     unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดเสีย</div>
-                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.damaged / 1.07 ?? 0,
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum((saleStore.target?.damaged ?? 0) / 1.07,
                     unitDisplay) }}</div>
                 <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.damaged ?? 0,
                     unitDisplay) }}</div>
             </div>
             <div class="card">
                 <div class="label">ยอดตัดแจก</div>
-                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum(saleStore.target?.give / 1.07 ?? 0,
+                <div v-if="selectedStatus === 'novat'" class="value">{{ formatNum((saleStore.target?.give ?? 0) / 1.07,
                     unitDisplay) }}</div>
                 <div v-if="selectedStatus === 'vat'" class="value">{{ formatNum(saleStore.target?.give ?? 0,
                     unitDisplay) }}</div>
@@ -341,7 +341,7 @@ const overallAttainment = computed(() => {
     return t > 0 ? s / t : 0
 })
 const variance = computed(() =>
-    (saleStore.target?.sale / 1.07 ?? 0) - (saleStore.target?.target ?? 0)
+    ((saleStore.target?.sale ?? 0) / 1.07) - (saleStore.target?.target ?? 0)
 )
 
 // display unit heuristic: if filter fixed use it, otherwise THB if present else first
