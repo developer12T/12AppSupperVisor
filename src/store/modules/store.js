@@ -7,6 +7,7 @@ export const useStoresStore = defineStore('stores', {
     statusCode: 0,
     message: '',
     storeAll: [],
+    storeLatlong: [],
     storeDetail: {},
     storeMap: [],
     storeNew: [],
@@ -82,6 +83,7 @@ export const useStoresStore = defineStore('stores', {
         const response = await api.get(
           `/api/cash/store/getStore?type=new&zone=${zone}&area=${area}&team=${team}&year=${year}&month=${month}`
         )
+
         const result = response.data
         this.storeNew = result
         console.log('storeNew', this.storeNew)
@@ -90,6 +92,7 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
+
     async updateStoreStatus (data) {
       try {
         // const area = localStorage.getItem('area')
@@ -102,6 +105,22 @@ export const useStoresStore = defineStore('stores', {
         const result = response.data.storeId
         this.newstoreId = result
         console.log('newstoreId', this.newstoreId)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async approveLatlong (data) {
+      try {
+        const user = localStorage.getItem('fullName')
+        const response = await api.post(`/api/cash/store/approveLatLongStore`, {
+          orderId: data.orderId,
+          status: data.status,
+          user: user
+        })
+        // const result = response.data.storeId
+        // this.newstoreId = result
+        console.log('message', response.data)
       } catch (error) {
         console.error(error)
       }
@@ -161,7 +180,6 @@ export const useStoresStore = defineStore('stores', {
           const m = String(nowTH.getMonth() + 1).padStart(2, '0')
           period = `${m}${y}` // MMYYYY
         }
-
         const response = await api.get(
           `/api/cash/store/storeToExcel?date=${period}`,
           { responseType: 'blob' } // สำคัญมาก!
@@ -218,6 +236,33 @@ export const useStoresStore = defineStore('stores', {
         }
       } finally {
         this.isLoading = false
+      }
+    },
+    async getStoreLatlong (storeId, selectZone, selectArea) {
+      try {
+        let zone = ''
+        let area = ''
+        
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+
+        const response = await api.get(
+          `/api/cash/store/getLatLongOrder?storeId=${storeId}`
+        )
+        const result = response.data.data
+        this.storeLatlong = result
+        console.log('storeLatlong', this.storeLatlong)
+      } catch (error) {
+        console.error(error)
       }
     }
   }

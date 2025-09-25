@@ -20,7 +20,7 @@ let waypoints = routeStore.polyline.map(item => ({
 }))
 
 
-const apiKey = 'AIzaSyAMMn98O_Z2GJwi_cN8lgTz9ufiF_k1B7w' // <-- ใส่ของจริงตรงนี้
+const apiKey = import.meta.env.VITE_GMAPS_KEY // <-- ใส่ของจริงตรงนี้
 
 // state สำหรับระยะทาง
 const totalKm = ref('—')

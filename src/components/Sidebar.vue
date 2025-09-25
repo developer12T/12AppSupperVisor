@@ -35,7 +35,6 @@ const menuItems = ref([
             { icon: 'mdi:autorenew', name: 'รายการเปลี่ยนสินค้า', link: '/supervisor/refundtable' },
             { icon: 'mdi:box-clock-outline', name: 'รายการใบเบิก', link: '/supervisor/withdrawtable' },
             { icon: 'mdi:credit-card-refund', name: 'รายการโอนจากเครดิต', link: '/supervisor/credit' },
-            { icon: 'mdi:store', name: 'รายการร้านค้าเปิดใหม่', link: '/supervisor/storenewtable' },
             // { icon: 'mdi:arrow-back-circle', name: 'รายงาน Back Order', link: '/supervisor/backorder' },
 
         ],
@@ -45,7 +44,6 @@ const menuItems = ref([
     { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/sale/give', submenu: null, roles: ['sale'] },
     { name: 'รายการคืนสินค้า', icon: 'mdi:autorenew', link: '/sale/refundtable', submenu: null, roles: ['sale'] },
     { name: 'รายการใบเบิก', icon: 'mdi:box-clock-outline', link: '/sale/withdrawtable', submenu: null, roles: ['sale'] },
-    // { name: 'รายการใบเบิก', icon: 'mdi:box-clock-outline', link: '/sale/withdrawtable', submenu: null, roles: ['sale'] },
     { name: 'เป้าหมาย', icon: 'mdi:target-arrow', link: '/sale/target', submenu: null, roles: ['sale', 'sale_manager', 'area_manager'] },
 
     {
@@ -55,11 +53,9 @@ const menuItems = ref([
         submenu: [
             { icon: 'mdi:chart-areaspline', name: 'รายงานยอดขาย', link: '/supervisor/report' },
             { icon: 'mdi:routes', name: 'รายงานไลน์การเช็คอิน', link: '/supervisor/checkin' },
-            // { icon: 'mdi:clipboard-check-outline', name: 'รายงานการเช็คอิน', link: '/supervisor/reportcheckin' },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product' },
             { icon: 'mdi:money-100', name: 'รายการส่งเงิน', link: '/supervisor/sendmoney' },
             { icon: 'mdi:box-clock-outline', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute' },
-
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'dc']
     },
@@ -71,7 +67,6 @@ const menuItems = ref([
     //     submenu: [
     //         { icon: 'mdi:warehouse', name: 'เช็ครายการเบิก', link: '/supervisor/withdrawm3' },
     //         { icon: 'mdi:cart', name: 'เช็ครายการออเดอร์', link: '/supervisor/orderm3' },
-
     //     ],
     // },
     {
@@ -84,7 +79,7 @@ const menuItems = ref([
             { icon: 'mdi:box-clock-outline', name: 'อนุมัติใบเบิก', link: '/supervisor/withdraw' },
             { icon: 'mdi:autorenew', name: 'อนุมัติขอคืน', link: '/supervisor/refund' },
             { icon: 'mdi:archive-edit', name: 'อนุมัติขอปรับสต๊อก', link: '/supervisor/adjuststock' },
-            // { icon: 'mdi:gift-open', name: 'อนุมัติแจกสินค้า', link: '/supervisor/gift' },
+            { icon: 'mdi:shop-location', name: 'อนุมัติร้านค้า Location', link: '/supervisor/storeapprovelatlong' },
 
         ],
     },
@@ -134,7 +129,7 @@ watch(isSidebarOpen, (newVal) => {
                                 :class="['flex items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-base-300', isSubmenuOpen(index) ? 'bg-base-300' : '', !isSidebarOpen ? 'justify-center' : '']">
                                 <Icon :icon="item.icon" class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                 <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{ item.name
-                                    }}</span>
+                                }}</span>
                                 <Icon v-if="showText" class="w-3 h-3" icon="mdi:chevron-down" />
                             </button>
                             <ul v-show="isSidebarOpen && isSubmenuOpen(index)" class="py-2 space-y-2">
@@ -146,7 +141,7 @@ watch(isSidebarOpen, (newVal) => {
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                        }}</span>
+                                            }}</span>
                                     </router-link>
                                 </li>
                             </ul>

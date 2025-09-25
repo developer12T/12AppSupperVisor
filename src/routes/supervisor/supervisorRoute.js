@@ -136,6 +136,16 @@ const supervisorRoutes = [
       {
         path: 'backorder',
         component: () => import('../../views/supervisor/BackOrder.vue')
+      },
+      {
+        path: 'storeapprovelatlong',
+        component: () =>
+          import('../../views/supervisor/ApproveLatLongStore.vue')
+      },
+      {
+        path: 'googleMapDirection',
+        name: 'googleMapDirection', // ✅ add this line
+        component: () => import('../../views/supervisor/GoogleMapDirection.vue')
       }
     ]
   }

@@ -288,7 +288,7 @@ export default {
                 this.barData = {
                     labels: Array.from({ length: apiDataBar[0].summary.length }, (_, i) => `${i + 1}`),
                     datasets: apiDataBar.map(item => ({
-                        label: item.area,
+                        label: item.zone,
                         data: item.summary,
                         backgroundColor: getRandomColor() // หรือสีคงที่ตามต้องการ
                     }))
