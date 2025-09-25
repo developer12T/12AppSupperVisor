@@ -3,12 +3,12 @@ import adminRoutes from '../routes/admin/adminRoute'
 import saleRoutes from '../routes/sale'
 import supervisorRoutes from '../routes/supervisor/supervisorRoute'
 import Dashboard from '../views/Dashboard.vue'
-import Layout from '../Layout.vue'
+// import Layout from '../Layout.vue'
 
 const routes = [
   {
     path: '/',
-    component: Layout,
+    component: () => import('@/Layout.vue'),
     meta: { requiresAuth: true },
     children: [{ path: '', component: Dashboard }]
   },
