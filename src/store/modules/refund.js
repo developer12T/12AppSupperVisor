@@ -92,10 +92,12 @@ export const useRefundStock = defineStore('refund', {
 
     async approveRefund (channel, orderId, status) {
       try {
+        const user = localStorage.getItem('fullName')
         setChannel(channel)
         const response = await api.post(`/api/cash/refund/updateStatus`, {
           orderId: orderId,
-          status: status
+          status: status,
+          user: user
         })
         // this.adjuststock = response.data.data
         this.message = response.data.message

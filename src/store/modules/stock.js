@@ -49,9 +49,11 @@ export const useStockStore = defineStore('stock', {
     async approveAdjustStock (channel, orderId, status) {
       try {
         setChannel(channel)
+        const user = localStorage.getItem('fullName')
         const response = await api.post(`/api/cash/stock/approveAdjustStock`, {
           orderId: orderId,
-          status: status
+          status: status,
+          user: user
         })
         // this.adjuststock = response.data.data
         this.message = response.data.message

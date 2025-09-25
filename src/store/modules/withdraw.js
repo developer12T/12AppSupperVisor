@@ -12,11 +12,13 @@ export const useWithdrawStore = defineStore('withdraws', {
     async approve (channel, id, status) {
       try {
         setChannel(channel)
+        const user = localStorage.getItem('fullName')
         const response = await api.post(
           `/api/cash/distribution/approveWithdraw`,
           {
             orderId: id,
-            status: status
+            status: status,
+            user: user
           }
         )
         this.status = response.data.status
