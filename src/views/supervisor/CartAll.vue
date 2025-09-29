@@ -3,7 +3,7 @@
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">อนุมัติใบเบิก</h2>
+            <h2 class="text-2xl font-bold mb-6">ตะกร้าคงค้างของ Sale</h2>
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
@@ -34,57 +34,74 @@
         </div>
 
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-            <div v-for="item in cardData" :key="item.orderId"
+            <div v-for="item in cartStore.cart" :key="item.area"
                 class="bg-white rounded-xl shadow p-6 border flex flex-col gap-2">
-                <router-link :to="`/supervisor/withdraw/${item.orderId}`">
+                <div @click=" $router.push({
+                    name: 'CartDetail', query: {
+                        storeId: item.storeId,
+                        area: item.area,
+                    }
+                })">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-lg text-gray-700">เลขใบเบิก</span>
+                        <span class="font-bold text-lg text-gray-700">เขต</span>
+                        <span class="text-sm text-gray-500">{{ item.area }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <div class="text-sm text-gray-500">รหัสร้าน:
+                        </div>
                         <div>
-                            <span class="inline-block rounded px-3 py-1 text-xs font-bold" :class="{
-                                'bg-green-100 text-green-700': item.newTrip === 'false',
-                                'bg-red-100 text-red-700': item.newTrip === 'true'
-                            }">
-                                {{ statusTH(item.newTrip) }}
+                            <span class="font-semibold">{{
+                                item.storeId }}
                             </span>
                         </div>
-                        <span class="text-sm text-gray-500">{{ item.orderId }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <div class="text-sm text-gray-500">พื้นที่: <span class="font-semibold">{{ item.area }}</span>
+                        <div class="text-sm text-gray-500">ประเภท:
                         </div>
-                        <div class="text-sm text-gray-500">Sale: <span class="font-semibold">{{ item.sale.fullname
-                                }}</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between">
-                        <div class="text-sm text-gray-500">ประเภท: <span class="font-semibold">{{ item.orderTypeName
-                                }}</span>
-                        </div>
-                        <div class="text-sm text-gray-500">เบอร์โทร: <span class="font-semibold">{{ item.sale.tel
-                                }}</span>
+                        <div>
+                            <span class="font-semibold">{{
+                                item.type }}
+                            </span>
                         </div>
                     </div>
                     <div class="flex justify-between">
-                        <div class="text-sm text-gray-500">วันที่เบิก: <span class="font-semibold">{{
-                            item.createdAt.slice(0, 16)
-                                }}</span></div>
-                        <div class="text-sm text-gray-500">วันที่ส่ง: <span class="font-semibold">{{
-                            formatDate(item.sendDate)
-                                }}</span></div>
+                        <div class="text-sm text-gray-500">รายการขาย:
+                        </div>
+                        <div>
+                            <span class="font-semibold">{{
+                                item.listProduct.length }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between">
+                        <div class="text-sm text-gray-500">รายการโปรโมทชั่น:
+                        </div>
+                        <div>
+                            <span class="font-semibold">{{
+                                item.listPromotion.length }}
+                            </span>
+                        </div>
                     </div>
 
-
-                    <div class="text-sm text-gray-500">จำนวนทั้งหมด: <span class="font-semibold">{{ item.total }}</span>
+                    <div class="flex justify-between">
+                        <div class="text-sm text-gray-500">ยอดรวม:
+                        </div>
+                        <div>
+                            <span class="font-semibold">{{
+                                item.total }}
+                                บาท</span>
+                        </div>
                     </div>
                     <div class="flex justify-between">
-                        <div class="text-sm text-gray-500">ประเภทการเบิก: <span class="font-semibold">{{
-                            statusTH(item.withdrawType)
-                                }}</span></div>
-                        <span class="inline-block rounded px-3 py-1 text-xs font-bold" :class="statusTHBG(item.status)">
-                            {{ statusTH(item.status) }}
-                        </span>
+                        <div class="text-sm text-gray-500">วันที่กด:
+                        </div>
+                        <div>
+                            <span class="font-semibold">{{
+                                formatDate(item.createdAt) }}
+                            </span>
+                        </div>
                     </div>
-                </router-link>
+                </div>
             </div>
         </div>
     </div>
@@ -94,8 +111,9 @@
 import { useRouter, useRoute } from 'vue-router'
 import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
 import { ref, computed, onMounted, watch } from 'vue'
-import { useWithdrawStore } from '../../store/modules/withdraw'
+import { useCart } from '../../store/modules/cart'
 import { useFilter } from '../../store/modules/filter'
+
 import { Icon } from '@iconify/vue'
 
 
@@ -111,7 +129,7 @@ const year = computed(() => selectedMonth.value.split('-')[0])
 const getSafe = v => (typeof v === 'string' ? v : '');
 
 const cardData = ref([]);
-const withdrawStore = useWithdrawStore()
+const cartStore = useCart()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
@@ -141,8 +159,8 @@ onMounted(async () => {
 
     }
     await filter.getZone(period);
-    await withdrawStore.getWithdraw('cash', period, selectedZone.value, selectedArea.value, selectedTeam.value, '', '', '', '') // fetch from API
-    cardData.value = withdrawStore.withdraw
+    await cartStore.getCartAll('');
+    // cardData.value = withdrawStore.withdraw
     isLoading.value = false
 })
 

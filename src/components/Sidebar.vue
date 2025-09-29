@@ -1,11 +1,20 @@
 <script setup>
-import { ref, inject, watch } from 'vue'
+import { ref, inject, watch, onMounted, computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
+import { useCart } from '../store/modules/cart.js'
+import { useWithdrawStore } from '../store/modules/withdraw.js'
+import { useStoresStore } from '../store/modules/store.js'
+import { useRefundStock } from '../store/modules/refund.js'
 
+
+const cartStore = useCart()
 const router = useRouter()
 const store = useAuthStore()
+const withdrawStore = useWithdrawStore()
+const storeModel = useStoresStore()
+const refundStore = useRefundStock()
 
 const SignOut = async () => {
     store.logout()
@@ -20,9 +29,8 @@ const toggleSidebar = inject('toggleSidebar')
 
 const showText = ref(isSidebarOpen.value)
 
-const menuItems = ref([
+const menuItems = computed(() => [
     { name: 'แดชบอร์ด', icon: 'mdi:monitor-dashboard', link: '/', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'] },
-
     // { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/supervisor/order', submenu: null, roles: ['supervisor', 'admin',] },
     // { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/supervisor/give', submenu: null, roles: ['supervisor', 'admin',] },
     {
@@ -38,7 +46,7 @@ const menuItems = ref([
             // { icon: 'mdi:arrow-back-circle', name: 'รายงาน Back Order', link: '/supervisor/backorder' },
 
         ],
-        roles: ['admin', 'area_manager', 'sale_manager', 'dc']
+        roles: ['admin', 'area_manager', 'sale_manager', 'dc', 'supervisor',]
     },
     { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/sale/order', submenu: null, roles: ['sale'] },
     { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/sale/give', submenu: null, roles: ['sale'] },
@@ -80,16 +88,17 @@ const menuItems = ref([
             { icon: 'mdi:autorenew', name: 'อนุมัติขอคืน', link: '/supervisor/refund' },
             { icon: 'mdi:archive-edit', name: 'อนุมัติขอปรับสต๊อก', link: '/supervisor/adjuststock' },
             { icon: 'mdi:shop-location', name: 'อนุมัติร้านค้า Location', link: '/supervisor/storeapprovelatlong' },
-
         ],
     },
-    { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['supervisor'] },
-    { name: 'อนุมัติใบเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['supervisor', 'dc',] },
-    { name: 'อนุมัติขอคืน', icon: 'mdi:autorenew', link: '/supervisor/refund', submenu: null, roles: ['supervisor', 'dc',] },
+    { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['supervisor'], badge: storeModel.count },
+    { name: 'อนุมัติใบเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['supervisor', 'dc',], badge: withdrawStore.count },
+    { name: 'อนุมัติขอคืน', icon: 'mdi:autorenew', link: '/supervisor/refund', submenu: null, roles: ['supervisor', 'dc',], badge: refundStore.count },
     { name: 'อนุมัติขอปรับสต๊อก', icon: 'mdi:archive-edit', link: '/supervisor/adjuststock', submenu: null, roles: ['dc'] },
-    { name: 'อนุมัติร้านค้า Location', icon: 'mdi:shop-location', link: '/supervisor/storeapprovelatlong', submenu: null, roles: ['supervisor'] },
+    { name: 'อนุมัติร้านค้า Location', icon: 'mdi:shop-location', link: '/supervisor/storeapprovelatlong', submenu: null, roles: ['supervisor'], badge:storeModel.countLat},
+    { name: 'จัดการตะกร้า Sale', icon: 'mdi:cart-variant', link: '/supervisor/cartall', submenu: null, roles: ['supervisor'], badge: cartStore.cart.length, },
     { name: 'คู่มือการใช้งาน', icon: 'mdi:book-information-variant', link: '/sale/manual', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'sale'] },
     { name: 'จัดการผู้ใช้งาน', icon: 'mdi:person-card-details', link: '/admin/manageuser', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'] },
+
     // { name: 'ดูร้านค้าตามพื้นที่', icon: 'mdi:map-marker-radius', link: '/supervisor/storemap', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'จัดการสินค้า', icon: 'mdi:toggle-switch-off', link: '/admin/product', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'] },
@@ -108,6 +117,15 @@ const isActive = (link) => route.path === link
 
 watch(isSidebarOpen, (newVal) => {
     showText.value = newVal
+})
+
+onMounted(async () => {
+    await cartStore.getCartAll("");
+    await withdrawStore.getCountPending('')
+    await storeModel.getPendingStore('', '')
+    await refundStore.getPendingRefund('', '')
+    await storeModel.getLatLongOrderPending('', '')
+    console.log('refundStore.count' + refundStore.count)
 })
 
 </script>
@@ -143,14 +161,27 @@ watch(isSidebarOpen, (newVal) => {
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
                                             }}</span>
+
                                     </router-link>
                                 </li>
                             </ul>
                         </div>
                         <div v-else>
-                            <router-link :to="item.link" class="flex items-center p-2 rounded-lg hover:bg-base-300"
+                            <router-link :to="item.link"
+                                class="flex items-center p-2 rounded-lg hover:bg-base-300 relative"
                                 :class="{ 'justify-center': !isSidebarOpen, 'bg-base-300': isActive(item.link) }">
-                                <Icon :icon="item.icon" class="h-6 w-6" />
+                                <!-- Icon Wrapper -->
+                                <div class="relative">
+                                    <Icon :icon="item.icon" class="h-6 w-6" />
+
+                                    <!-- Badge for cart only -->
+                                    <span v-if="item.badge > 0"
+                                        class="absolute -top-2 -right-2 text-xs font-bold bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center shadow">
+                                        {{ item.badge }}
+                                    </span>
+                                </div>
+
+                                <!-- Show name only when sidebar is open -->
                                 <span v-if="showText" class="ml-3">{{ item.name }}</span>
                             </router-link>
                         </div>
@@ -158,12 +189,6 @@ watch(isSidebarOpen, (newVal) => {
                 </ul>
             </nav>
         </div>
-
-        <!-- <router-link to="#" class="flex items-center p-2 rounded-lg hover:bg-base-300"
-            :class="{ 'justify-center': !isSidebarOpen }">
-            <Icon icon="mdi:logout" class="h-6 w-6" />
-            <span v-if="showText" @click="SignOut" class="ml-3 cursor-pointer">ออกจากระบบ</span>
-        </router-link> -->
     </aside>
 </template>
 

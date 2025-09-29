@@ -233,7 +233,7 @@ function endOfDay(d) {
 async function onMonthChange() {
     if (startDate.value && endDate.value) {
         isLoading.value = true
-        await giveStore.giveOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+        await giveStore.giveOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`, '', '')
         isLoading.value = false
     }
 }
@@ -297,9 +297,8 @@ onMounted(async () => {
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
     await filter.getZone(period);
-    // await useOrderStore.fetchOrder(period, '', '')
+    await giveStore.giveOrder(period, '', '', '', '')
 
-    await giveStore.giveOrder(period)
     // console.log(giveStore.give)
     // cardData.value = giveStore.give.data
     isLoading.value = false

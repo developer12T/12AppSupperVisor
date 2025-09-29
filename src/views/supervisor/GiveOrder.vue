@@ -168,8 +168,13 @@ const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 const zone = localStorage.getItem('zone')
 
-const startDate = computed(() => formatDateToYYYYMMDD(dateRange.value[0]))
-const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
+const startDate = computed(() =>
+    dateRange.value?.[0] ? formatDateToYYYYMMDD(dateRange.value[0]) : null
+)
+
+const endDate = computed(() =>
+    dateRange.value?.[1] ? formatDateToYYYYMMDD(dateRange.value[1]) : null
+)
 
 const dateRange = ref();
 
@@ -245,7 +250,7 @@ async function exportExcel() {
 
 async function onMonthChange() {
     isLoading.value = true
-    await giveStore.giveOrder('', `${startDate.value}`, `${endDate.value}`)
+    await giveStore.giveOrder('', `${startDate.value}`, `${endDate.value}`, '', '')
     isLoading.value = false
 
 }
@@ -259,7 +264,7 @@ async function clearFilter() {
     selectedArea.value = ''
     selectedTeam.value = ''
     selectedStatus.value = ''
-    await useOrderStore.fetchOrder(period, '', '')
+    await useOrderStore.fetchOrder(period, '', '', '', '')
     isLoading.value = false;
 }
 
@@ -293,7 +298,11 @@ onMounted(async () => {
     isLoading.value = true
     await filter.getZone(period);
     await giveStore.getGiveType();
-    await giveStore.giveOrder(period, '', '')
+    await giveStore.giveOrder(period, '', '', '', '')
+    if (userRole == 'supervisor' || userRole == 'area_manager') {
+        await filter.getTeam(zone);
+        await filter.getArea(period, zone, '');
+    }
     isLoading.value = false
 
 })

@@ -179,9 +179,13 @@ const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 const zone = localStorage.getItem('zone')
 
-const startDate = computed(() => formatDateToYYYYMMDD(dateRange.value[0]))
-const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
+const startDate = computed(() =>
+    dateRange.value?.[0] ? formatDateToYYYYMMDD(dateRange.value[0]) : null
+)
 
+const endDate = computed(() =>
+    dateRange.value?.[1] ? formatDateToYYYYMMDD(dateRange.value[1]) : null
+)
 
 // const month = computed(() => startDate.value.split('-')[1])
 // const year = computed(() => startDate.value.split('-')[0])
@@ -296,7 +300,13 @@ async function exportExcel() {
 
 async function onMonthChange() {
     isLoading.value = true
-    await withdrawStore.getWithdrawTable('cash', period, '', '', '', `${startDate.value}`, `${endDate.value}`)
+    if (startDate.value && endDate.value) {
+        await withdrawStore.getWithdrawCreditTable('cash', '', '', '', '', `${startDate.value}`, `${endDate.value}`)
+    } else {
+        await withdrawStore.getWithdrawCreditTable('cash', period, '', '', '', '', '')
+
+    }
+    console.log("onMonthChange")
     isLoading.value = false
 }
 

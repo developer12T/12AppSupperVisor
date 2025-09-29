@@ -6,7 +6,8 @@ export const useRefundStock = defineStore('refund', {
     refund: [],
     refundDetail: {},
     message: '',
-    statusCode: 0
+    statusCode: 0,
+    count: 0
   }),
   actions: {
     async getRefundAll (channel, period, selectZone, team, selectArea) {
@@ -200,6 +201,39 @@ export const useRefundStock = defineStore('refund', {
           this.refund = []
           this.message = 'เกิดข้อผิดพลาดในการดึงข้อมูล'
         }
+      }
+    },
+
+    async getPendingRefund (selectZone, selectArea) {
+      try {
+        let zone = ''
+        let area = ''
+        // const today = new Date()
+        // const period =
+        //   today.getFullYear().toString() +
+        //   String(today.getMonth() + 1).padStart(2, '0')
+
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+
+        const response = await api.get(
+          `/api/cash/refund/getRefundPending?type=refund&zone=${zone}`
+        )
+
+        const result = response.data.data
+        this.count = result
+        console.log('Refund count', response.data)
+      } catch (error) {
+        console.error(error)
       }
     }
   }

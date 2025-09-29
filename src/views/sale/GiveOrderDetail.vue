@@ -114,7 +114,6 @@ const toggle = (i) => (expanded[i] = !expanded[i])
 onMounted(async () => {
     isLoading.value = true
     console.log('Fetching order:', orderId.value)
-    // await orderStore.fetchOrderDetail(orderId.value)
     await giveStore.giveOrderDetail(orderId.value)
     console.log('orderStore:', giveStore.giveDetail)
     isLoading.value = false

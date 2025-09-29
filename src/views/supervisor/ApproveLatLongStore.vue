@@ -93,7 +93,6 @@
                         <div :class="{
                             'text-warning': prod.status === 'pending',
                             'text-green-700': prod.status === 'completed',
-                            'text-green-700': prod.status === 'approved',
                             'text-red-700': prod.status === 'canceled'
                         }">
                             {{ prod.statusTH }}</div>
@@ -102,10 +101,10 @@
                         <div class=""> <button class="btn btn-success" @click="$router.push({
                             name: 'googleMapDirection',
                             query: {
-                                originLat: prod.latitude,
-                                originLng: prod.longtitude,
-                                destLat: prod.latitudeOld,
-                                destLng: prod.longtitudeOld,
+                                originLat: prod.latitudeOld,
+                                originLng: prod.longtitudeOld,
+                                destLat: prod.latitude,
+                                destLng: prod.longtitude,
                                 id: prod.orderId,
                                 storeId: prod.storeId
                             }
@@ -257,9 +256,6 @@ watch(selectedTeam, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, selectedZone.value, newVal);
-        await store.getCustomerAll(selectedZone.value, selectedArea.value, newVal, getSafe(year.value),
-            getSafe(month.value),)
-        customers.value = store.storeNew.data
         isLoading.value = false
     }
 });
@@ -267,9 +263,6 @@ watch(selectedTeam, async (newVal) => {
 watch(selectedArea, async (newVal) => {
     if (newVal) {
         isLoading.value = true
-        await store.getCustomerAll(selectedZone.value, newVal, selectedTeam.value, getSafe(year.value),
-            getSafe(month.value))
-        customers.value = store.storeNew.data
         isLoading.value = false
     }
 });
@@ -288,8 +281,6 @@ watch(selectedZone, async (newVal) => {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
         await filter.getTeam(newVal);
-        await store.getCustomerAll(newVal, selectedArea.value, selectedTeam.value, getSafe(year.value),
-            getSafe(month.value))
         customers.value = store.storeNew.data
         isLoading.value = false
     }

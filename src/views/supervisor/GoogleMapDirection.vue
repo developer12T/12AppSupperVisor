@@ -8,7 +8,7 @@
                 <div class=" flex justify-between">
                     <div>
                         <div class="text-xl font-semibold text-green-700" v-if="distanceText">
-                            🛣️ ระยะทางประมาณ: {{ distanceText }} A = จุดใหม่, B = จุดเก่า
+                            🛣️ ระยะทางประมาณ: {{ distanceText }} A = จุดเก่า, B = จุดใหม่
                         </div>
                         <h1 class="text-xl font-bold mb-2">{{ route.query.id }} ประวัติการขอปรับ Location</h1>
                     </div>
@@ -43,12 +43,10 @@
                             <td class="border p-2 text-left">{{ prod.address || '-' }}</td>
                             <td class="border p-2 text-left">{{ prod.typeName }}</td>
 
-                            <td class="border p-2">
-                                <img v-if="prod.imageList?.[0]?.path"
-                                    :src="'https://apps.onetwotrading.co.th/' + relativePath(prod.imageList[0].path)"
-                                    alt="รูปภาพ" style="width: 75px; height: 75px; object-fit: cover; cursor: pointer"
-                                    @click="openModal(prod.imageList[0].path)" />
-                                <div v-else class="text-gray-400">-</div>
+                            <td class="border p-2 text-center whitespace-pre">
+                                <img :src="`${imageAPIPath}/` + relativePath(prod.imageList[0]?.path)" alt="placeholder"
+                                    :style="{ width: '75px', height: '75px', objectFit: 'cover' }"
+                                    @click="openModal(prod.imageList[0]?.path)" />
                             </td>
 
                             <td class="border p-2">
@@ -61,6 +59,10 @@
                 </table>
             </div>
         </div>
+    </div>
+    <div v-if="showModal" class="fixed inset-0 bg-black  flex items-center justify-center z-50">
+        <div @click="showModal = false" class="absolute inset-0"></div>
+        <img :src="modalImageSrc" class="max-w-full max-h-full z-10" />
     </div>
     <div v-if="showModalConfirm" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
         <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
@@ -90,6 +92,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStoresStore } from '../../store/modules/store' // <-- adjust path to your Pinia store
 
+const imageAPIPath = import.meta.env.VITE_API_IMAGE_URL;
 const router = useRouter()
 const route = useRoute()
 const store = useStoresStore()
@@ -110,6 +113,9 @@ const searchQuery = ref('')
 
 const showModalConfirm = ref(false);
 const showModalReject = ref(false);
+
+const modalImageSrc = ref('');
+const showModal = ref(false);
 
 const filteredStores = computed(() => {
     const data = store.storeLatlong || []
@@ -146,10 +152,12 @@ function statusClass(status) {
     }
 }
 
-function openModal(path) {
-    console.log('Open image modal for:', path)
-    // TODO: plug in your real modal / dialog
+function openModal(imagePath) {
+    modalImageSrc.value = imageAPIPath + '/' + relativePath(imagePath);
+    showModal.value = true;
 }
+
+
 
 function loadGoogleMapsApi() {
     return new Promise((resolve) => {
@@ -333,12 +341,10 @@ const showRejectionDialog = (id) => {
     // storeName.value = name;
 };
 
-
-
-
 onMounted(async () => {
     await loadGoogleMapsApi()
     initMap()
     await store.getStoreLatlong(`${route.query.storeId}`, '', '')
 })
+
 </script>

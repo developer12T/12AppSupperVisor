@@ -6,6 +6,7 @@ export const useWithdrawStore = defineStore('withdraws', {
   state: () => ({
     withdraw: [],
     withdrawDetail: {},
+    count: 0,
     status: 0
   }),
   actions: {
@@ -18,6 +19,22 @@ export const useWithdrawStore = defineStore('withdraws', {
           {
             orderId: id,
             status: status,
+            user: user
+          }
+        )
+        this.status = response.data.status
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async cancelWithdraw (channel, id) {
+      try {
+        setChannel(channel)
+        const user = localStorage.getItem('fullName')
+        const response = await api.post(
+          `/api/cash/distribution/cancelWithdraw`,
+          {
+            orderId: id,
             user: user
           }
         )
@@ -67,6 +84,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
+
     async getWithdrawTable (
       channel,
       period,
@@ -137,7 +155,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         }
 
         const response = await api.get(
-          `/api/cash/distribution/get?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}&start=${start}1&end=${end}`
+          `/api/cash/distribution/getsup?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}&start=${start}1&end=${end}`
         )
 
         socket.on('store-updated', data => {
@@ -157,6 +175,28 @@ export const useWithdrawStore = defineStore('withdraws', {
         const response = await api.get(`/api/cash/distribution/detail/${id}`)
         this.withdrawDetail = response.data.data[0]
         console.log('withdrawDetail', response.data.data[0])
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async getCountPending (selectZone) {
+      try {
+        let zone = ''
+        let area = ''
+        // setChannel(channel)
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        const response = await api.get(
+          `/api/cash/distribution/getOrderPending?zone=${zone}`
+        )
+
+        this.count = response.data.data
+        console.log('count', this.count)
       } catch (error) {
         console.log(error)
       }

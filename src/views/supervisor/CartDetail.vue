@@ -14,47 +14,23 @@
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h2 class="text-2xl font-extrabold tracking-tight mb-1">
-                    เลขใบเบิก (Withdraw)
-                    <span class="text-gray-400">#{{ data.orderId ?? '-' }}</span>
+                    รายละเอียดของตะกร้าสินค้า
+                    <span class="">{{ data.storeId ?? '-' }}</span>
+
                 </h2>
-                <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full" :class="statusTHBG(data.status)">
+                <h2 class="text-2xl font-extrabold tracking-tight mb-1">
+                    เขต
+                    <span class="">{{ data.area }}</span>
+                </h2>
+                <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full"
+                    :class="statusTHBG(data.status)">
                     {{ data.statusTH }}
                 </span>
             </div>
             <div class="flex gap-2">
-
-                <button v-if="data.status === 'pending'"
-                    class="rounded-xl px-4 py-2 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition"
-                    @click="onApproveClick">
-                    อนุมัติใบเบิก
-                </button>
-                <button v-if="data.status === 'approved' || data.status === 'success' || data.status === 'pending'"
-                    class="rounded-xl px-4 py-2 bg-red-400 text-white font-medium hover:bg-red-100 transition"
-                    @click="onCancelClick">
-                    ยกเลิกใบเบิก
-                </button>
-                <button class="rounded-xl px-4 py-2 bg-gray-50 text-gray-600 font-medium hover:bg-gray-100 transition"
-                    @click="refreshData">
-                    Refresh
-                </button>
             </div>
         </div>
-        <!-- Info Section -->
-        <div class="grid md:grid-cols-2 gap-5 mb-8">
-            <Info label="ประเภท" :value="statusTH(data.withdrawType) ?? '-'" />
-            <Info label="เบิกต้นทริป" :value="statusTH(data.newTrip)" />
-            <Info label="Order Type" :value="data.orderTypeName ?? '-'" />
-            <Info label="Area" :value="data.area ?? '-'" />
-            <Info label="จากคลัง" :value="data.fromWarehouse ?? '-'" />
-            <Info label="ถึงคลัง" :value="data.toWarehouse ?? '-'" />
-            <Info label="Shipping ID" :value="data.shippingId ?? '-'" />
-            <Info label="Shipping Route" :value="data.shippingRoute ?? '-'" />
-            <Info label="Shipping Name" :value="data.shippingName || '-'" />
-            <Info label="Send Address" :value="data.sendAddress || '-'" />
-            <Info label="Create Date" :value="formatDate(data.createdAt) || '-'" />
-            <Info label="Send Date" :value="formatDate(data.sendDate) || '-'" />
-            <Info label="Remark" :value="data.remark || '-'" />
-        </div>
+
         <!-- Product List Section -->
         <div class="mb-8">
             <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
@@ -101,8 +77,56 @@
                 </table>
             </div>
         </div>
+
+        <div class="mt-6">
+            <h2 class="text-lg font-semibold mb-2">Promotions</h2>
+
+            <table class="table table-zebra w-full">
+                <thead class="bg-base-200">
+                    <tr>
+                        <th class="text-left">No</th>
+                        <th class="text-left">Pro ID</th>
+                        <th class="text-left">Pro Code</th>
+                        <th class="text-left">Promotion Name</th>
+                        <th class="text-left">จำนวน</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template v-for="(promo, index) in data?.listPromotion || []" :key="promo.proId || index">
+
+                        <!-- Summary Row -->
+                        <tr class="hover font-semibold">
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ promo.proId }}</td>
+                            <td>{{ promo.proCode }}</td>
+                            <td>{{ promo.proName }}</td>
+                            <td>{{ promo.proQty ?? (promo.listProduct?.length || 0) }}</td>
+                        </tr>
+
+                        <!-- Detail Rows -->
+                        <tr v-for="(p, i) in promo.listProduct || []" :key="p.id || p.productId || i"
+                            class="bg-base-100">
+                            <td class="pl-10">{{ i + 1 }}</td>
+                            <td>{{ p.id ?? p.productId }}</td>
+                            <td>{{ p.name ?? p.proName ?? '-' }}</td>
+                            <td></td>
+                            <td>{{ p.qty ?? p.quantity ?? 0 }} {{ p.unit }}</td>
+                        </tr>
+
+                        <!-- No products -->
+                        <tr v-if="!promo.listProduct?.length" class="bg-base-100">
+                            <td colspan="5" class="text-center text-base-content/60">
+                                — ไม่มีรายการสินค้าในโปร —
+                            </td>
+                        </tr>
+
+                    </template>
+                </tbody>
+            </table>
+
+        </div>
         <!-- Summary Section -->
-        <div class="grid md:grid-cols-4 gap-5 bg-gray-50 rounded-xl p-4 shadow-inner">
+        <div class="grid md:grid-cols-4 gap-5 bg-gray-50 rounded-xl p-4 shadow-inner mt-4">
             <Info label="ยอดรวม (บาท)" :value="formatNumber(data.total)" highlight />
             <Info label="จำนวนรวม (กล่อง)" :value="formatNumber(data.totalQty)" />
             <Info label="น้ำหนักรวม (Gross)" :value="formatNumber(data.totalWeightGross)" />
@@ -141,13 +165,11 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
-import { useWithdrawStore } from '../../store/modules/withdraw'
 import Info from '../../views/Info.vue'
 import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
-
+import { useCart } from '../../store/modules/cart'
 
 // Inline modern Info component with <script setup>
-const withdrawStore = useWithdrawStore()
 const route = useRoute()
 const data = ref(null)
 const showAlert = ref(false)
@@ -155,11 +177,14 @@ const showAlertCancel = ref(false)
 const status = ref('pending')
 const router = useRouter()
 const isLoading = ref(false)
+const cartStore = useCart()
+
 
 const loadData = async () => {
     isLoading.value = true
-    await withdrawStore.getWithdrawDetail('cash', route.params.id)
-    data.value = withdrawStore.withdrawDetail
+    await cartStore.getCartDetail(route.query.storeId, route.query.area);
+    data.value = cartStore.detailCart
+    console.log(data.value.listPromotion)
     isLoading.value = false
 }
 
@@ -231,12 +256,10 @@ function statusLabel(status) {
 }
 
 async function approveStatus(statusBool) {
-    await withdrawStore.approve('cash', route.params.id, statusBool)
     window.location.reload()
 
 }
 async function cancelWithdraw(statusBool) {
-    await withdrawStore.cancelWithdraw('cash', route.params.id,)
     window.location.reload()
 
 }

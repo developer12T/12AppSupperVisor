@@ -167,8 +167,15 @@ const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 
-const startDate = computed(() => formatDateToYYYYMMDD(dateRange.value[0]))
-const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
+const startDate = computed(() =>
+    dateRange.value?.[0] ? formatDateToYYYYMMDD(dateRange.value[0]) : null
+)
+
+const endDate = computed(() =>
+    dateRange.value?.[1] ? formatDateToYYYYMMDD(dateRange.value[1]) : null
+)
+
+const zone = localStorage.getItem('zone')
 
 const filteredOrders = computed(() => {
     let data = Array.isArray(useOrderStore.order?.data) ? [...useOrderStore.order.data] : []
@@ -246,13 +253,13 @@ async function exportExcel() {
     await useOrderStore.downloadExcel(`${startDate.value}`, `${endDate.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
 }
 async function exportExcelProduct() {
-    await useOrderStore.downloadExcelProduct(`${period}`,``, ``, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
+    await useOrderStore.downloadExcelProduct(`${period}`, ``, ``, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
 }
 
 
 async function onMonthChange() {
     isLoading.value = true
-    await useOrderStore.fetchOrder('', `${startDate.value}`, `${endDate.value}`)
+    await useOrderStore.fetchOrder('', `${startDate.value}`, `${endDate.value}`, '', '')
     isLoading.value = false
 }
 
@@ -263,7 +270,7 @@ async function clearFilter() {
     selectedArea.value = ''
     selectedTeam.value = ''
     selectedStatus.value = ''
-    await useOrderStore.fetchOrder(period, '', '')
+    await useOrderStore.fetchOrder(period, '', '', '', '')
     isLoading.value = false;
 }
 
@@ -289,7 +296,11 @@ watch(selectedTeam, async (newVal) => {
 onMounted(async () => {
     isLoading.value = true
     await filter.getZone(period);
-    await useOrderStore.fetchOrder('', '', '')
+    await useOrderStore.fetchOrder('', '', '', '', '')
+    if (userRole == 'supervisor' || userRole == 'area_manager') {
+        await filter.getTeam(zone);
+        await filter.getArea(period, zone, '');
+    }
     isLoading.value = false
 
 })

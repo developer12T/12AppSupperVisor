@@ -8,9 +8,24 @@ export const useOrder = defineStore('order', {
     message: ''
   }),
   actions: {
-    async fetchOrder (period, start, end) {
+    async fetchOrder (period, start, end, selectArea, selectZone) {
       try {
-        let area = localStorage.getItem('area')
+        let zone = ''
+        let area = ''
+
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+
+        // let area = localStorage.getItem('area')
         if (!/^\d{8}$/.test(start)) {
           const nowTH = new Date(
             new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
@@ -23,7 +38,7 @@ export const useOrder = defineStore('order', {
         }
 
         const response = await api.get(
-          `api/cash/order/all?type=sale&period=${period}&start=${start}&end=${end}&area=${area}`
+          `api/cash/order/all?type=sale&period=${period}&start=${start}&end=${end}&area=${area}&zone=${zone}`
         )
         this.order = response.data
         console.log('response', this.order)

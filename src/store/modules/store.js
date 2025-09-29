@@ -21,7 +21,9 @@ export const useStoresStore = defineStore('stores', {
     addedStoreInfo: {
       storeId: '',
       storeName: ''
-    }
+    },
+    count: 0,
+    countLat: 0
   }),
   actions: {
     async getStoreMap (zone) {
@@ -254,9 +256,9 @@ export const useStoresStore = defineStore('stores', {
         } else {
           area = localStorage.getItem('area')
         }
-        console.log(
-          `/api/cash/store/getLatLongOrder?storeId=${storeId}&zone=${zone}&area=${area}`
-        )
+        // console.log(
+        //   `/api/cash/store/getLatLongOrder?storeId=${storeId}&zone=${zone}&area=${area}`
+        // )
 
         const response = await api.get(
           `/api/cash/store/getLatLongOrder?storeId=${storeId}&zone=${zone}&area=${area}`
@@ -264,6 +266,66 @@ export const useStoresStore = defineStore('stores', {
         const result = response.data.data
         this.storeLatlong = result
         console.log('storeLatlong', this.storeLatlong)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getPendingStore (selectZone, selectArea) {
+      try {
+        let zone = ''
+        let area = ''
+
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+        // console.log(
+        //   `/api/cash/store/getLatLongOrder?storeId=${storeId}&zone=${zone}&area=${area}`
+        // )
+
+        const response = await api.post(`/api/cash/store/getPendingStore`, {
+          zone: zone
+        })
+        const result = response.data.count
+        this.count = result
+        console.log('Store count', this.count)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getLatLongOrderPending (selectZone, selectArea) {
+      try {
+        let zone = ''
+        let area = ''
+
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+        // console.log(
+        //   `/api/cash/store/getLatLongOrder?storeId=${storeId}&zone=${zone}&area=${area}`
+        // )
+
+        const response = await api.get(
+          `/api/cash/store/getLatLongOrderPending?zone=${zone}`
+        )
+        const result = response.data.data
+        this.countLat = result
+        console.log('countLat', this.countLat)
       } catch (error) {
         console.error(error)
       }

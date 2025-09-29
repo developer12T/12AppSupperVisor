@@ -138,6 +138,16 @@ const supervisorRoutes = [
         component: () => import('../../views/supervisor/BackOrder.vue')
       },
       {
+        path: 'cartall',
+        name: 'CartAll',
+        component: () => import('../../views/supervisor/CartAll.vue')
+      },
+      {
+        path: 'cartdeatail',
+        name: 'CartDetail',
+        component: () => import('../../views/supervisor/CartDetail.vue')
+      },
+      {
         path: 'storeapprovelatlong',
         component: () =>
           import('../../views/supervisor/ApproveLatLongStore.vue')

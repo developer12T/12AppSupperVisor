@@ -296,7 +296,7 @@ async function onMonthChange() {
     // console.log('endDate:', endDate.value)
     if (startDate.value && endDate.value) {
         isLoading.value = true
-        await useOrderStore.fetchOrder('',`${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`)
+        await useOrderStore.fetchOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`, '', '')
 
         //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
         //     cardData.value = useOrderStore.order.data

@@ -23,9 +23,23 @@ export const useGiveAway = defineStore('giveaway', {
       }
     },
 
-    async giveOrder (period, start, end) {
+    async giveOrder (period, start, end, selectArea, selectZone) {
       try {
-        const area = localStorage.getItem('area')
+        let zone = ''
+        let area = ''
+
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+        // const area = localStorage.getItem('area')
         // if (!/^\d{8}$/.test(start)) {
         //   const nowTH = new Date(
         //     new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
@@ -37,7 +51,7 @@ export const useGiveAway = defineStore('giveaway', {
         //   end = `${y}${m}${d}` // YYYYMMDD
         // }
         const response = await api.get(
-          `/api/cash/give/all?type=give&period=${period}&area=${area}&start=${start}&end=${end}`
+          `/api/cash/give/all?type=give&period=${period}&area=${area}&start=${start}&end=${end}&zone=${zone}`
         )
 
         this.give = response.data

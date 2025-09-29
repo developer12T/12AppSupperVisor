@@ -38,9 +38,12 @@
                     <div class="text-sm text-gray-500">วันที่ส่ง: <span class="font-semibold">{{
                         formatDate(item.createdAt)
                             }}</span></div>
-                    <div class="text-sm text-gray-500">จำนวนทั้งหมด: <span class="font-semibold">{{ item.total }}</span>
+                    <div class="text-sm text-gray-50 flex justify-between">
+                        <span class="text-sm text-gray-500">ยอดรวม:{{ item.total }}</span>
+                        <span class="text-sm text-gray-500">รหัสร้าน: {{ item.storeName }}</span>
                     </div>
-                    <div class="flex justify-end">
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-500">รหัสร้าน: {{ item.storeId }}</span>
                         <span class="inline-block rounded px-3 py-1 text-xs font-bold" :class="{
                             'bg-yellow-100 text-yellow-700': item.status === 'pending',
                             'bg-green-100 text-green-700': item.status === 'completed' || item.status === 'approved',
