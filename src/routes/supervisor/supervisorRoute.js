@@ -127,6 +127,7 @@ const supervisorRoutes = [
       },
       {
         path: 'storedetail/:storeid',
+        name: 'StoreDetail',
         component: () => import('../../views/supervisor/StoreDetailAll.vue')
       },
       {

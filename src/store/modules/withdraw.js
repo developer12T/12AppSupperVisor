@@ -155,7 +155,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         }
 
         const response = await api.get(
-          `/api/cash/distribution/getsup?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}&start=${start}1&end=${end}`
+          `/api/cash/distribution/get?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}&start=${start}1&end=${end}`
         )
 
         socket.on('store-updated', data => {

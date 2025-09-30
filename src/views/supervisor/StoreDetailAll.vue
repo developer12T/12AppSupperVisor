@@ -42,7 +42,8 @@
                         <Icon icon="mdi:google" width="24" height="24" />
                         Google Map
                     </button>
-                    <button v-if="storeDetail.status == '20'" class="btn btn-primary" @click="insertStoreToM3()">
+                    <button v-if="storeDetail.status == '20' && userRole == 'admin'" class="btn btn-primary"
+                        @click="insertStoreToM3()">
                         <Icon icon="mdi:store-plus" width="24" height="24" />
                         นำเข้า M3
                     </button>
@@ -171,8 +172,9 @@ const confirmAction = async () => {
         isLoading.value = true;
         await store.updateStoreStatus({ storeId: storeId.value, status: '20' });
         showModalConfirm.value = false;
-        router.replace({ name: 'StoreDetail', params: { storeid: store.newstoreId } });
-        await store.getDetailStore(storeId.value); // เรียกฟังก์ชันโหลด detail ใหม่
+        console.log(store.newstoreId)
+        // router.replace({ name: 'StoreDetail', params: { storeid: store.newstoreId } });
+        // await store.getDetailStore(storeId.value); // เรียกฟังก์ชันโหลด detail ใหม่
         isLoading.value = false;
     } catch (error) {
         console.log('Error confirming:', error);

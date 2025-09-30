@@ -24,7 +24,7 @@
             <div class="flex gap-2">
 
                 <button v-if="data.status === 'pending'"
-                    class="rounded-xl px-4 py-2 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition"
+                    class="rounded-xl px-4 py-2 bg-green-200 text-green-900 font-medium hover:bg-green-100 transition"
                     @click="onApproveClick">
                     อนุมัติใบเบิก
                 </button>

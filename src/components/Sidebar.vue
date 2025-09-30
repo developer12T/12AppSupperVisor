@@ -15,6 +15,7 @@ const store = useAuthStore()
 const withdrawStore = useWithdrawStore()
 const storeModel = useStoresStore()
 const refundStore = useRefundStock()
+const route = useRoute();
 
 const SignOut = async () => {
     store.logout()
@@ -94,7 +95,7 @@ const menuItems = computed(() => [
     { name: 'อนุมัติใบเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['supervisor', 'dc',], badge: withdrawStore.count },
     { name: 'อนุมัติขอคืน', icon: 'mdi:autorenew', link: '/supervisor/refund', submenu: null, roles: ['supervisor', 'dc',], badge: refundStore.count },
     { name: 'อนุมัติขอปรับสต๊อก', icon: 'mdi:archive-edit', link: '/supervisor/adjuststock', submenu: null, roles: ['dc'] },
-    { name: 'อนุมัติร้านค้า Location', icon: 'mdi:shop-location', link: '/supervisor/storeapprovelatlong', submenu: null, roles: ['supervisor'], badge:storeModel.countLat},
+    { name: 'อนุมัติร้านค้า Location', icon: 'mdi:shop-location', link: '/supervisor/storeapprovelatlong', submenu: null, roles: ['supervisor'], badge: storeModel.countLat },
     { name: 'จัดการตะกร้า Sale', icon: 'mdi:cart-variant', link: '/supervisor/cartall', submenu: null, roles: ['supervisor'], badge: cartStore.cart.length, },
     { name: 'คู่มือการใช้งาน', icon: 'mdi:book-information-variant', link: '/sale/manual', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'sale'] },
     { name: 'จัดการผู้ใช้งาน', icon: 'mdi:person-card-details', link: '/admin/manageuser', submenu: null, roles: ['admin', 'supervisor', 'area_manager', 'sale_manager'] },
@@ -112,21 +113,26 @@ const toggleSubmenu = (index) => {
 }
 const isSubmenuOpen = (index) => openSubmenus.value.has(index)
 
-const route = useRoute()
 const isActive = (link) => route.path === link
 
 watch(isSidebarOpen, (newVal) => {
     showText.value = newVal
 })
 
-onMounted(async () => {
-    await cartStore.getCartAll("");
-    await withdrawStore.getCountPending('')
-    await storeModel.getPendingStore('', '')
-    await refundStore.getPendingRefund('', '')
-    await storeModel.getLatLongOrderPending('', '')
-    console.log('refundStore.count' + refundStore.count)
-})
+watch(() => route.fullPath, async () => {
+    await refreshSidebarData();
+});
+
+const refreshSidebarData = async () => {
+    await cartStore.getCartAll('');
+    await withdrawStore.getCountPending('');
+    await storeModel.getPendingStore('', '');
+    await refundStore.getPendingRefund('', '');
+    await storeModel.getLatLongOrderPending('', '');
+};
+
+
+onMounted(refreshSidebarData);
 
 </script>
 
@@ -148,7 +154,7 @@ onMounted(async () => {
                                 :class="['flex items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-base-300', isSubmenuOpen(index) ? 'bg-base-300' : '', !isSidebarOpen ? 'justify-center' : '']">
                                 <Icon :icon="item.icon" class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                 <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{ item.name
-                                }}</span>
+                                    }}</span>
                                 <Icon v-if="showText" class="w-3 h-3" icon="mdi:chevron-down" />
                             </button>
                             <ul v-show="isSidebarOpen && isSubmenuOpen(index)" class="py-2 space-y-2">
@@ -160,7 +166,7 @@ onMounted(async () => {
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                            }}</span>
+                                        }}</span>
 
                                     </router-link>
                                 </li>

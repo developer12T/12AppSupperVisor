@@ -251,6 +251,7 @@ const confirmAction = async () => {
         isLoading.value = true;
         await store.updateStoreStatus({ storeId: storeId.value, status: '20' });
         showModalConfirm.value = false;
+        console.log(store.newstoreId)
         router.replace({ name: 'StoreDetail', params: { storeid: store.newstoreId } });
         await store.getDetailStore(storeId.value); // เรียกฟังก์ชันโหลด detail ใหม่
         isLoading.value = false;
