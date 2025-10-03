@@ -40,7 +40,7 @@
                             }}</span></div>
                     <div class="text-sm text-gray-50 flex justify-between">
                         <span class="text-sm text-gray-500">ยอดรวม:{{ item.total }}</span>
-                        <span class="text-sm text-gray-500">รหัสร้าน: {{ item.storeName }}</span>
+                        <span class="text-sm text-gray-500">ชื่อร้าน: {{ item.storeName }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-sm text-gray-500">รหัสร้าน: {{ item.storeId }}</span>

@@ -12,7 +12,8 @@
                         </div>
                         <h1 class="text-xl font-bold mb-2">{{ route.query.id }} ประวัติการขอปรับ Location</h1>
                     </div>
-                    <div>
+                    <div v-if="store.latLongOrderDetail && store.latLongOrderDetail.status !== 'approved'">
+
                         <button @click="showConfirmationDialog('')" class="btn btn-success">อนุมัติ</button>
                         <button @click="showRejectionDialog('')" class="ms-3 btn btn-error">ไม่อนุมัติ</button>
                     </div>
@@ -110,7 +111,6 @@ const mapEl = ref(null)
 const distanceText = ref('')
 const searchQuery = ref('')
 
-
 const showModalConfirm = ref(false);
 const showModalReject = ref(false);
 
@@ -156,7 +156,6 @@ function openModal(imagePath) {
     modalImageSrc.value = imageAPIPath + '/' + relativePath(imagePath);
     showModal.value = true;
 }
-
 
 
 function loadGoogleMapsApi() {
@@ -345,6 +344,8 @@ onMounted(async () => {
     await loadGoogleMapsApi()
     initMap()
     await store.getStoreLatlong(`${route.query.storeId}`, '', '')
+    await store.getLatLongOrderDetail(`${route.query.id}`)
+    // console.log('latLongOrderDetail:', store.latLongOrderDetail)
 })
 
 </script>
