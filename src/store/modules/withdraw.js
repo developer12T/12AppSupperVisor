@@ -27,6 +27,37 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
+    async approveWithdrawCredit (channel, id, statusApprove) {
+      try {
+        let status = ''
+        setChannel(channel)
+        console.log(statusApprove)
+        const user = localStorage.getItem('fullName')
+        const role = localStorage.getItem('role')
+        if (statusApprove === 'approved') {
+          if (role == 'supervisor') {
+            status = 'supapproved'
+          } else {
+            status = 'approved'
+          }
+        } else {
+          status = 'rejected'
+        }
+
+        const response = await api.post(
+          `/api/cash/distribution/approveWithdrawCredit`,
+          {
+            orderId: id,
+            status: status,
+            user: user,
+            role: role
+          }
+        )
+        this.status = response.data.status
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async cancelWithdraw (channel, id) {
       try {
         setChannel(channel)
@@ -155,7 +186,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         }
 
         const response = await api.get(
-          `/api/cash/distribution/get?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}&start=${start}1&end=${end}`
+          `/api/cash/distribution/getsup?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}&start=${start}1&end=${end}`
         )
 
         socket.on('store-updated', data => {
@@ -191,8 +222,13 @@ export const useWithdrawStore = defineStore('withdraws', {
           zone = localStorage.getItem('zone')
         }
 
+        const today = new Date()
+        const period =
+          today.getFullYear().toString() +
+          String(today.getMonth() + 1).padStart(2, '0')
+
         const response = await api.get(
-          `/api/cash/distribution/getOrderPending?zone=${zone}`
+          `/api/cash/distribution/getOrderPending?zone=${zone}&period=${period}`
         )
 
         this.count = response.data.data

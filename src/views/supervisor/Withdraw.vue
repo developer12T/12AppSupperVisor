@@ -167,6 +167,7 @@ function statusTH(status) {
         case 'success': return 'รอ Sale กดรับสินค้า'
         case 'confirm': return 'รับสินค้าเรียบร้อย'
         case 'canceled': return 'ยกเลิกใบเบิก'
+        case 'supapproved': return 'ซุปอนุมัติ'
         default: return status
     }
 }
@@ -177,6 +178,7 @@ function statusTHBG(status) {
         case 'approved': return 'bg-green-100 text-green-700'
         case 'rejected': return 'bg-red-100 text-red-700'
         case 'success': return 'bg-yellow-100 text-yellow-700'
+        case 'supapproved': return 'bg-yellow-100 text-yellow-700'
         case 'confirm': return 'bg-blue-100 text-blue-700'
         case 'canceled': return 'bg-red-100 text-red-700'
         default: return status

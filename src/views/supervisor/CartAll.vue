@@ -14,7 +14,7 @@
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
                     <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
-                        }}
+                    }}
                     </option>
                 </select>
             </div>
@@ -34,7 +34,7 @@
         </div>
 
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-            <div v-for="item in cartStore.cart" :key="item.area"
+            <div v-for="item in filteredCart" :key="item.area"
                 class="bg-white rounded-xl shadow p-6 border flex flex-col gap-2">
                 <div @click=" $router.push({
                     name: 'CartDetail', query: {
@@ -110,7 +110,7 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
 import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useCart } from '../../store/modules/cart'
 import { useFilter } from '../../store/modules/filter'
 
@@ -124,11 +124,6 @@ const route = useRoute()
 const isLoading = ref(false)
 const selectedMonth = ref('') // format: YYYY-MM
 
-const month = computed(() => selectedMonth.value.split('-')[1])
-const year = computed(() => selectedMonth.value.split('-')[0])
-const getSafe = v => (typeof v === 'string' ? v : '');
-
-const cardData = ref([]);
 const cartStore = useCart()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
@@ -145,6 +140,23 @@ function clearFilter() {
     selectedTeam.value = ''
     window.location.assign('/supervisor/withdraw')
 }
+
+const filteredCart = computed(() => {
+    let data = Array.isArray(cartStore?.cart) ? [...cartStore?.cart] : []
+    console.log(data)
+    if (selectedArea.value) {
+        data = data.filter(order => order.area === selectedArea.value);
+    }
+
+    // if (selectedTeam.value) {
+    //     console.log()
+    //     data = data.filter(order =>
+    //         getTeam3(order.area) === selectedTeam.value
+    //     )
+    // }
+    return data;
+});
+
 
 
 onMounted(async () => {
@@ -200,79 +212,5 @@ function statusTHBG(status) {
         default: return status
     }
 }
-
-
-
-
-watch(() => route.query.zone, (val) => {
-    selectedZone.value = val || ''
-})
-
-watch(() => route.query.area, (val) => {
-    selectedArea.value = val || ''
-})
-watch(() => route.query.team, (val) => {
-    selectedTeam.value = val || ''
-})
-
-
-watch(selectedZone, async (newVal) => {
-    selectedArea.value = '' // Reset area when zone changes
-    selectedTeam.value = ''
-    router.replace({
-        query: {
-            ...route.query,
-            zone: newVal,
-            team: '',
-            area: '',
-        }
-    });
-    if (newVal) {
-        isLoading.value = true
-        await filter.getArea(period, newVal, selectedTeam.value);
-        await filter.getTeam(newVal);
-        await withdrawStore.getWithdraw('cash', period, newVal, selectedArea.value, selectedTeam.value, '', '', '', '')
-        cardData.value = withdrawStore.withdraw
-        isLoading.value = false
-    }
-});
-
-
-watch(selectedTeam, async (newVal) => {
-    selectedArea.value = ''
-    router.replace({
-        query: {
-            ...route.query,
-            zone: selectedZone.value,
-            team: newVal,
-            area: '',
-        }
-    });
-    if (newVal) {
-        isLoading.value = true
-        await filter.getArea(period, selectedZone.value, newVal);
-        await withdrawStore.getWithdraw('cash', period, selectedZone.value, selectedArea.value, newVal, '', '', '', '')
-        cardData.value = withdrawStore.withdraw
-        isLoading.value = false
-    }
-});
-
-watch(selectedArea, async (newVal) => {
-    router.replace({
-        query: {
-            ...route.query,
-            zone: selectedZone.value,
-            team: selectedTeam.value,
-            area: newVal,
-        }
-    });
-    if (newVal) {
-        isLoading.value = true
-        console.log(selectedZone.value, newVal, selectedTeam.value)
-        await withdrawStore.getWithdraw('cash', period, selectedZone.value, newVal, selectedTeam.value, '', '', '', '')
-        cardData.value = withdrawStore.withdraw
-        isLoading.value = false
-    }
-});
 
 </script>

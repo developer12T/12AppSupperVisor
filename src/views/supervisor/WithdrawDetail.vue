@@ -17,18 +17,26 @@
                     เลขใบเบิก (Withdraw)
                     <span class="text-gray-400">#{{ data.orderId ?? '-' }}</span>
                 </h2>
-                <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full" :class="statusTHBG(data.status)">
+                <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full"
+                    :class="statusTHBG(data.status)">
                     {{ data.statusTH }}
                 </span>
             </div>
             <div class="flex gap-2">
 
-                <button v-if="data.status === 'pending'"
+                <button v-if="data.status === 'pending' && data.withdrawType !== 'credit'"
                     class="rounded-xl px-4 py-2 bg-green-200 text-green-900 font-medium hover:bg-green-100 transition"
                     @click="onApproveClick">
                     อนุมัติใบเบิก
                 </button>
-                <button v-if="data.status === 'approved' || data.status === 'success' || data.status === 'pending'"
+                <button
+                    v-if="((data.status === 'pending' || data.status === 'supapproved') && data.withdrawType === 'credit')"
+                    class="rounded-xl px-4 py-2 bg-green-200 text-green-900 font-medium hover:bg-green-100 transition"
+                    @click="onApproveCreditClick">
+                    อนุมัติใบเบิก
+                </button>
+                <button
+                    v-if="data.status === 'approved' || data.status === 'success' || data.status === 'pending' || data.status === 'supapproved'"
                     class="rounded-xl px-4 py-2 bg-red-400 text-white font-medium hover:bg-red-100 transition"
                     @click="onCancelClick">
                     ยกเลิกใบเบิก
@@ -126,6 +134,18 @@
             </div>
         </div>
     </div>
+
+    <div v-if="showAlertCredit" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4">อนุมัติใบรับโอนจากเครดิต</h2>
+            <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการอนุมัติใบรับโอนจากเครดิตนี้ ?</p>
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-neutral" @click="showAlertCredit = false">ยกเลิก</button>
+                <button class="btn btn-error text-white" @click="approveCreditStatus('rejected')">ไม่อนุมัติ</button>
+                <button class="btn btn-primary" @click="approveCreditStatus('approved')">อนุมัติ</button>
+            </div>
+        </div>
+    </div>
     <div v-if="showAlertCancel" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
         <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
             <h2 class="font-bold text-lg mb-4 ">ยกเลิกใบเบิก</h2>
@@ -151,10 +171,13 @@ const withdrawStore = useWithdrawStore()
 const route = useRoute()
 const data = ref(null)
 const showAlert = ref(false)
+const showAlertCredit = ref(false)
 const showAlertCancel = ref(false)
 const status = ref('pending')
 const router = useRouter()
 const isLoading = ref(false)
+
+const userRole = localStorage.getItem('role')
 
 const loadData = async () => {
     isLoading.value = true
@@ -165,6 +188,9 @@ const loadData = async () => {
 
 function onApproveClick() {
     showAlert.value = true
+}
+function onApproveCreditClick() {
+    showAlertCredit.value = true
 }
 
 function statusTHBG(status) {
@@ -231,7 +257,16 @@ function statusLabel(status) {
 }
 
 async function approveStatus(statusBool) {
+
     await withdrawStore.approve('cash', route.params.id, statusBool)
+    window.location.reload()
+
+}
+
+
+async function approveCreditStatus(status) {
+
+    await withdrawStore.approveWithdrawCredit('cash', route.params.id, status)
     window.location.reload()
 
 }
