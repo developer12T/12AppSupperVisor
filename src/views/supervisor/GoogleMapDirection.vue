@@ -12,8 +12,8 @@
                         </div>
                         <h1 class="text-xl font-bold mb-2">{{ route.query.id }} ประวัติการขอปรับ Location</h1>
                     </div>
-                    <div v-if="store.latLongOrderDetail && store.latLongOrderDetail.status !== 'approved'">
-
+                    <div
+                        v-if="store.latLongOrderDetail && store.latLongOrderDetail.status !== 'approved' || store.latLongOrderDetail.status !== 'rejected'">
                         <button @click="showConfirmationDialog('')" class="btn btn-success">อนุมัติ</button>
                         <button @click="showRejectionDialog('')" class="ms-3 btn btn-error">ไม่อนุมัติ</button>
                     </div>
@@ -171,6 +171,7 @@ function loadGoogleMapsApi() {
         document.head.appendChild(script)
     })
 }
+
 
 function handleRowClick(prod) {
     const origin = {

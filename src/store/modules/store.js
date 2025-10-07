@@ -155,19 +155,6 @@ export const useStoresStore = defineStore('stores', {
           storeId: data.storeId,
           area: area
         })
-        // const response = await axios.post(
-        //   `${import.meta.env.VITE_API_URL}/api/cash/store/rejectStore`,
-        //   {
-        //     storeId: data.storeId,
-        //     area: area
-        //   },
-        //   {
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //       'x-channel': 'cash'
-        //     }
-        //   }
-        // )
         console.log('response', response.data)
       } catch (error) {
         console.error(error)

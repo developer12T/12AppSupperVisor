@@ -156,7 +156,7 @@ const supervisorRoutes = [
       {
         path: 'googleMapDirection',
         name: 'googleMapDirection', // ✅ add this line
-        component: () => import('../../views/supervisor/GoogleMapDirection.vue')
+        component: () => import('../../views/supervisor/GoogleMapDirection2.vue')
       }
     ]
   }
