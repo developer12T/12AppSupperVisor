@@ -47,7 +47,7 @@
 
     </div>
     <div class="overflow-x-auto rounded-xl"
-        style="min-width: 450px; max-height: 450px; max-width: 80vw; overflow-y: auto;">
+        style="min-width: 450px; max-height: 500px; max-width: 95vw; overflow-y: auto;">
         <table class="min-w-full border text-center text-sm bg-white">
             <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                 <tr>
