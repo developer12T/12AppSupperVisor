@@ -47,43 +47,43 @@
 
     </div>
     <div class="overflow-x-auto rounded-xl"
-        style="min-width: 450px; max-height: 450px; max-width: 90vw; overflow-y: auto;">
+        style="min-width: 450px; max-height: 450px; max-width: 80vw; overflow-y: auto;">
         <table class="min-w-full border text-center text-sm bg-white">
             <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                 <tr>
-                    <th class="p-2 border">Id</th>
-                    <th class="p-2 border">รหัสร้าน</th>
-                    <th class="p-2 border">เขต</th>
-                    <th class="p-2 border">ชื่อร้าน</th>
-                    <th class="p-2 border">ที่อยู่</th>
-                    <th class="p-2 border">ประเภท</th>
-                    <th class="p-2 border">ดูรูปภาพ</th>
-                    <th class="p-2 border">สถานะ</th>
-                    <th class="p-2 border">รายละเอียด</th>
+                    <th class="p-2 border w-[80px]">Id</th>
+                    <th class="p-2 border w-[80px]">รหัสร้าน</th>
+                    <th class="p-2 border w-[80px]">เขต</th>
+                    <th class="p-2 border w-[80px]">ชื่อร้าน</th>
+                    <th class="p-2 border w-[80px]">ที่อยู่</th>
+                    <th class="p-2 border w-[80px]">ประเภท</th>
+                    <th class="p-2 border w-[80px]">ดูรูปภาพ</th>
+                    <th class="p-2 border w-[80px]">สถานะ</th>
+                    <th class="p-2 border w-[80px]">รายละเอียด</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(prod, i) in filteredStores" :key="prod.orderId" class="align-top">
-                    <td class="border p-2 text-center whitespace-pre">
+                    <td class="border w-[80px]  p-2 text-center whitespace-pre">
                         <div class="">{{ prod.orderId }}</div>
                     </td>
-                    <td class="border p-2 text-left whitespace-pre">
+                    <td class="border w-[80px]  p-2 text-left whitespace-pre">
                         <div class="">{{ prod.storeId }}</div>
                     </td>
-                    <td class="border p-2 text-left whitespace-pre">
+                    <td class="border break-words whitespace-pre-wrap w-[80px]  p-2 text-left whitespace-pre">
                         <div class="">{{ prod.area }}</div>
                     </td>
-                    <td class="border p-2 text-left whitespace-pre">
+                    <td class="border  break-words whitespace-pre-wrap w-[80px] p-2 text-left whitespace-pre">
                         <div class="">{{ prod.name }}</div>
                     </td>
-                    <td class="border p-2 text-left whitespace-pre">
+                    <td class="border break-words whitespace-pre-wrap  w-[80px] p-2 text-left whitespace-pre">
                         <div class="">{{ prod.address }}</div>
                     </td>
-                    <td class="border p-2 text-left whitespace-pre">
+                    <td class="border break-words whitespace-pre-wrap p-2 text-left whitespace-pre">
                         <div class="">{{ prod.typeName }}</div>
                     </td>
 
-                    <td class="border p-2 text-center whitespace-pre">
+                    <td class="border w-[80px]  p-2 text-center whitespace-pre">
                         <img :src="`${imageAPIPath}` + relativePath(prod.imageList[0]?.path)" alt="placeholder"
                             :style="{ width: '75px', height: '75px', objectFit: 'cover' }"
                             @click="openModal(prod.imageList[0]?.path)" />
@@ -97,7 +97,7 @@
                         }">
                             {{ prod.statusTH }}</div>
                     </td>
-                    <td class="border p-2 text-center whitespace-pre">
+                    <td class="border w-[80px]  p-2 text-center whitespace-pre">
                         <div class=""> <button class="btn btn-success" @click="$router.push({
                             name: 'googleMapDirection',
                             query: {

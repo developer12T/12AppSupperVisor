@@ -7,8 +7,11 @@
             <div class="w-1/2 p-2">
                 <div class=" flex justify-between">
                     <div>
-                        <div class="text-xl font-semibold text-green-700" v-if="distanceText">
-                            🛣️ ระยะทางประมาณ: {{ distanceText }} A = จุดเก่า, B = จุดใหม่
+                        <div class="text-xl font-semibold" v-if="distanceText">
+                            🛣️ ระยะทางประมาณห่าง:
+                            <span class="text-red-600">
+                                {{ distanceText }}
+                            </span>
                         </div>
                         <h1 class="text-xl font-bold mb-2">{{ route.query.id }} ประวัติการขอปรับ Location</h1>
                     </div>
@@ -33,6 +36,7 @@
                             <th class="p-2 border">ประเภท</th>
                             <th class="p-2 border">ดูรูปภาพ</th>
                             <th class="p-2 border">สถานะ</th>
+                            <!-- <th class="p-2 border"></th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -55,6 +59,12 @@
                                     {{ prod.statusTH }}
                                 </div>
                             </td>
+                            <!-- <td class="border p-2">
+                                <div class="btn btn-error">
+                                    <Icon @click.stop="handleRowClick(prod)" icon="mdi:map-marker-radius-outline"
+                                        width="24" height="24" style="color: #8700ff" />
+                                </div>
+                            </td> -->
                         </tr>
                     </tbody>
                 </table>
@@ -92,7 +102,7 @@ import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตา�
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStoresStore } from '../../store/modules/store' // <-- adjust path to your Pinia store
-
+import { Icon } from '@iconify/vue'
 const imageAPIPath = import.meta.env.VITE_API_IMAGE_URL;
 const router = useRouter()
 const route = useRoute()
@@ -164,16 +174,15 @@ function loadGoogleMapsApi() {
         const script = document.createElement('script')
         // 👉 move the key to .env and inject at build time
         // e.g. VITE_GMAPS_KEY
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GMAPS_KEY}&libraries=places`
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GMAPS_KEY}&libraries=places,geometry`
         script.async = true
         script.defer = true
         script.onload = resolve
         document.head.appendChild(script)
     })
 }
-
-
 function handleRowClick(prod) {
+    // ✅ ตรวจสอบค่าพิกัด
     const origin = {
         lat: parseFloat(prod.latitudeOld),
         lng: parseFloat(prod.longtitudeOld),
@@ -191,76 +200,185 @@ function handleRowClick(prod) {
         return
     }
 
-    drawDirection(origin, destination)
+    // ✅ สร้างแผนที่ใหม่ (รีเซ็ตทุกครั้งที่กด)
+    map.value = new window.google.maps.Map(mapEl.value, {
+        zoom: 15,
+        center: destination,
+        mapTypeId: 'roadmap',
+    })
+
+    // // ✅ Marker A (พิกัดเดิม)
+    // new window.google.maps.Marker({
+    //     position: origin,
+    //     map: map.value,
+    //     label: {
+    //         text: 'เก่า',
+    //         color: '#fff',
+    //     },
+    //     title: 'พิกัดเดิม',
+    //     icon: {
+    //         path: window.google.maps.SymbolPath.CIRCLE,
+    //         scale: 15,
+    //         fillColor: '#ff0000', // แดง
+    //         fillOpacity: 1,
+    //         strokeColor: '#fff',
+    //         strokeWeight: 2,
+    //     },
+    // })
+
+    // // ✅ Marker B (พิกัดใหม่)
+    // new window.google.maps.Marker({
+    //     position: destination,
+    //     map: map.value,
+    //     label: {
+    //         text: 'ใหม่',
+    //         color: '#fff',
+    //     },
+    //     title: 'พิกัดใหม่',
+    //     icon: {
+    //         path: window.google.maps.SymbolPath.CIRCLE,
+    //         scale: 15,
+    //         fillColor: '#00b300', // เขียว
+    //         fillOpacity: 1,
+    //         strokeColor: '#fff',
+    //         strokeWeight: 2,
+    //     },
+    // })
+
+    // // วาดจุด origin (เก่า)
+    // new window.google.maps.Marker({
+    //     position: origin,
+    //     map: map.value,
+    //     label: "เก่า",
+    //     title: "พิกัดเดิม"
+    // })
+
+    // // วาดจุด destination (ใหม่)
+    // new window.google.maps.Marker({
+    //     position: destination,
+    //     map: map.value,
+    //     label: "ใหม่",
+    //     title: "พิกัดใหม่"
+    // })
+
+
+    // ✅ วาดเส้นเชื่อมระหว่างจุด (เส้นตรง ไม่ snap ถนน)
+    const line = new window.google.maps.Polyline({
+        path: [origin, destination],
+        geodesic: true,
+        strokeColor: "#4285F4",
+        strokeOpacity: 1.0,
+        strokeWeight: 3,
+    })
+    line.setMap(map.value)
+
+    // ✅ ปรับมุมมองให้เห็นทั้งสองจุดพร้อมกัน
+    const bounds = new window.google.maps.LatLngBounds()
+    bounds.extend(origin)
+    bounds.extend(destination)
+    map.value.fitBounds(bounds)
+
+    // ✅ คำนวณระยะทางจริง
+    const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
+        new window.google.maps.LatLng(origin.lat, origin.lng),
+        new window.google.maps.LatLng(destination.lat, destination.lng)
+    )
+
+    // ✅ แปลงหน่วยอัตโนมัติ
+    if (distance >= 1000) {
+        distanceText.value = (distance / 1000).toFixed(2) + ' กม.'
+    } else {
+        distanceText.value = distance.toFixed(0) + ' ม.'
+    }
 }
+
+
 
 function drawDirection(origin, destination) {
-    directionsService.value.route(
-        {
-            origin,
-            destination,
-            travelMode: window.google.maps.TravelMode.DRIVING,
+    // ล้างเส้นเก่าออกก่อน (ถ้ามี)
+    if (directionsRenderer.value) {
+        directionsRenderer.value.setMap(null)
+    }
+
+    // วาดจุด origin (เก่า)
+    // new window.google.maps.Marker({
+    //     position: origin,
+    //     map: map.value,
+    //     label: "เก่า",
+    //     title: "พิกัดเดิม"
+    // })
+
+    new window.google.maps.Marker({
+        position: origin,
+        map: map.value,
+        label: {
+            text: 'เก่า',
+            color: '#fff',
         },
-        (response, status) => {
-            if (status === 'OK') {
-                directionsRenderer.value.setDirections(response)
-                const leg = response.routes[0]?.legs[0]
-                if (leg?.distance?.text) {
-                    distanceText.value = leg.distance.text
-                }
-            } else {
-                alert('Directions request failed due to ' + status)
-            }
-        }
+        title: 'พิกัดเดิม',
+        icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 15,
+            fillColor: '#212020', // แดง
+            fillOpacity: 1,
+            strokeColor: '#fff',
+            strokeWeight: 1,
+        },
+    })
+
+    // วาดจุด destination (ใหม่)
+    // new window.google.maps.Marker({
+    //     position: destination,
+    //     map: map.value,
+    //     label: "ใหม่",
+    //     title: "พิกัดใหม่"
+    // })
+
+    new window.google.maps.Marker({
+        position: destination,
+        map: map.value,
+        label: {
+            text: 'ใหม่',
+            color: '#fff',
+        },
+        title: 'พิกัดใหม่',
+        icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 15,
+            fillColor: '#b30000', // เขียว
+            fillOpacity: 1,
+            strokeColor: '#fff',
+            strokeWeight: 1,
+        },
+    })
+
+    // วาดเส้นเชื่อมระหว่าง 2 จุด (เส้นตรง ไม่ snap ถนน)
+    const line = new window.google.maps.Polyline({
+        path: [origin, destination],
+        geodesic: true,
+        strokeColor: "#4285F4",
+        strokeOpacity: 1.0,
+        strokeWeight: 3,
+    })
+
+    line.setMap(map.value)
+
+    // ปรับขนาดแผนที่ให้เห็นทั้งสองจุด
+    const bounds = new window.google.maps.LatLngBounds()
+    bounds.extend(origin)
+    bounds.extend(destination)
+    map.value.fitBounds(bounds)
+
+    // คำนวณระยะทางจริง (ระยะเส้นตรง)
+    const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
+        new window.google.maps.LatLng(origin.lat, origin.lng),
+        new window.google.maps.LatLng(destination.lat, destination.lng)
     )
+
+    // แปลงเป็นกิโลเมตร
+    distanceText.value = (distance).toFixed(2) + ' ม.'
 }
 
-// function initMap() {
-//     const origin = {
-//         lat: parseFloat(route.query.originLat),
-//         lng: parseFloat(route.query.originLng)
-//     }
-//     const destination = {
-//         lat: parseFloat(route.query.destLat),
-//         lng: parseFloat(route.query.destLng)
-//     }
-
-//     if (
-//         Number.isNaN(origin.lat) || Number.isNaN(origin.lng) ||
-//         Number.isNaN(destination.lat) || Number.isNaN(destination.lng)
-//     ) {
-//         alert('Invalid coordinates provided in URL')
-//         return
-//     }
-
-//     const map = new window.google.maps.Map(mapEl.value, {
-//         zoom: 7,
-//         center: origin
-//     })
-
-//     const directionsService = new window.google.maps.DirectionsService()
-//     const directionsRenderer = new window.google.maps.DirectionsRenderer()
-//     directionsRenderer.setMap(map)
-
-//     directionsService.route(
-//         {
-//             origin,
-//             destination,
-//             travelMode: window.google.maps.TravelMode.DRIVING
-//         },
-//         (response, status) => {
-//             if (status === 'OK') {
-//                 directionsRenderer.setDirections(response)
-//                 const leg = response.routes[0]?.legs[0]
-//                 if (leg?.distance?.text) {
-//                     distanceText.value = leg.distance.text
-//                 }
-//             } else {
-//                 alert('Directions request failed due to ' + status)
-//             }
-//         }
-//     )
-// }
 
 const cancelAction = () => {
     showModalConfirm.value = false;

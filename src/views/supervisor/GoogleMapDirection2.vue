@@ -149,16 +149,15 @@ function openModal(imagePath) {
     showModal.value = true
 }
 
-function handleRowClick(prod) {
-    if (!map.value) return
 
+function handleRowClick(prod) {
     const origin = {
         lat: parseFloat(prod.latitudeOld),
-        lng: parseFloat(prod.longtitudeOld)
+        lng: parseFloat(prod.longtitudeOld),
     }
     const destination = {
         lat: parseFloat(prod.latitude),
-        lng: parseFloat(prod.longtitude)
+        lng: parseFloat(prod.longtitude),
     }
 
     if (
@@ -169,15 +168,82 @@ function handleRowClick(prod) {
         return
     }
 
-    map.value.eachLayer(layer => {
-        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
-            map.value.removeLayer(layer)
-        }
+    // ล้าง marker เก่า
+    if (map.value._markers) {
+        map.value._markers.forEach(m => m.setMap(null))
+    }
+    map.value._markers = []
+
+    // วาด marker ใหม่
+    const markerOld = new window.google.maps.Marker({
+        position: origin,
+        map: map.value,
+        label: "A",
+        title: "พิกัดเดิม",
+    })
+    const markerNew = new window.google.maps.Marker({
+        position: destination,
+        map: map.value,
+        label: "B",
+        title: "พิกัดใหม่",
     })
 
-    map.value.setView(origin, 15)
-    drawDirection(origin, destination)
+    map.value._markers.push(markerOld, markerNew)
+
+    // วาดเส้นเชื่อมระหว่าง 2 จุด
+    const line = new window.google.maps.Polyline({
+        path: [origin, destination],
+        geodesic: true,
+        strokeColor: "#4285F4",
+        strokeOpacity: 1.0,
+        strokeWeight: 3,
+    })
+    line.setMap(map.value)
+
+    // ปรับขนาด view ให้เห็นทั้งสองจุด
+    const bounds = new window.google.maps.LatLngBounds()
+    bounds.extend(origin)
+    bounds.extend(destination)
+    map.value.fitBounds(bounds)
+
+    // คำนวณระยะทาง (เมตร)
+    const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
+        new window.google.maps.LatLng(origin.lat, origin.lng),
+        new window.google.maps.LatLng(destination.lat, destination.lng)
+    )
+    distanceText.value = distance.toFixed(2) + ' ม.'
 }
+
+
+// function handleRowClick(prod) {
+//     if (!map.value) return
+
+//     const origin = {
+//         lat: parseFloat(prod.latitudeOld),
+//         lng: parseFloat(prod.longtitudeOld)
+//     }
+//     const destination = {
+//         lat: parseFloat(prod.latitude),
+//         lng: parseFloat(prod.longtitude)
+//     }
+
+//     if (
+//         Number.isNaN(origin.lat) || Number.isNaN(origin.lng) ||
+//         Number.isNaN(destination.lat) || Number.isNaN(destination.lng)
+//     ) {
+//         alert('พิกัดไม่ถูกต้อง')
+//         return
+//     }
+
+//     map.value.eachLayer(layer => {
+//         if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+//             map.value.removeLayer(layer)
+//         }
+//     })
+
+//     map.value.setView(origin, 15)
+//     drawDirection(origin, destination)
+// }
 
 
 function drawDirection(origin, destination) {
@@ -233,9 +299,17 @@ function initMap() {
         return
     }
 
-    map.value = L.map(mapEl.value).setView([origin.lat, origin.lng], 13)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
+    map.value = L.map(mapEl.value).setView([origin.lat, origin.lng], 15)
+
+    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //     attribution: '&copy; OpenStreetMap contributors',
+    // }).addTo(map.value)
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 100
     }).addTo(map.value)
 
     drawDirection(origin, destination)
