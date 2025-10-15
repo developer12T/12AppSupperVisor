@@ -23,13 +23,15 @@ export const useProductsStore = defineStore('products', {
     },
     async onOff (id, type, status, channel) {
       try {
+        const user = localStorage.getItem('fullName')
         setChannel(channel)
         const response = await api.post(
           `${import.meta.env.VITE_API_URL}/api/cash/product/onOff`,
           {
             id: `${id}`,
             type: `${type}`,
-            status: `${status}`
+            status: `${status}`,
+            user: user
           }
         )
         this.message = response.data.message
@@ -39,10 +41,10 @@ export const useProductsStore = defineStore('products', {
         console.error(error)
       }
     },
-    async addNewProduct (channel,data) {
+    async addNewProduct (channel, data) {
       try {
         setChannel(channel)
-        const response = await api.post(`/api/cash/product/add`,data)
+        const response = await api.post(`/api/cash/product/add`, data)
         // const result = response.data
         // this.product = result
         this.statusCode = response.status

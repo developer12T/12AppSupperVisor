@@ -70,6 +70,11 @@ const adminRoutes = [
         path: 'addNewProduct',
         component: () => import('../../views/admin/AddNewProduct.vue')
         // meta: { breadcrumb: 'ใบสั่งจอง' }
+      },
+      {
+        path: 'sendmoneyDaily',
+        component: () => import('../../views/admin/SendmoneySummaryDaily.vue')
+        // meta: { breadcrumb: 'ใบสั่งจอง' }
       }
     ]
   }

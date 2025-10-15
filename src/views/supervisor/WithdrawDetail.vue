@@ -41,6 +41,11 @@
                     @click="onCancelClick">
                     ยกเลิกใบเบิก
                 </button>
+                <button v-if="data.status === 'confirm'"
+                    class="rounded-xl px-4 py-2 bg-blue-200 text-blue-900 font-medium hover:bg-blue-100 transition"
+                    @click="onAddRemarkClick">
+                    เพิ่มหมายเหตุการรับของ
+                </button>
                 <button class="rounded-xl px-4 py-2 bg-gray-50 text-gray-600 font-medium hover:bg-gray-100 transition"
                     @click="refreshData">
                     Refresh
@@ -62,6 +67,8 @@
             <Info label="Create Date" :value="formatDate(data.createdAt) || '-'" />
             <Info label="Send Date" :value="formatDate(data.sendDate) || '-'" />
             <Info label="Remark" :value="data.remark || '-'" />
+            <Info label="Remark Warehouse" :value="`${data?.remarkWarehouse?.remark ?? ''}` || '-'" />
+            <Info label="User Remark" :value="`${data?.remarkWarehouse?.user ?? ''}` || '-'" />
         </div>
         <!-- Product List Section -->
         <div class="mb-8">
@@ -156,6 +163,52 @@
             </div>
         </div>
     </div>
+
+
+
+
+    <div v-if="showAlertAddRemark" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4 ">เพิ่มหมายเหตุการับของ</h2>
+            <div class="relative space-y-3">
+                <label for="remarkWarehouse" class="block text-sm font-medium text-gray-900">
+                    หมายเหตุคลังสินค้า
+                </label>
+
+                <!-- Dropdown -->
+                <div class="relative">
+                    <select id="remarkWarehouse" v-model="remarkWarehouse"
+                        class="block w-full p-2.5 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition ease-in-out duration-200 appearance-none"
+                        required>
+                        <option disabled value="">เลือกหมายเหตุ</option>
+                        <option value="สินค้าขาด">สินค้าขาด</option>
+                        <option value="สินค้าชำรุด">สินค้าชำรุด</option>
+                        <option value="ค้างส่ง">ค้างส่ง</option>
+                        <option value="อื่นๆ">อื่นๆ</option>
+                    </select>
+
+                    <!-- Dropdown arrow -->
+                    <span class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </span>
+                </div>
+
+                <!-- Extra input when "อื่นๆ" selected -->
+                <transition name="fade">
+                    <input v-if="remarkWarehouse === 'อื่นๆ'" v-model="customRemark" type="text"
+                        placeholder="โปรดระบุหมายเหตุ"
+                        class="block w-full p-2.5 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition ease-in-out duration-200" />
+                </transition>
+            </div>
+            <div class="flex justify-end gap-2 mt-4">
+                <button class="btn btn-error" @click="showAlertAddRemark = false">ยกเลิก</button>
+                <!-- <button class="btn btn-error" @click="addRemarkWarehouse = false">ยกเลิก</button> -->
+                <button class="btn btn-primary" @click="addRemarkWarehouse">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -173,9 +226,12 @@ const data = ref(null)
 const showAlert = ref(false)
 const showAlertCredit = ref(false)
 const showAlertCancel = ref(false)
+const showAlertAddRemark = ref(false)
 const status = ref('pending')
 const router = useRouter()
 const isLoading = ref(false)
+const remarkWarehouse = ref('');
+const customRemark = ref('');
 
 const userRole = localStorage.getItem('role')
 
@@ -208,6 +264,9 @@ function statusTHBG(status) {
 
 function onCancelClick() {
     showAlertCancel.value = true
+}
+function onAddRemarkClick() {
+    showAlertAddRemark.value = true
 }
 
 
@@ -257,10 +316,17 @@ function statusLabel(status) {
 }
 
 async function approveStatus(statusBool) {
-
     await withdrawStore.approve('cash', route.params.id, statusBool)
     window.location.reload()
+}
 
+async function addRemarkWarehouse() {
+    if (remarkWarehouse.value === "อื่นๆ") {
+        await withdrawStore.addRemark('cash', route.params.id, customRemark.value)
+    } else {
+        await withdrawStore.addRemark('cash', route.params.id, remarkWarehouse.value)
+    }
+    window.location.reload()
 }
 
 

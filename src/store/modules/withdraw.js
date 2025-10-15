@@ -58,6 +58,23 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
+    async addRemark (channel, id, remark) {
+      try {
+        setChannel(channel)
+        const user = localStorage.getItem('fullName')
+        const response = await api.post(
+          `/api/cash/distribution/addRemark`,
+          {
+            orderId: id,
+            remark: remark,
+            user: user
+          }
+        )
+        this.status = response.data.status
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async cancelWithdraw (channel, id) {
       try {
         setChannel(channel)
@@ -187,6 +204,33 @@ export const useWithdrawStore = defineStore('withdraws', {
 
         const response = await api.get(
           `/api/cash/distribution/getsup?type=pending&period=${period}&zone=${zone}&team=${team}&area=${area}&year=${year}&month=${month}&start=${start}1&end=${end}`
+        )
+
+        socket.on('store-updated', data => {
+          console.log('store updated', data)
+        })
+
+        this.withdraw = response.data.data
+        console.log('withdraw', this.withdraw)
+      } catch (error) {
+        this.withdraw = []
+        console.log(error)
+      }
+    },
+    async getWareHouseWithdraw (
+      channel,
+      period,
+      warehouse,
+      year,
+      month,
+      start,
+      end
+    ) {
+      try {
+        setChannel(channel)
+
+        const response = await api.get(
+          `/api/cash/distribution/getwarehouse?type=pending&warehouse=${warehouse}&period=${period}&year=${year}&month=${month}&start=${start}&end=${end}`
         )
 
         socket.on('store-updated', data => {

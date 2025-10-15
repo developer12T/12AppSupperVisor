@@ -139,6 +139,10 @@
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel To M3</button>
             </div>
             <div class="ms-2">
+                <VueDatePicker format="MM/yyyy" @update:model-value="onBackOrderMonth" v-model="monthRange"
+                    month-picker />
+            </div>
+            <div class="ms-2">
                 <button class="btn btn-success text-white" @click="exportExcelBackOrder">Export Back Order</button>
             </div>
         </div>
@@ -165,11 +169,13 @@ const route = useRoute()
 const isLoading = ref(false)
 const searchQuery = ref('');
 const dateRange = ref();
+const monthRange = ref();
 const cardData = ref([]);
 // const useOrderStore = useOrder()
 const withdrawStore = useWithdrawStore()
 const today = new Date();
-const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
+const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0')
+let periodBackOrder = ref(today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0'));
 
 
 const selectedZone = ref(route.query.zone || '')
@@ -293,7 +299,7 @@ async function exportExcel() {
 
 }
 async function exportExcelBackOrder() {
-    await withdrawStore.downloadExcelBackOrder(period);
+    await withdrawStore.downloadExcelBackOrder(periodBackOrder.value);
 }
 
 async function onMonthChange() {
@@ -306,6 +312,32 @@ async function onMonthChange() {
     }
     console.log("onMonthChange")
     isLoading.value = false
+}
+
+async function onBackOrderMonth(value) {
+    console.log('value from datepicker:', value)
+    // console.log(monthRange)
+    // console.log(monthRange.value[1])
+
+    // const formatted = `${monthRange.value.year}${String(monthRange.value.month + 1).padStart(2, '0')}`
+    // console.log(formatted) // 👉 "202508"
+
+
+    // กรณี month - picker จะส่ง { month: 8, year: 2025 }
+    if (value && value.year && value.month !== undefined) {
+        const formatted = `${value.year}${String(value.month + 1).padStart(2, '0')}`
+        console.log(formatted) // 👉 "202508"
+        periodBackOrder.value = formatted;
+    }
+
+    // ถ้า VueDatePicker ส่ง Date object แทน (เช่น new Date(2025, 7))
+    else if (value instanceof Date) {
+        const year = value.getFullYear()
+        const month = String(value.getMonth() + 1).padStart(2, '0')
+        const formatted = `${year}${month}`
+        periodBackOrder.value = formatted;
+        console.log(formatted)
+    }
 }
 
 async function clearFilter() {

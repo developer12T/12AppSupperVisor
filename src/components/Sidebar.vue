@@ -68,16 +68,7 @@ const menuItems = computed(() => [
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'dc']
     },
-    // {
-    //     name: 'เช็ครายการใน M3',
-    //     icon: 'mdi:error',
-    //     link: '#',
-    //     roles: ['admin', 'dc'],
-    //     submenu: [
-    //         { icon: 'mdi:warehouse', name: 'เช็ครายการเบิก', link: '/supervisor/withdrawm3' },
-    //         { icon: 'mdi:cart', name: 'เช็ครายการออเดอร์', link: '/supervisor/orderm3' },
-    //     ],
-    // },
+
     {
         name: 'รายการอนุมัติ',
         icon: 'mdi:approval',
@@ -90,6 +81,17 @@ const menuItems = computed(() => [
             { icon: 'mdi:archive-edit', name: 'อนุมัติขอปรับสต๊อก', link: '/supervisor/adjuststock' },
             { icon: 'mdi:shop-location', name: 'อนุมัติร้านค้า Location', link: '/supervisor/storeapprovelatlong' },
         ],
+    },
+    {
+        name: 'รายงานส่งเงิน',
+        icon: 'noto:money-with-wings',
+        link: '#',
+        roles: ['admin'],
+        submenu: [
+            { icon: 'fluent:shifts-day-20-filled', name: 'ยอดส่งเงินรายวัน', link: '/admin/sendmoneyDaily' },
+            { icon: 'material-symbols:calendar-month', name: 'ยอดส่งเงินประจำเดือน', link: '/supervisor/approve' },
+            { icon: 'fluent:money-hand-16-filled', name: 'สรุปยอดเงิน', link: '/supervisor/withdraw' },
+        ]
     },
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['supervisor'], badge: storeModel.count },
     { name: 'อนุมัติใบเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['supervisor', 'dc',], badge: withdrawStore.count },
@@ -154,7 +156,7 @@ onMounted(refreshSidebarData);
                                 :class="['flex items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-base-300', isSubmenuOpen(index) ? 'bg-base-300' : '', !isSidebarOpen ? 'justify-center' : '']">
                                 <Icon :icon="item.icon" class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                 <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{ item.name
-                                    }}</span>
+                                }}</span>
                                 <Icon v-if="showText" class="w-3 h-3" icon="mdi:chevron-down" />
                             </button>
                             <ul v-show="isSidebarOpen && isSubmenuOpen(index)" class="py-2 space-y-2">
@@ -166,7 +168,7 @@ onMounted(refreshSidebarData);
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                        }}</span>
+                                            }}</span>
 
                                     </router-link>
                                 </li>
