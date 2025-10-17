@@ -44,7 +44,7 @@ const menuItems = computed(() => [
             { icon: 'mdi:autorenew', name: 'รายการเปลี่ยนสินค้า', link: '/supervisor/refundtable' },
             { icon: 'mdi:box-clock-outline', name: 'รายการใบเบิก', link: '/supervisor/withdrawtable' },
             { icon: 'mdi:credit-card-refund', name: 'รายการโอนจากเครดิต', link: '/supervisor/credit' },
-            // { icon: 'mdi:arrow-back-circle', name: 'รายงาน Back Order', link: '/supervisor/backorder' },
+            { icon: 'mdi:store-clock', name: 'รายการร้านค้า', link: '/supervisor/storenewtable' },
 
         ],
         roles: ['admin', 'area_manager', 'sale_manager', 'dc', 'supervisor',]

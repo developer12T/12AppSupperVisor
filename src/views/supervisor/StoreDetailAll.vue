@@ -124,7 +124,7 @@ const selectedArea = ref('')
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
-
+const userRole = localStorage.getItem('role')
 
 function formatDate(dateStr) {
     if (!dateStr) return ''
