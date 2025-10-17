@@ -36,14 +36,14 @@
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
             </div>
-            <div class="mx-3" v-if="userRole != 'supervisor'">
+            <!-- <div class="mx-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedStatus">
                     <option disabled value="">Select Status</option>
                     <option value="pending">Pending</option>
                     <option value="completed">Completed</option>
                     <option value="canceled">Cancel</option>
                 </select>
-            </div>
+            </div> -->
 
         </div>
 
@@ -106,12 +106,12 @@
                 <Icon icon="mdi:broom" width="24" height="24" />
                 เคลีย
             </button>
-            <div class="ms-2">
+            <!-- <div class="ms-2">
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel To M3</button>
             </div>
             <div class="ms-2">
                 <button class="btn btn-success text-white" @click="exportExcel">Export Excel Item</button>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
@@ -172,10 +172,22 @@ const filteredOrders = computed(() => {
         data = data.filter(order => order.area === selectedArea.value);
     }
 
+    if (selectedZone.value) {
+        data = data.filter(order =>
+            (order.area || '').startsWith(selectedZone.value)
+        )
+    }
+    if (selectedTeam.value) {
+        console.log()
+        data = data.filter(order =>
+            getTeam3(order.area) === selectedTeam.value
+        )
+    }
+
     if (selectedStatus.value) {
         data = data.filter(order => order.status === selectedStatus.value);
     }
- // --- Date range filter (client-side) ---
+    // --- Date range filter (client-side) ---
 
     const startDateRange = dateRange.value?.[0]
         ? formatDateToYYYYMMDD(dateRange.value[0])
