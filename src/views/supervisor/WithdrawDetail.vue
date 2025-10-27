@@ -55,7 +55,7 @@
         <!-- Info Section -->
         <div class="grid md:grid-cols-2 gap-5 mb-8">
             <Info label="ประเภท" :value="statusTH(data.withdrawType) ?? '-'" />
-            <Info label="เบิกต้นทริป" :value="statusTH(data.newTrip)" />
+            <Info label="เบิก" :value="statusTH(data.newTrip)" />
             <Info label="Order Type" :value="data.orderTypeName ?? '-'" />
             <Info label="Area" :value="data.area ?? '-'" />
             <Info label="จากคลัง" :value="data.fromWarehouse ?? '-'" />
