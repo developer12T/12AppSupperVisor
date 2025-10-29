@@ -5,7 +5,7 @@
 
         <template v-if="!isLoading">
             <template v-if="data">
-                <h1 class="text-xl font-bold mb-2">ข้อมูลรายการปรับสต็อก</h1>
+                <h1 class="text-xl font-bold mb-2">ข้อมูลรายการขอเปลี่ยน</h1>
                 <div class="mb-4 grid grid-cols-2 gap-3 text-sm">
                     <div><span class="font-semibold">Order ID:</span> {{ data.orderId }}</div>
                     <div><span class="font-semibold">สถานะ:</span> <span
