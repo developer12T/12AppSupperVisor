@@ -36,7 +36,7 @@
                     อนุมัติใบเบิก
                 </button>
                 <button
-                    v-if="data.status === 'approved' || data.status === 'success' || data.status === 'pending' || data.status === 'supapproved'"
+                    v-if="data.status === 'pending'"
                     class="rounded-xl px-4 py-2 bg-red-400 text-white font-medium hover:bg-red-100 transition"
                     @click="onCancelClick">
                     ยกเลิกใบเบิก
@@ -55,7 +55,7 @@
         <!-- Info Section -->
         <div class="grid md:grid-cols-2 gap-5 mb-8">
             <Info label="ประเภท" :value="statusTH(data.withdrawType) ?? '-'" />
-            <Info label="เบิกต้นทริป" :value="statusTH(data.newTrip)" />
+            <Info label="เบิก" :value="statusTH(data.newTrip)" />
             <Info label="Order Type" :value="data.orderTypeName ?? '-'" />
             <Info label="Area" :value="data.area ?? '-'" />
             <Info label="จากคลัง" :value="data.fromWarehouse ?? '-'" />

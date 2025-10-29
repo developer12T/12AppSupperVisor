@@ -94,6 +94,41 @@
         </div>
         <div v-if="!data.rewards?.length" class="text-gray-400 pl-3">-</div>
       </div>
+
+  <div>
+    <div v-if="rewardProduct && rewardProduct.length > 0" class="overflow-x-auto">
+      <div class="flex gap-4 px-4 py-2">
+        <div
+          v-for="item in rewardProduct"
+          :key="item.id"
+          class="min-w-[200px] flex-shrink-0 border rounded-lg shadow hover:shadow-md transition p-4 text-center bg-white"
+        >
+          <img
+            :src="`${path}${item.url}`"
+            :alt="item.name || item.id"
+            class="w-full h-32 object-contain mx-auto mb-2"
+          />
+          <div class="text-sm text-gray-700">
+            <p><strong>ID:</strong> {{ item.id }}</p>
+            <p><strong>ชื่อ:</strong> {{ item.name || 'ไม่ระบุชื่อ' }}</p>
+            <p><strong>แบรนด์:</strong> {{ item.brand }}</p>
+            <p><strong>กลุ่ม:</strong> {{ item.group }}</p>
+            <p><strong>รสชาติ:</strong> {{ item.brand }}</p>
+            <p><strong>รสชาติ:</strong> {{ item.flavour }}</p>
+            <p><strong>ขนาด:</strong> {{ item.size }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ถ้าไม่มีข้อมูล -->
+    <div v-else class="text-center text-gray-400 py-6">
+      <img src="" alt="ไม่มีข้อมูล" class="mx-auto w-32 h-32 opacity-40 mb-2" />
+      <p>ไม่มีข้อมูลของรางวัล</p>
+    </div>
+  </div>
+
+
     </template>
   </div>
 </template>
@@ -108,6 +143,9 @@ const promotionStore = usePromotionsStore()
 
 const data = ref(null)
 const isLoading = ref(false)
+const rewardProduct = ref([])
+
+const path = import.meta.env.VITE_API_IMAGE_URL
 
 onMounted(async () => {
   isLoading.value = true
@@ -136,7 +174,7 @@ onMounted(async () => {
   try {
     await promotionStore.getPromotionDetail('cash', route.params.proId)
     const detail = promotionStore.promotionDetail
-    console.log('detail', detail)
+    // console.log('detail', detail)
     if (detail) {
       data.value = {
         ...defaultData,
@@ -156,6 +194,10 @@ onMounted(async () => {
   } finally {
     isLoading.value = false
   }
+  const result = await promotionStore.getRewardProduct('cash', route.params.proId);
+  // console.log('🚀 result:', result); // ต้องได้ array
+  rewardProduct.value = result;
+  console.log('✅ rewardProduct.value:', rewardProduct.value);
 })
 
 function formatDate(dateStr) {

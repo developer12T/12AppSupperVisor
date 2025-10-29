@@ -47,6 +47,22 @@ export const usePromotionsStore = defineStore('promotions', {
       } catch (error) {
         console.error(error)
       }
+    },
+    async getRewardProduct (channel,proId) {
+      try {
+        setChannel(channel)
+        const response = await api.post(
+          '/api/cash/promotion/getReward',
+          { proId }
+        )
+        const result = response.data.data
+        // this.rewardProduct = result
+        return result
+        // console.log('rewardProduct', this.rewardProduct)
+      } catch (error) {
+        console.error(error)
+      }
+
     }
   }
 })
