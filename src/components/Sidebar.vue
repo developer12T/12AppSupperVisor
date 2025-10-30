@@ -61,7 +61,7 @@ const menuItems = computed(() => [
         link: '#',
         submenu: [
             { icon: 'mdi:chart-areaspline', name: 'รายงานยอดขาย', link: '/supervisor/report' },
-            { icon: 'mdi:routes', name: 'รายงานไลน์การเช็คอิน', link: '/supervisor/checkin' },
+            { icon: 'mdi:routes', name: 'รายงานการเข้าเยี่ยม', link: '/supervisor/checkin' },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product' },
             { icon: 'mdi:money-100', name: 'รายการส่งเงิน', link: '/supervisor/sendmoney' },
             { icon: 'mdi:box-clock-outline', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute' },

@@ -94,7 +94,7 @@ export const useRouteStore = defineStore('checkin', {
             import.meta.env.VITE_API_URL
           }/api/cash/route/getRouteEffectiveAll?area=${area}&period=${period}&day=${route}&zone=${zone}`
         )
-        console.log('response', response.data)
+        // console.log('response', response.data)
         this.visit = response.data.visit
         this.effective = response.data.effective
         this.totalStoreAll = response.data.totalStoreAll
@@ -105,6 +105,33 @@ export const useRouteStore = defineStore('checkin', {
       } catch (error) {
         console.error(error)
       }
-    }
+    },
+    async getExcelCheckin (area, period) {
+      try {
+        const response = await api.post(
+          `${import.meta.env.VITE_API_URL}/api/cash/route/getRouteEffective`,
+          {
+            area: area,
+            period: period,
+            excel: 'true',
+          },
+          {
+            responseType: 'blob', // สำคัญมาก! สำหรับไฟล์
+          }
+        )
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `getRouteEffective_${period}.xlsx`) // ชื่อไฟล์
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+
   }
 })

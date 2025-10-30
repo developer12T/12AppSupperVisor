@@ -31,7 +31,7 @@
             </div>
         </router-link>
 
-        <div class="card bg-base-100 shadow-xl p-4 w-full max-w-sm">
+        <div class="card bg-base-100 shadow-xl p-4 w-full max-w-xs">
             <div class="flex items-center justify-between mb-2">
                 <h2 class="font-bold text-lg">Visit</h2>
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
@@ -45,6 +45,12 @@
                 </span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
+                ร้านทั้งหมด:
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
+            </div>
+
+            <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 เยี่ยมแล้ว:
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
                 <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreCheckInNotSell }}</span>
@@ -54,14 +60,10 @@
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
                 <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStorePending }}</span>
             </div>
-            <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                ร้านทั้งหมด:
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
-            </div>
+
         </div>
 
-        <div class="card bg-base-100 shadow-xl p-4 w-full max-w-sm">
+        <div class="card bg-base-100 shadow-xl p-4 w-full max-w-xs">
             <div class="flex items-center justify-between mb-2">
                 <h2 class="font-bold text-lg">Effective</h2>
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
@@ -95,19 +97,28 @@
                 :value="percentageUsed" max="100"></progress> -->
         </div>
     </div>
+    <div v-if="showExcel === 'true'" class="w-full text-right">
+  <button class="btn btn-success text-white mb-3" @click="exportExcel()">
+    Export Excel
+  </button>
+</div>
+    
+
+
     <div class="overflow-auto max-h-[600px] w-full border rounded-lg shadow">
         <table class="table w-full min-w-[800px] border-collapse">
             <thead class="bg-primary text-white sticky top-0 z-10">
                 <tr>
                     <th class="text-left p-2 ">Route</th>
                     <th class="text-center p-2 ">ร้านทั้งหมด</th>
-                    <th class="text-center p-2 ">รอเยี่ยม</th>
+                    <th class="text-center p-2 ">เยี่ยมแล้ว</th>
                     <th class="text-center p-2 ">ซื้อ</th>
-                    <th class="text-center p-2 ">เยี่ยม</th>
+                    <th class="text-center p-2 ">ไม่ซื้อ</th>
+                    <th class="text-center p-2 ">รอเยี่ยม</th>
                     <th class="text-center p-2 ">ยอดขายรวม</th>
                     <th class="text-center p-2 ">ยอดหีบ (CTN)</th>
-                    <th class="text-center p-2 ">Visit (%)</th>
-                    <th class="text-center p-2 ">Effective (%)</th>
+                    <th class="text-center p-2 ">เปอร์เซ็นต์การเข้าเยี่ยม</th>
+                    <th class="text-center p-2 ">เปอร์เซ็นต์การขายได้</th>
 
                 </tr>
             </thead>
@@ -152,11 +163,12 @@
                         @click="showDetail(item, item.route, item.routeId)">
                         <td class="p-2 border-r border-black">{{ item.route }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeAll }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storePending }}</td>
+                        <td class="text-center p-2 border-r border-black">{{ item.storeTotal }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeSell }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storeCheckInNotSell +
-                            item.storeNotSell
+                        <td class="text-center p-2 border-r border-black">{{ 
+                            item.storeNotSell + item.storeCheckInNotSell
                             }}</td>
+                        <td class="text-center p-2 border-r border-black">{{ item.storeAll - item.storeTotal  }}</td>
                         <td class="text-right p-2  border-r border-black">{{ formatCurrency(item.summary) }}</td>
                         <td class="text-right p-2 border-r border-black">
                             {{ new Intl.NumberFormat('th-TH').format(item.totalqty || 0) }}
@@ -188,7 +200,7 @@ const routeStore = useRouteStore()
 const filter = useFilter()
 const isLoading = ref(false);
 const selectedRoute = ref(null)
-
+const showExcel = ref(null)
 
 
 const selectedZone = ref(route.query.zone || '')
@@ -204,8 +216,12 @@ function clearFilter() {
     selectedZone.value = ''
     selectedArea.value = ''
     selectedTeam.value = ''
+    showExcel.value = ''
     window.location.assign('/supervisor/checkin')
 }
+
+
+
 
 
 function formatCurrency(value) {
@@ -223,15 +239,27 @@ onMounted(async () => {
     await filter.getZone(period);
     if (selectedZone.value) {
         await filter.getArea(period, selectedZone.value, selectedTeam.value);
-        await filter.getTeam(selectedZone.value);
+        // showExcel.value = 'true'
+    //     await filter.getTeam(selectedZone.value);
     }
-    if (selectedArea.value) {
-        await routeStore.getCheckin(period, selectedArea.value, selectedTeam.value);
-    }
-    await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // if (selectedArea.value) {
+    //     await routeStore.getCheckin(period, selectedArea.value, selectedTeam.value);
+
+    // }
+    // await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
+    // await new Promise(resolve => setTimeout(resolve, 2000))
     isLoading.value = false;
+    // showExcel.value = 'true'
 })
+
+async function exportExcel() {
+  try {
+    await routeStore.getExcelCheckin(selectedArea.value, period, '', selectedZone.value)
+    console.log('✅ Export success')
+  } catch (err) {
+    console.error('❌ Export failed:', err)
+  }
+}
 
 watch(selectedTeam, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
@@ -291,6 +319,7 @@ watch(selectedArea, async (newVal) => {
         }
         if (selectedArea.value) {
             await routeStore.getCheckin(period, selectedArea.value);
+            showExcel.value = 'true'
         }
         await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
         await routeStore.getCheckin(period, newVal);
