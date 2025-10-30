@@ -7,6 +7,7 @@ export const useRouteStore = defineStore('checkin', {
     polyline: [],
     routesStore: [],
     checkIn: [],
+    total:{},
     routeInStore: [],
     visit: '',
     effective: '',
@@ -81,8 +82,10 @@ export const useRouteStore = defineStore('checkin', {
             period: period
           }
         )
-        console.log('response', response.data)
+        
         this.checkIn = response.data.data
+        this.total = response.data.total
+        // console.log('total', this.total)
       } catch (error) {
         console.error(error)
       }

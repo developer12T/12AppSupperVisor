@@ -179,6 +179,31 @@
                     </tr>
                 </template>
             </tbody>
+
+    <tfoot v-if="routeStore.total.route" class="bg-success  text-white sticky bottom-0 z-10 font-semibold">
+      <tr>
+        <td class="p-2 border-r border-black text-center">{{ routeStore.total.route }}</td>
+        <td class="text-center p-2 border-r border-black">{{ routeStore.total.storeAll }}</td>
+        <td class="text-center p-2 border-r border-black">{{ routeStore.total.storeTotal }}</td>
+        <td class="text-center p-2 border-r border-black">{{ routeStore.total.storeSell }}</td>
+        <td class="text-center p-2 border-r border-black">{{ 
+            routeStore.total.storeNotSell + routeStore.total.storeCheckInNotSell
+            }}</td>
+        <td class="text-center p-2 border-r border-black">{{ routeStore.total.storeAll - routeStore.total.storeTotal  }}</td>
+        <td class="text-right p-2  border-r border-black">{{ formatCurrency(routeStore.total.summary) }}</td>
+        <td class="text-right p-2 border-r border-black">
+            {{ new Intl.NumberFormat('th-TH').format(routeStore.total.totalqty || 0) }}
+        </td>
+        <td class="text-center p-2 border-r border-black">{{ routeStore.total.percentVisit }}</td>
+        <td class="text-center p-2 border-r border-black">{{ routeStore.total.percentEffective }}</td>
+
+
+
+
+        </tr>
+            </tfoot>
+
+
         </table>
     </div>
 
@@ -201,7 +226,7 @@ const filter = useFilter()
 const isLoading = ref(false);
 const selectedRoute = ref(null)
 const showExcel = ref(null)
-
+const totalRow = ref('')
 
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
