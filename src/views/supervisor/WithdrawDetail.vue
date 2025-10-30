@@ -41,7 +41,7 @@
                     @click="onCancelClick">
                     ยกเลิกใบเบิก
                 </button>
-                <button v-if="data.status === 'confirm'"
+                <button v-if="data.status === 'confirm' || data.status === 'canceled'"
                     class="rounded-xl px-4 py-2 bg-blue-200 text-blue-900 font-medium hover:bg-blue-100 transition"
                     @click="onAddRemarkClick">
                     เพิ่มหมายเหตุการรับของ
@@ -182,6 +182,7 @@
                         required>
                         <option disabled value="">เลือกหมายเหตุ</option>
                         <option value="สินค้าขาด">สินค้าขาด</option>
+                        <option value="Sale กดเบิกมาผิด">Sale กดเบิกมาผิด</option>
                         <option value="สินค้าชำรุด">สินค้าชำรุด</option>
                         <option value="ค้างส่ง">ค้างส่ง</option>
                         <option value="อื่นๆ">อื่นๆ</option>
