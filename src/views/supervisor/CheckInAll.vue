@@ -210,11 +210,12 @@ const selectedTeam = ref(route.query.team || '')
 function showDetail(item, area, routeId) {
   selectedRoute.value = item
 
-  const routeData = router.resolve({
-    path: '/supervisor/checkin',
-    query: { area: area, routeId: routeId }
-  })
+  // ✅ เก็บค่าที่ต้องการส่งไว้ใน sessionStorage
+  const payload = { item, area, routeId }
+  sessionStorage.setItem('checkin-data', JSON.stringify(payload))
 
+  // ✅ เปิดหน้าใหม่โดยไม่ใช้ query
+  const routeData = router.resolve({ path: '/supervisor/checkin' })
   window.open(routeData.href, '_blank')
 }
 

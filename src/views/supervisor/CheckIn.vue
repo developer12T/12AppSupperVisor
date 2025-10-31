@@ -7,7 +7,7 @@
             </select>
             <select class="select select-info ms-3 text-center" v-model="selectedArea">
                 <option disabled value="">Select Area</option>
-                <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                <option v-for="area in filter.area" :key="area" :value="area.area">{{ area?.area ?? checkinData.value.area  }}</option>
             </select>
         </div>
         <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
@@ -229,6 +229,8 @@ const selectedRoute = ref(null)
 const showExcel = ref(null)
 const totalRow = ref('')
 
+const checkinData = ref({})
+
 
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
@@ -270,11 +272,20 @@ onMounted(async () => {
     //     await filter.getTeam(selectedZone.value);
     }
     // if (selectedArea.value) {
-    //     await routeStore.getCheckin(period, selectedArea.value, selectedTeam.value);
+        // console.log("testsssssssss",checkinData)
+        
 
     // }
     // await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
     // await new Promise(resolve => setTimeout(resolve, 2000))
+    const data = sessionStorage.getItem('checkin-data')
+    if (data) {
+        checkinData.value = JSON.parse(data)
+        console.log('✅ ข้อมูลที่ส่งมา:', checkinData.value.area)
+    }
+
+    await routeStore.getCheckin(period, checkinData.value.area, selectedTeam.value);
+    
     isLoading.value = false;
     // showExcel.value = 'true'
 })
