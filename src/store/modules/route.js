@@ -7,7 +7,7 @@ export const useRouteStore = defineStore('checkin', {
     polyline: [],
     routesStore: [],
     checkIn: [],
-    total:{},
+    total:[],
     routeInStore: [],
     visit: '',
     effective: '',
@@ -84,8 +84,8 @@ export const useRouteStore = defineStore('checkin', {
         )
         
         this.checkIn = response.data.data
-        this.total = response.data.total
-        // console.log('total', this.total)
+        this.total = response.data.totalByArea
+        console.log('total', this.total)
       } catch (error) {
         console.error(error)
       }
@@ -114,7 +114,7 @@ export const useRouteStore = defineStore('checkin', {
         const response = await api.post(
           `${import.meta.env.VITE_API_URL}/api/cash/route/getRouteEffective`,
           {
-            area: area,
+            // area: area,
             period: period,
             excel: 'true',
           },

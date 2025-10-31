@@ -97,7 +97,7 @@
                 :value="percentageUsed" max="100"></progress> -->
         </div>
     </div>
-    <div v-if="showExcel === 'true'" class="w-full text-right">
+    <div  class="w-full text-right">
   <button class="btn btn-success text-white mb-3" @click="exportExcel()">
     Export Excel
   </button>
@@ -158,10 +158,10 @@
                     </tr>
                 </template>
                 <template v-else>
-                    <tr v-for="(item, index) in routeStore.checkIn" :key="index"
+                    <tr v-for="(item, index) in routeStore.total" :key="index"
                         class="hover:bg-blue-100 cursor-pointer border-black"
-                        @click="showDetail(item, item.route, item.routeId)">
-                        <td class="p-2 border-r border-black">{{ item.route }}</td>
+                        @click="showDetail(item, item.area, item.routeId)">
+                        <td class="p-2 border-r border-black">{{ item.area }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeAll }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeTotal }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeSell }}</td>
@@ -179,32 +179,6 @@
                     </tr>
                 </template>
             </tbody>
-
-<tfoot v-if="routeStore.total?.length" class="bg-success text-white sticky bottom-0 z-10 font-semibold">
-  <tr>
-    <td class="p-2 border-r border-black text-center">{{ routeStore.total[0].route }}</td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].storeAll }}</td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].storeTotal }}</td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].storeSell }}</td>
-    <td class="text-center p-2 border-r border-black">
-      {{ (routeStore.total[0].storeNotSell || 0) + (routeStore.total[0].storeCheckInNotSell || 0) }}
-    </td>
-    <td class="text-center p-2 border-r border-black">
-      {{ (routeStore.total[0].storeAll || 0) - (routeStore.total[0].storeTotal || 0) }}
-    </td>
-    <td class="text-right p-2 border-r border-black">
-      {{ formatCurrency(routeStore.total[0].summary) }}
-    </td>
-    <td class="text-right p-2 border-r border-black">
-      {{ new Intl.NumberFormat('th-TH').format(routeStore.total[0].totalqty || 0) }}
-    </td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].percentVisit }}</td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].percentEffective }}</td>
-  </tr>
-</tfoot>
-
-
-
         </table>
     </div>
 
@@ -216,7 +190,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted, watch } from 'vue'
 import { useRouteStore } from '../../store/modules/route'
 import { useFilter } from '../../store/modules/filter'
-
+import Swal from 'sweetalert2'
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
@@ -229,14 +203,19 @@ const selectedRoute = ref(null)
 const showExcel = ref(null)
 const totalRow = ref('')
 
-
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 
-function showDetail(item, routeCode, routeId) {
-    selectedRoute.value = item
-    router.push({ name: 'RouteDetail', params: { route: routeCode, routeId: routeId } })
+function showDetail(item, area, routeId) {
+  selectedRoute.value = item
+
+  const routeData = router.resolve({
+    path: '/supervisor/checkin',
+    query: { area: area, routeId: routeId }
+  })
+
+  window.open(routeData.href, '_blank')
 }
 
 function clearFilter() {
@@ -269,6 +248,8 @@ onMounted(async () => {
         // showExcel.value = 'true'
     //     await filter.getTeam(selectedZone.value);
     }
+
+    await routeStore.getCheckin(period);
     // if (selectedArea.value) {
     //     await routeStore.getCheckin(period, selectedArea.value, selectedTeam.value);
 
@@ -281,10 +262,31 @@ onMounted(async () => {
 
 async function exportExcel() {
   try {
-    await routeStore.getExcelCheckin(selectedArea.value, period, '', selectedZone.value)
-    console.log('✅ Export success')
+    // 🕐 เปิด popup ระหว่างรอ
+    Swal.fire({
+      title: 'กำลังสร้างไฟล์ Excel...',
+      text: 'กรุณารอสักครู่',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
+    await routeStore.getExcelCheckin('', period)
+
+    // ✅ เมื่อโหลดเสร็จ
+    Swal.fire({
+      icon: 'success',
+      title: 'สำเร็จ!',
+      text: 'ดาวน์โหลดไฟล์ Excel เรียบร้อยแล้ว'
+    })
   } catch (err) {
     console.error('❌ Export failed:', err)
+    Swal.fire({
+      icon: 'error',
+      title: 'เกิดข้อผิดพลาด',
+      text: err.message || 'ไม่สามารถดาวน์โหลดไฟล์ได้'
+    })
   }
 }
 
@@ -337,22 +339,22 @@ watch(selectedArea, async (newVal) => {
     //         area: newVal
     //     }
     // });
-    if (newVal) {
-        isLoading.value = true;
-        await filter.getZone(period);
-        if (selectedZone.value) {
-            await filter.getArea(period, selectedZone.value, selectedArea.value);
+    // if (newVal) {
+    //     isLoading.value = true;
+    //     await filter.getZone(period);
+    //     if (selectedZone.value) {
+    //         await filter.getArea(period, selectedZone.value, selectedArea.value);
 
-        }
-        if (selectedArea.value) {
-            await routeStore.getCheckin(period, selectedArea.value);
-            showExcel.value = 'true'
-        }
-        await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
-        await routeStore.getCheckin(period, newVal);
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        isLoading.value = false;
-    }
+    //     }
+    //     if (selectedArea.value) {
+    //         await routeStore.getCheckin(period, selectedArea.value);
+    //         showExcel.value = 'true'
+    //     }
+    //     await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
+    //     await routeStore.getCheckin(period, newVal);
+    //     await new Promise(resolve => setTimeout(resolve, 2000))
+    //     isLoading.value = false;
+    // }
 });
 
 </script>

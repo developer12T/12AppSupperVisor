@@ -18,6 +18,12 @@
                 </span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
+                ร้านทั้งหมด:
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
+            </div>
+
+            <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 เยี่ยมแล้ว:
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
                 <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreCheckInNotSell }}</span>
@@ -27,11 +33,7 @@
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
                 <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStorePending }}</span>
             </div>
-            <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                ร้านทั้งหมด:
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
-            </div>
+
             <!-- <progress class="progress w-full"
                 :class="percentageUsed >= 90 ? 'progress-error' : percentageUsed >= 70 ? 'progress-warning' : 'progress-success'"
                 :value="percentageUsed" max="100"></progress> -->
@@ -51,6 +53,12 @@
                 </span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
+                ร้านทั้งหมด:
+                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
+                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
+            </div>
+
+            <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 ซื้อ:
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
                 <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreSell }}</span>
@@ -60,11 +68,7 @@
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
                 <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreNotSell }}</span>
             </div>
-            <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                ร้านทั้งหมด:
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
-            </div>
+
             <!-- <progress class="progress w-full"
                 :class="percentageUsed >= 90 ? 'progress-error' : percentageUsed >= 70 ? 'progress-warning' : 'progress-success'"
                 :value="percentageUsed" max="100"></progress> -->

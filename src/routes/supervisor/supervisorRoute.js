@@ -28,6 +28,10 @@ const supervisorRoutes = [
         component: () => import('../../views/supervisor/CheckIn.vue')
       },
       {
+        path: 'checkinAll',
+        component: () => import('../../views/supervisor/CheckInAll.vue')
+      },
+      {
         path: 'checkin/:route/:routeId',
         name: 'RouteDetail',
         component: () => import('../../views/supervisor/RouteDetail.vue'),
