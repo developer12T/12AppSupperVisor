@@ -36,6 +36,7 @@ export const useAuthStore = defineStore('auth', {
           this.warehouse = result.warehouse
           this.token = result.token
           this.role = result.role
+          this.role = result.platformType
 
           localStorage.setItem('saleCode', this.saleCode)
           localStorage.setItem('fullName', this.fullName)
@@ -48,6 +49,7 @@ export const useAuthStore = defineStore('auth', {
           localStorage.setItem('warehouse', this.warehouse)
           localStorage.setItem('token', JSON.stringify(this.token))
           localStorage.setItem('role', this.role)
+          localStorage.setItem('platformType', this.platformType)
           this.statusCode = response.data['status']
         } else {
           this.validateLogin = user.message

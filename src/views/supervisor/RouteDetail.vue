@@ -83,6 +83,7 @@
                     <th class="text-center p-2">Phone</th>
                     <th class="text-right p-2">Summary</th>
                     <th class="text-center p-2">Status</th>
+                    <th class="text-center p-2">Note</th>
                     <th class="text-center p-2">Google Map</th>
                     <th class="text-center p-2">Image</th>
                     <th class="text-center p-2">Datetime</th>
@@ -133,6 +134,7 @@
                                 {{ store.status }}
                             </span>
                         </td>
+                          <td class="text-center p-2">{{ store.note }}</td>
                         <td class="text-center p-2">
                             <a :href="store.mapLink" target="_blank" class="text-blue-600 underline">View</a>
                         </td>
