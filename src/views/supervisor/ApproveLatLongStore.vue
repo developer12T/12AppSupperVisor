@@ -194,7 +194,7 @@ async function onMonthChange() {
     console.log('เลือกเดือน:', month.value)
     console.log('เลือกปี:', year.value)
     // console.log('selectedMonth:', selectedMonth.value)
-    await store.getCustomerAll(selectedZone.value, selectedArea.value, selectedTeam.value, year.value, month.value)
+    await store.getCustomerAll('cash', selectedZone.value, selectedArea.value, selectedTeam.value, year.value, month.value)
     customers.value = store.storeNew.data
     isLoading.value = false
 }
@@ -303,7 +303,7 @@ const filteredStores = computed(() => {
 onMounted(async () => {
     isLoading.value = true
     await store.getStoreLatlong('', '', '')
-    await filter.getZone('cash',period);
+    await filter.getZone('cash', period);
 
     if (userRole == 'supervisor' || userRole == 'area_manager') {
         await filter.getTeam(zone);

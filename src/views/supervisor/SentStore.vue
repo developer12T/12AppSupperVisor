@@ -220,7 +220,7 @@ async function onMonthChange() {
     console.log('เลือกเดือน:', month.value)
     console.log('เลือกปี:', year.value)
     // console.log('selectedMonth:', selectedMonth.value)
-    await store.getCustomerAll(selectedZone.value, selectedArea.value, selectedTeam.value, year.value, month.value)
+    await store.getCustomerAll('cash', selectedZone.value, selectedArea.value, selectedTeam.value, year.value, month.value)
     customers.value = store.storeNew.data
     isLoading.value = false
 }
@@ -282,7 +282,7 @@ watch(selectedTeam, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, selectedZone.value, newVal);
-        await store.getCustomerAll(selectedZone.value, selectedArea.value, newVal, getSafe(year.value),
+        await store.getCustomerAll('cash', selectedZone.value, selectedArea.value, newVal, getSafe(year.value),
             getSafe(month.value),)
         customers.value = store.storeNew.data
         isLoading.value = false
@@ -293,7 +293,7 @@ watch(selectedArea, async (newVal) => {
 
     if (newVal) {
         isLoading.value = true
-        await store.getCustomerAll(selectedZone.value, newVal, selectedTeam.value, getSafe(year.value),
+        await store.getCustomerAll('cash', selectedZone.value, newVal, selectedTeam.value, getSafe(year.value),
             getSafe(month.value))
         customers.value = store.storeNew.data
         isLoading.value = false
@@ -314,7 +314,7 @@ watch(selectedZone, async (newVal) => {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
         await filter.getTeam(newVal);
-        await store.getCustomerAll(newVal, selectedArea.value, selectedTeam.value, getSafe(year.value),
+        await store.getCustomerAll('cash', newVal, selectedArea.value, selectedTeam.value, getSafe(year.value),
             getSafe(month.value))
         customers.value = store.storeNew.data
         isLoading.value = false
@@ -337,8 +337,8 @@ const filteredStores = computed(() => {
 
 onMounted(async () => {
     isLoading.value = true
-    await store.getCustomerAll('', '', '', '', '')
-    await filter.getZone('cash',period);
+    await store.getCustomerAll('cash', '', '', '', '', '')
+    await filter.getZone('cash', period);
     if (userRole == 'supervisor' || userRole == 'area_manager') {
         await filter.getTeam(zone);
         await filter.getArea(period, zone, '');
