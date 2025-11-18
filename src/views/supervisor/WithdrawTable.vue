@@ -37,6 +37,13 @@
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
             </div>
+            <div class="mx-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedChannel">
+                    <option disabled value="">Select Channel</option>
+                    <option value="cash">CASH</option>
+                    <option value="pc">PC</option>
+                </select>
+            </div>
 
             <!-- <input type="date" v-model="startDate" class="input input-bordered w-full" /> -->
 
@@ -164,6 +171,7 @@ import { formatDate, formatDateToYYYYMMDD, formatNumber, toDateOrNull, endOfDay,
 
 const filter = useFilter()
 const userRole = localStorage.getItem('role')
+const selectedChannel = ref('cash')
 const router = useRouter()
 const route = useRoute()
 const isLoading = ref(false)
@@ -305,14 +313,25 @@ async function exportExcelBackOrder() {
 async function onMonthChange() {
     isLoading.value = true
     if (startDate.value && endDate.value) {
-        await withdrawStore.getWithdrawTable('cash', '', '', '', '', `${startDate.value}`, `${endDate.value}`)
+        await withdrawStore.getWithdrawTable(`${selectedChannel.value}`, '', '', '', '', `${startDate.value}`, `${endDate.value}`)
     } else {
-        await withdrawStore.getWithdrawTable('cash', period, '', '', '', '', '')
+        await withdrawStore.getWithdrawTable(`${selectedChannel.value}`, period, '', '', '', '', '')
 
     }
     console.log("onMonthChange")
     isLoading.value = false
 }
+
+watch(selectedChannel, async (newVal) => {
+    if (newVal) {
+        if (startDate.value && endDate.value) {
+            await withdrawStore.getWithdrawTable(`${selectedChannel.value}`, '', '', '', '', `${startDate.value}`, `${endDate.value}`)
+        } else {
+            await withdrawStore.getWithdrawTable(`${selectedChannel.value}`, period, '', '', '', '', '')
+        }
+    }
+});
+
 
 async function onBackOrderMonth(value) {
     console.log('value from datepicker:', value)
@@ -347,7 +366,7 @@ async function clearFilter() {
     selectedArea.value = ''
     selectedTeam.value = ''
     selectedStatus.value = ''
-    await withdrawStore.getWithdrawTable('cash', period, '', '', '', '', '')
+    await withdrawStore.getWithdrawTable(`${selectedChannel.value}`, period, '', '', '', '', '')
     isLoading.value = false;
 }
 
@@ -371,8 +390,8 @@ onMounted(async () => {
     isLoading.value = true
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
-    await filter.getZone(period);
-    await withdrawStore.getWithdrawTable('cash', period, '', '', '', '', '')
+    await filter.getZone('cash',period);
+    await withdrawStore.getWithdrawTable(`${selectedChannel.value}`, period, '', '', '', '', '')
     console.log(withdrawStore.withdraw)
     // cardData.value = withdrawStore.withdraw.data
     isLoading.value = false

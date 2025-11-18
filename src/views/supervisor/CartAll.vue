@@ -170,7 +170,7 @@ onMounted(async () => {
     if (route.query.area) {
 
     }
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     await cartStore.getCartAll('');
     // cardData.value = withdrawStore.withdraw
     isLoading.value = false

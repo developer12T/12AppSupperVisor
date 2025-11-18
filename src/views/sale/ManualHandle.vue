@@ -1,6 +1,6 @@
 <template>
     <div class="max-w-3xl mx-auto p-6">
-        <h1 class="text-2xl font-bold mb-4">12Cash Manual</h1>
+        <h1 class="text-2xl font-bold mb-4">{{ header }}</h1>
         <div v-if="isAdmin">
             <form @submit.prevent="uploadFile" class="mb-6 flex items-center gap-4">
 
@@ -12,7 +12,7 @@
             </form>
         </div>
         <div v-if="pptUrl" class="border rounded p-4 bg-white shadow">
-            <h2 class="font-semibold mb-2">12Cash Manual</h2>
+            <h2 class="font-semibold mb-2">{{ header }}</h2>
             <!-- Microsoft Office Online Viewer -->
             <iframe :src="officeViewerUrl" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
         </div>
@@ -25,14 +25,17 @@ import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 
 const userRole = ref(localStorage.getItem('role') || '')
+const platformType = localStorage.getItem('platformType')
 const isAdmin = computed(() => userRole.value === 'admin')
 
 const selectedFile = ref(null)
 const pptUrl = ref('')
 const uploading = ref(false)
+let header = ref('')
 
 // Set your actual domain or IP here
-const FILE_URL = 'https://apps.onetwotrading.co.th/manual/Manual.pptx'
+// const FILE_URL = 'https://apps.onetwotrading.co.th/manual/Manual.pptx'
+let FILE_URL = ref('')
 
 function onFileChange(e) {
     selectedFile.value = e.target.files[0] || null
@@ -40,6 +43,19 @@ function onFileChange(e) {
 
 onMounted(() => {
     pptUrl.value = FILE_URL
+    switch (platformType) {
+        case 'CASH':
+            header = '12Cash Manual'
+            FILE_URL = 'https://apps.onetwotrading.co.th/manual/Manual.pptx'
+            break;
+        case 'PC':
+            header = '12PC Manual'
+            FILE_URL = 'https://apps.onetwotrading.co.th/manual/Manual.pptx'
+            break;
+
+        default:
+            break;
+    }
 })
 
 

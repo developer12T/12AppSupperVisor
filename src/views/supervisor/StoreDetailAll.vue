@@ -42,6 +42,24 @@
                         <Icon icon="mdi:google" width="24" height="24" />
                         Google Map
                     </button>
+                    <div v-if="platformType == 'PC'">
+                        <select class="select select-info ms-3 text-center" v-model="selectedZone">
+                            <option disabled value="">Select Zone</option>
+                            <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+                        </select>
+                    </div>
+                    <div v-if="platformType == 'PC'">
+                        <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                            <option disabled value="">Select Area</option>
+                            <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                        </select>
+                    </div>
+                    <div v-if="platformType == 'PC'">
+                        <button class="btn btn-warning">
+                            <Icon icon="mdi:email-sent" width="24" height="24" />
+                            Sent to Store Cash
+                        </button>
+                    </div>
                     <button v-if="storeDetail.status == '20' && userRole == 'admin'" class="btn btn-primary"
                         @click="insertStoreToM3()">
                         <Icon icon="mdi:store-plus" width="24" height="24" />
@@ -122,9 +140,11 @@ const storeName = ref('');
 const selectedZone = ref('')
 const selectedArea = ref('')
 const today = new Date();
+const zone = localStorage.getItem('zone')
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
 const userRole = localStorage.getItem('role')
+const platformType = localStorage.getItem('platformType')
 
 function formatDate(dateStr) {
     if (!dateStr) return ''
@@ -139,7 +159,8 @@ function formatDate(dateStr) {
 onMounted(async () => {
     isLoading.value = true
     await store.getDetailStore(route.params.storeid)
-    await filter.getZone(period)
+    await filter.getZone('cash',period)
+    await filter.getArea(period, zone, '');
     // สมมุติให้ store.loadSimilarStore() เป็น method ดึงร้านค้าที่คล้ายกัน
     // await store.checkSimilarStore(route.params.storeid) || []
     // similarStore.value = store.similarStore
@@ -189,6 +210,7 @@ watch(selectedZone, async (newVal) => {
         filter.getArea(period, newVal, '');
     }
 });
+
 const rejectAction = async () => {
     try {
         isLoading.value = true

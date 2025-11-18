@@ -161,6 +161,11 @@ const supervisorRoutes = [
         path: 'googleMapDirection',
         name: 'googleMapDirection', // ✅ add this line
         component: () => import('../../views/supervisor/GoogleMapDirection.vue')
+      },
+      {
+        path: 'sentstore',
+        name: 'sentStore',
+        component: () => import('../../views/supervisor/CartDetail.vue')
       }
     ]
   }

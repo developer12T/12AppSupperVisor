@@ -10,7 +10,7 @@
         <!-- Content -->
         <div v-else>
             <!-- Order Info -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-base-100 p-4 rounded-lg shadow">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-base-100 p-4 rounded-lg shadow">
                 <div>
                     <p><strong>รหัสออเดอร์:</strong> {{ giveStore.giveDetail.orderId }}</p>
                     <p><strong>วันที่:</strong> {{ formatDate(giveStore.giveDetail.createdAt) }}</p>
@@ -22,14 +22,26 @@
                     </p>
                     <p><strong>เซลล์:</strong> {{ giveStore.giveDetail.sale?.name || '-' }}</p>
                     <p><strong>คลัง:</strong> {{ giveStore.giveDetail.sale?.warehouse || '-' }}</p>
-                    <p><strong>รูปแบบการจ่ายเงิน:</strong> {{ giveStore.giveDetail?.paymentMethod || '-' }}</p>
+                    <p><strong>note:</strong> {{ giveStore.giveDetail?.note || '-' }}</p>
                 </div>
                 <div>
-                    <p><strong>ชื่อร้าน:</strong> {{ giveStore.giveDetail.store?.name || '-' }}</p>
+                    <p><strong>ประเภทการตัดของ:</strong> {{ giveStore.giveDetail?.giveInfo?.name || '-' }}</p>
                     <p><strong>เขต:</strong> {{ giveStore.giveDetail.store?.area || '-' }}</p>
                     <p><strong>รหัสร้านค้า:</strong> {{ giveStore.giveDetail.store?.storeId || '-' }}</p>
                     <p><strong>เบอร์โทร:</strong> {{ giveStore.giveDetail.store?.tel || '-' }}</p>
                     <p><strong>ที่อยู่:</strong> {{ giveStore.giveDetail.store?.address || '-' }}</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div v-if="giveStore.giveDetail?.listImage?.length > 0 && giveStore.giveDetail.listImage[0]?.path">
+                        <img :src="giveStore.giveDetail.listImage[0].path" alt="placeholder"
+                            style="width: 150px; height: 150px; object-fit: cover;"
+                            @click="openModal(giveStore.giveDetail.listImage[0].path)" />
+                        <p class="text-sm text-gray-600 mt-1 text-center">ภาพการตัดของ</p>
+                    </div>
+                    <div v-else>
+                        <Icon icon="mdi:image-off-outline" width="150" height="150" style="color: #00569D;" />
+                        <p class="text-sm text-gray-600 mt-1 text-center">ภาพการตัดของ</p>
+                    </div>
                 </div>
             </div>
 
@@ -61,7 +73,7 @@
                     </tbody>
                 </table>
             </div>
-        
+
 
             <!-- Summary -->
             <div class="mt-6 bg-base-100 p-4 rounded-lg shadow w-full md:w-1/2 ml-auto">
@@ -92,6 +104,11 @@
             </div>
         </div>
     </div>
+    <!-- Show Image -->
+    <div v-if="showModal" class="fixed inset-0 bg-black  flex items-center justify-center z-50">
+        <div @click="showModal = false" class="absolute inset-0"></div>
+        <img :src="modalImageSrc" class="max-w-full max-h-full z-10" />
+    </div>
 </template>
 
 <script setup>
@@ -105,8 +122,10 @@ const orderStore = useOrder()
 const giveStore = useGiveAway()
 const route = useRoute()
 const router = useRouter()
+const showModal = ref(false);
 
 const orderId = computed(() => route.params.orderId)
+const modalImageSrc = ref('');
 
 const expanded = reactive({})
 const toggle = (i) => (expanded[i] = !expanded[i])
@@ -131,6 +150,13 @@ const subtotal = computed(() =>
 const total = computed(() =>
     subtotal.value - (giveStore.giveDetail.discount || 0)
 )
+
+
+function openModal(imagePath) {
+    modalImageSrc.value = imagePath;
+    showModal.value = true;
+}
+
 
 // Format currency
 function formatCurrency(value) {

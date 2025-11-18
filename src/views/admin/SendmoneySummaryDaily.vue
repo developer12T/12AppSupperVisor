@@ -239,7 +239,7 @@ const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
 
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     await sendmoney.downloadtoExcel('', '', false)
     isLoading.value = false
 })

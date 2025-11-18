@@ -45,6 +45,14 @@
                     <option value="canceled">Cancel</option>
                 </select>
             </div>
+
+            <div class="mx-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedChannel">
+                    <option disabled value="">Select Channel</option>
+                    <option value="cash">CASH</option>
+                    <option value="pc">PC</option>
+                </select>
+            </div>
         </div>
         <div class="overflow-x-auto rounded-xl mt-5"
             style="min-height: 450px; max-height: 450px; max-width: 90vw; overflow-y: auto;">
@@ -149,6 +157,8 @@ import { Icon } from '@iconify/vue'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import { formatDate, formatCurrency, formatDateToYYYYMMDD, toDateOrNull, endOfDay, getTeam3, } from '../../utils/format'
+import { toast } from 'vue3-toastify';
+
 
 const filter = useFilter()
 const userRole = localStorage.getItem('role')
@@ -166,6 +176,7 @@ const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
+const selectedChannel = ref('cash')
 
 const startDate = computed(() =>
     dateRange.value?.[0] ? formatDateToYYYYMMDD(dateRange.value[0]) : null
@@ -211,6 +222,8 @@ const filteredOrders = computed(() => {
         data = data.filter(order => order.status === selectedStatus.value);
     }
 
+
+
     // --- Date range filter (client-side) ---
 
     const startDateRange = dateRange.value?.[0]
@@ -249,8 +262,15 @@ const totalOrderAmount = computed(() => {
     }, 0)
 })
 
+
 async function exportExcel() {
-    await useOrderStore.downloadExcel(`${startDate.value}`, `${endDate.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
+    // toast('เลือก Channel ก่อน', {
+    //     theme: toast.THEME.COLORED,
+    //     type: toast.TYPE.ERROR,
+    //     dangerouslyHTMLString: true
+    // })
+
+    await useOrderStore.downloadExcel(`${selectedChannel.value}`, `${startDate.value}`, `${endDate.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
 }
 async function exportExcelProduct() {
     await useOrderStore.downloadExcelProduct(`${period}`, ``, ``, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
@@ -259,7 +279,7 @@ async function exportExcelProduct() {
 
 async function onMonthChange() {
     isLoading.value = true
-    await useOrderStore.fetchOrder('', `${startDate.value}`, `${endDate.value}`, '', '')
+    await useOrderStore.fetchOrder(`${selectedChannel.value}`, '', `${startDate.value}`, `${endDate.value}`, '', '')
     isLoading.value = false
 }
 
@@ -270,7 +290,7 @@ async function clearFilter() {
     selectedArea.value = ''
     selectedTeam.value = ''
     selectedStatus.value = ''
-    await useOrderStore.fetchOrder(period, '', '', '', '')
+    await useOrderStore.fetchOrder(`${selectedChannel.value}`, period, '', '', '', '')
     isLoading.value = false;
 }
 
@@ -285,6 +305,15 @@ watch(selectedZone, async (newVal) => {
 });
 
 
+watch(selectedChannel, async (newVal) => {
+    if (newVal) {
+        await filter.getZone(selectedChannel.value, period)
+        await useOrderStore.fetchOrder(`${selectedChannel.value}`, '', `${startDate.value}`, `${endDate.value}`, '', '')
+    }
+});
+
+
+
 watch(selectedTeam, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
     if (newVal) {
@@ -295,8 +324,8 @@ watch(selectedTeam, async (newVal) => {
 
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone(period);
-    await useOrderStore.fetchOrder('', '', '', '', '')
+    await filter.getZone(selectedChannel.value, period);
+    await useOrderStore.fetchOrder(`${selectedChannel.value}`, '', '', '', '', '')
     if (userRole == 'supervisor' || userRole == 'area_manager') {
         await filter.getTeam(zone);
         await filter.getArea(period, zone, '');

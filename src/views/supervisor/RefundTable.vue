@@ -319,7 +319,7 @@ watch(selectedTeam, async (newVal) => {
 
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     await refundStore.getRefundStartEnd('cash', period, '', '', '', '', '')
     console.log(refundStore.refund)
     cardData.value = refundStore.refund.data

@@ -373,7 +373,7 @@ onMounted(async () => {
     isLoading.value = true
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     await withdrawStore.getWithdrawTable('cash', period, '', '', '', '', '')
     console.log(withdrawStore.withdraw)
     // cardData.value = withdrawStore.withdraw.data

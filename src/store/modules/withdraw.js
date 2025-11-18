@@ -10,9 +10,9 @@ export const useWithdrawStore = defineStore('withdraws', {
     status: 0
   }),
   actions: {
-    async approve (channel, id, status) {
+    async approve (id, status) {
       try {
-        setChannel(channel)
+        // setChannel(channel)
         const user = localStorage.getItem('fullName')
         const response = await api.post(
           `/api/cash/distribution/approveWithdraw`,
@@ -62,14 +62,11 @@ export const useWithdrawStore = defineStore('withdraws', {
       try {
         setChannel(channel)
         const user = localStorage.getItem('fullName')
-        const response = await api.post(
-          `/api/cash/distribution/addRemark`,
-          {
-            orderId: id,
-            remark: remark,
-            user: user
-          }
-        )
+        const response = await api.post(`/api/cash/distribution/addRemark`, {
+          orderId: id,
+          remark: remark,
+          user: user
+        })
         this.status = response.data.status
       } catch (error) {
         console.log(error)
@@ -143,7 +140,7 @@ export const useWithdrawStore = defineStore('withdraws', {
       end
     ) {
       try {
-        // setChannel(channel)
+        setChannel(channel)
 
         let zone = ''
         let area = ''
@@ -160,7 +157,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         }
 
         const response = await api.get(
-          `/api/cash/distribution/get?period=${period}&zone=${zone}&team=${team}&area=${area}&start=${start}1&end=${end}`
+          `/api/cash/distribution/get?period=${period}&zone=${zone}&team=${team}&area=${area}&start=${start}&end=${end}`
         )
 
         socket.on('store-updated', data => {
@@ -244,9 +241,9 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async getWithdrawDetail (channel, id) {
+    async getWithdrawDetail (id) {
       try {
-        setChannel(channel)
+        // setChannel(channel)
         const response = await api.get(`/api/cash/distribution/detail/${id}`)
         this.withdrawDetail = response.data.data[0]
         console.log('withdrawDetail', response.data.data[0])

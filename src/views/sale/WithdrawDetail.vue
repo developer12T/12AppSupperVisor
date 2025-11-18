@@ -142,7 +142,7 @@ const status = ref('pending')
 const router = useRouter()
 
 const loadData = async () => {
-    await withdrawStore.getWithdrawDetail('cash', route.params.id)
+    await withdrawStore.getWithdrawDetail(route.params.id)
     data.value = withdrawStore.withdrawDetail
 }
 
@@ -180,8 +180,8 @@ function statusLabel(status) {
 }
 
 async function approveStatus(statusBool) {
-    await withdrawStore.approve('cash', route.params.id, statusBool)
-    window.location.reload()
+    await withdrawStore.approve(route.params.id, statusBool)
+    // window.location.reload()
     // Optionally: send API request here!
     // await axios.post('/api/approve', { ... })
 }

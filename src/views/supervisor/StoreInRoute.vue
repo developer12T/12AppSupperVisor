@@ -71,7 +71,7 @@ const selectedTeam = ref('')
 
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     await routeStore.getStoreInRoute(period, '', '')
     data.value = routeStore.routeInStore
     isLoading.value = false

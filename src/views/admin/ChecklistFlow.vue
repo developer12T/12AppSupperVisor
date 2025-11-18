@@ -172,7 +172,7 @@ watch(selectedZone, async (newVal) => {
 
 onMounted(async () => {
     await reportStore.getChecklist('', '', '', '', '')
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     tableData.value = reportStore.checklist
 })
 </script>

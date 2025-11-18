@@ -213,7 +213,7 @@ onMounted(async () => {
     try {
 
         await reportStore.getSummary18SKU('', '', '')
-        await filter.getZone(period);
+        await filter.getZone('cash',period);
         rawData.value = reportStore.summary18SKU
         if (selectedZone.value) {
             await filter.getTeam(selectedZone.value);

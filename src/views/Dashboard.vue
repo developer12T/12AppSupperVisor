@@ -218,7 +218,7 @@ export default {
     },
     mounted() {
         this.selectedType = 'year';
-        // this.filter.getZone(period);
+        // this.filter.getZone('cash',period);
         this.fetchData();
     },
     watch: {
@@ -243,7 +243,7 @@ export default {
         async fetchData() {
             try {
                 this.isLoading = true;
-                await this.filter.getZone(period); // Load zones
+                await this.filter.getZone('cash',period); // Load zones
                 await this.routeStore.getRouteEffective('', period, '', '');
 
                 let query = `/api/cash/order/getSummarybyArea?period=${period}&year=2025&type=${this.selectedType}`;
@@ -389,7 +389,7 @@ export default {
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="card bg-base-100 shadow-xl p-4">
-                <h2 class="text-xl font-bold mb-2">Line Chart</h2>
+                <h2 class="text-xl font-bold mb-2">Bar Chart</h2>
                 <Bar :data="barData" :options="options" />
             </div>
             <div class="card bg-base-100 shadow-xl p-4">

@@ -35,8 +35,7 @@
                     @click="onApproveCreditClick">
                     อนุมัติใบเบิก
                 </button>
-                <button
-                    v-if="data.status === 'pending'"
+                <button v-if="data.status === 'pending'"
                     class="rounded-xl px-4 py-2 bg-red-400 text-white font-medium hover:bg-red-100 transition"
                     @click="onCancelClick">
                     ยกเลิกใบเบิก
@@ -238,7 +237,7 @@ const userRole = localStorage.getItem('role')
 
 const loadData = async () => {
     isLoading.value = true
-    await withdrawStore.getWithdrawDetail('cash', route.params.id)
+    await withdrawStore.getWithdrawDetail(route.params.id)
     data.value = withdrawStore.withdrawDetail
     isLoading.value = false
 }
@@ -317,8 +316,8 @@ function statusLabel(status) {
 }
 
 async function approveStatus(statusBool) {
-    await withdrawStore.approve('cash', route.params.id, statusBool)
-    window.location.reload()
+    await withdrawStore.approve(route.params.id, statusBool)
+    // window.location.reload()
 }
 
 async function addRemarkWarehouse() {

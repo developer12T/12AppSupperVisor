@@ -18,7 +18,6 @@ export const useAuthStore = defineStore('auth', {
           {
             headers: {
               'Content-Type': 'application/json',
-              'x-channel': 'cash'
             }
           }
         )
@@ -36,7 +35,7 @@ export const useAuthStore = defineStore('auth', {
           this.warehouse = result.warehouse
           this.token = result.token
           this.role = result.role
-          this.role = result.platformType
+          this.platformType = result.platformType
 
           localStorage.setItem('saleCode', this.saleCode)
           localStorage.setItem('fullName', this.fullName)

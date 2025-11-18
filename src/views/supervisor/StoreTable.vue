@@ -36,6 +36,13 @@
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
             </div>
+            <div class="mx-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedChannel">
+                    <option disabled value="">Select Channel</option>
+                    <option value="cash">CASH</option>
+                    <option value="pc">PC</option>
+                </select>
+            </div>
             <!-- <div class="mx-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedStatus">
                     <option disabled value="">Select Status</option>
@@ -135,6 +142,7 @@ const router = useRouter()
 const route = useRoute()
 const isLoading = ref(false)
 const searchQuery = ref('');
+const selectedChannel = ref('cash')
 
 const cardData = ref([]);
 const useOrderStore = useOrder()
@@ -217,6 +225,7 @@ const filteredOrders = computed(() => {
     return data;
 })
 
+
 async function exportExcel() {
 
     await useOrderStore.downloadExcel(`${startDate.value}`, `${endDate.value}`)
@@ -272,13 +281,21 @@ watch(selectedTeam, async (newVal) => {
     }
 });
 
+watch(selectedChannel, async (newVal) => {
+    if (newVal) {
+        await store.getCustomerAll(`${selectedChannel.value}`, '', '', '', '', '')
+
+    }
+});
+
+
 onMounted(async () => {
     isLoading.value = true
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     // await useOrderStore.fetchOrder(period, '', '')
-    await store.getCustomerAll('', '', '', '', '')
+    await store.getCustomerAll(`${selectedChannel.value}`, '', '', '', '', '')
     // console.log(useOrderStore.order)
     // cardData.value = useOrderStore.order.data
     isLoading.value = false

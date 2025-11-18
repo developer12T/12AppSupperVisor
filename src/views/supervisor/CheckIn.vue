@@ -265,7 +265,7 @@ function formatCurrency(value) {
 
 onMounted(async () => {
     isLoading.value = true;
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     if (selectedZone.value) {
         await filter.getArea(period, selectedZone.value, selectedTeam.value);
         // showExcel.value = 'true'
@@ -350,7 +350,7 @@ watch(selectedArea, async (newVal) => {
     // });
     if (newVal) {
         isLoading.value = true;
-        await filter.getZone(period);
+        await filter.getZone('cash',period);
         if (selectedZone.value) {
             await filter.getArea(period, selectedZone.value, selectedArea.value);
 

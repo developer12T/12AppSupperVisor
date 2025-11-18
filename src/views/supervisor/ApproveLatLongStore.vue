@@ -303,7 +303,7 @@ const filteredStores = computed(() => {
 onMounted(async () => {
     isLoading.value = true
     await store.getStoreLatlong('', '', '')
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
 
     if (userRole == 'supervisor' || userRole == 'area_manager') {
         await filter.getTeam(zone);

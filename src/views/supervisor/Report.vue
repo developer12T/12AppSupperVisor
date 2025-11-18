@@ -178,7 +178,7 @@ const summaryRow = computed(() =>
 
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone(period)
+    await filter.getZone('cash',period)
     if (selectedZone.value) {
         await filter.getArea(period, selectedZone.value)
     }

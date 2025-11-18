@@ -93,7 +93,7 @@ onMounted(
             await filter.getArea(period, zone, '');
         }
         await refundStore.getRefundAll('cash', period, '', '', '')
-        await filter.getZone(period);
+        await filter.getZone('cash',period);
         cardData.value = refundStore.refund
         isLoading.value = false
     })

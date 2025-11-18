@@ -218,7 +218,7 @@ const period = today.getFullYear().toString() + String(today.getMonth() + 1).pad
 onMounted(async () => {
     isLoading.value = true
     await store.getDetailStore(route.params.storeid)
-    await filter.getZone(period)
+    await filter.getZone('cash',period)
     // สมมุติให้ store.loadSimilarStore() เป็น method ดึงร้านค้าที่คล้ายกัน
     await store.checkSimilarStore(route.params.storeid) || []
     similarStore.value = store.similarStore

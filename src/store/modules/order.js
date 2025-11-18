@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import api from '../../utils/axios'
+import api, { setChannel } from '../../utils/axios'
 
 export const useOrder = defineStore('order', {
   state: () => ({
@@ -8,8 +8,9 @@ export const useOrder = defineStore('order', {
     message: ''
   }),
   actions: {
-    async fetchOrder (period, start, end, selectArea, selectZone) {
+    async fetchOrder (channel, period, start, end, selectArea, selectZone) {
       try {
+        setChannel(channel)
         let zone = ''
         let area = ''
 
@@ -43,6 +44,7 @@ export const useOrder = defineStore('order', {
         this.order = response.data
         console.log('response', this.order)
       } catch (error) {
+        this.order = [];
         console.error(error)
       }
     },
@@ -56,8 +58,21 @@ export const useOrder = defineStore('order', {
         console.error(error)
       }
     },
-    async downloadExcel (start, end, area, team, zone) {
+    async downloadExcel (channel, start, end, area, team, zone) {
       try {
+        // const platformType = localStorage.getItem('platformType')
+        // let channel = ''
+        // switch (platformType) {
+        //   case 'CASH':
+        //     channel = 'cash'
+        //     break
+        //   case 'PC':
+        //     channel = 'pc'
+        //     break
+        //   default:
+        //     channel = 'cash'
+        //     break
+        // }
         // ถ้าไม่ได้ส่งมา หรือฟอร์แมตไม่ใช่ YYYYMMDD ให้ใช้ "วันนี้" ตามเวลาไทย
         if (!/^\d{8}$/.test(start)) {
           const nowTH = new Date(
@@ -71,7 +86,7 @@ export const useOrder = defineStore('order', {
         }
 
         const response = await api.get(
-          `/api/cash/order/ordertoexcel?channel=cash&startDate=${start}&endDate=${end}&status=pending,approved,completed&area=${area}&team=${team}&zone=${zone}`,
+          `/api/cash/order/ordertoexcel?channel=${channel}&startDate=${start}&endDate=${end}&status=pending,approved,completed&area=${area}&team=${team}&zone=${zone}`,
           { responseType: 'blob' } // สำคัญมาก!
         )
         // สร้าง URL ให้ browser โหลดไฟล์

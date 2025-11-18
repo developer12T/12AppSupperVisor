@@ -81,7 +81,7 @@ const fetchData = async () => {
     isLoading.value = true
     error.value = ''
     try {
-        await filter.getZone(period)
+        await filter.getZone('cash',period)
         // await routeStore.getRoutesStore(period, 'BE')
         // data.value = routeStore.routesStore
     } catch (err) {

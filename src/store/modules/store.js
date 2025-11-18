@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import api from '../../utils/axios'
+import api, { setChannel } from '../../utils/axios'
 
 export const useStoresStore = defineStore('stores', {
   state: () => ({
@@ -24,10 +24,10 @@ export const useStoresStore = defineStore('stores', {
     },
     count: 0,
     countLat: 0,
-    latLongOrderDetail:{}
+    latLongOrderDetail: {}
   }),
   actions: {
-    async getStoreMap(zone) {
+    async getStoreMap (zone) {
       try {
         const response = await api.get(
           `/api/cash/store/getStore?type=all&zone=${zone}&showMap=true`
@@ -39,7 +39,7 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
-    async getDetailStore(storeId) {
+    async getDetailStore (storeId) {
       try {
         const response = await api.get(`/api/cash/store/${storeId}`)
         const result = response.data.data
@@ -49,7 +49,7 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
-    async checkSimilarStore(storeId) {
+    async checkSimilarStore (storeId) {
       try {
         const response = await api.get(`/api/cash/store/check/${storeId}`)
         const result = response.data.data
@@ -66,8 +66,9 @@ export const useStoresStore = defineStore('stores', {
       }
     },
 
-    async getCustomerAll(selectZone, selectArea, team, year, month) {
+    async getCustomerAll (channel, selectZone, selectArea, team, year, month) {
       try {
+        setChannel(channel)
         //   const token = JSON.parse(localStorage.getItem('token'));
         let zone = ''
         let area = ''
@@ -96,7 +97,7 @@ export const useStoresStore = defineStore('stores', {
       }
     },
 
-    async updateStoreStatus(data) {
+    async updateStoreStatus (data) {
       try {
         // const area = localStorage.getItem('area')
         const user = localStorage.getItem('fullName')
@@ -113,7 +114,7 @@ export const useStoresStore = defineStore('stores', {
       }
     },
 
-    async approveLatlong(data) {
+    async approveLatlong (data) {
       try {
         const user = localStorage.getItem('fullName')
         const response = await api.post(`/api/cash/store/approveLatLongStore`, {
@@ -129,7 +130,7 @@ export const useStoresStore = defineStore('stores', {
       }
     },
 
-    async updateStoreStatusNoNewId(data) {
+    async updateStoreStatusNoNewId (data) {
       try {
         // const area = localStorage.getItem('area')
         const user = localStorage.getItem('fullName')
@@ -148,7 +149,7 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
-    async rejectStore(data) {
+    async rejectStore (data) {
       try {
         const area = localStorage.getItem('area')
         const response = await api.post(`/api/cash/store/rejectStore`, {
@@ -160,7 +161,7 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
-    async downloadExcel(period) {
+    async downloadExcel (period) {
       try {
         if (!/^\d{6}$/.test(period)) {
           const nowTH = new Date(
@@ -187,7 +188,7 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
-    async insertToM3(storeId) {
+    async insertToM3 (storeId) {
       this.isLoading = true
       this.message = ''
       this.statusCode = null
@@ -228,7 +229,7 @@ export const useStoresStore = defineStore('stores', {
         this.isLoading = false
       }
     },
-    async getStoreLatlong(storeId, selectZone, selectArea) {
+    async getStoreLatlong (storeId, selectZone, selectArea) {
       try {
         let zone = ''
         let area = ''
@@ -258,7 +259,7 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
-    async getPendingStore(selectZone, selectArea) {
+    async getPendingStore (selectZone, selectArea) {
       try {
         let zone = ''
         let area = ''
@@ -288,7 +289,7 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
-    async getLatLongOrderPending(selectZone, selectArea) {
+    async getLatLongOrderPending (selectZone, selectArea) {
       try {
         let zone = ''
         let area = ''
@@ -318,7 +319,7 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
-    async getLatLongOrderDetail(orderId) {
+    async getLatLongOrderDetail (orderId) {
       try {
         // console.log('getLatLongOrderDetail called with', orderId)
         const response = await api.get(
@@ -331,6 +332,6 @@ export const useStoresStore = defineStore('stores', {
       } catch (error) {
         console.error(error)
       }
-    },
+    }
   }
 })

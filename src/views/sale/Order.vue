@@ -366,7 +366,7 @@ onMounted(async () => {
     isLoading.value = true
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     await useOrderStore.fetchOrder(period, '', '')
     // console.log(useOrderStore.order)
     // cardData.value = useOrderStore.order.data

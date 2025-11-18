@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import api from '../../utils/axios'
+import api, { setChannel } from '../../utils/axios'
 
 export const useFilter = defineStore('filters', {
   state: () => ({
@@ -94,8 +94,9 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-    async getZone (period) {
+    async getZone (channel, period) {
       try {
+        setChannel(channel)
         const response = await api.get(
           `/api/cash/route/getZone?period=${period}`
         )

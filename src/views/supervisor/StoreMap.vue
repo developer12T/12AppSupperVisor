@@ -87,7 +87,7 @@ watch(selectedZone, async (newVal) => {
 
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     await storesStore.getStoreMap('BE')
     stores.value = storesStore.storeMap
     initLeafletMap({

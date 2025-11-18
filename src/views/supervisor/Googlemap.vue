@@ -112,7 +112,7 @@ watch(selectedTeam, async (team) => {
 
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone(period)
+    await filter.getZone('cash',period)
     await storesStore.getStoreMap('')
     stores.value = storesStore.storeMap
     loadGoogleMaps(GOOGLE_MAPS_API_KEY, renderGoogleMap)

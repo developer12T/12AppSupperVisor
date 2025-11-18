@@ -47,6 +47,13 @@
                         <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                     </select>
                 </div>
+                <div class="mx-3">
+                    <select class="select select-info ms-3 text-center" v-model="selectedChannel">
+                        <option disabled value="">Select Channel</option>
+                        <option value="cash">CASH</option>
+                        <option value="pc">PC</option>
+                    </select>
+                </div>
 
                 <!-- <input type="date" v-model="startDate" class="input input-bordered w-full" /> -->
 
@@ -166,6 +173,7 @@ const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
+const selectedChannel = ref('cash')
 const zone = localStorage.getItem('zone')
 
 const startDate = computed(() =>
@@ -244,16 +252,23 @@ const filteredOrders = computed(() => {
     return data;
 })
 
+watch(selectedChannel, async (newVal) => {
+    if (newVal) {
+        await giveStore.giveOrder(`${selectedChannel.value}`, '', `${startDate.value}`, `${endDate.value}`, '', '')
+    }
+});
+
 async function exportExcel() {
-    await giveStore.downloadExcel(`${startDate.value}`, `${endDate.value}`, `${selectedGiveId.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
+    await giveStore.downloadExcel(`${selectedChannel.value}`, `${startDate.value}`, `${endDate.value}`, `${selectedGiveId.value}`, `${selectedArea.value}`, `${selectedTeam.value}`, `${selectedZone.value}`)
 }
 
 async function onMonthChange() {
     isLoading.value = true
-    await giveStore.giveOrder('', `${startDate.value}`, `${endDate.value}`, '', '')
+    await giveStore.giveOrder(`${selectedChannel.value}`, '', `${startDate.value}`, `${endDate.value}`, '', '')
     isLoading.value = false
 
 }
+
 
 async function clearFilter() {
     isLoading.value = true;
@@ -264,7 +279,7 @@ async function clearFilter() {
     selectedArea.value = ''
     selectedTeam.value = ''
     selectedStatus.value = ''
-    await useOrderStore.fetchOrder(period, '', '', '', '')
+    await giveStore.giveOrder(`${selectedChannel.value}`, period, '', '', '', '')
     isLoading.value = false;
 }
 
@@ -294,11 +309,14 @@ watch(selectedTeam, async (newVal) => {
     }
 });
 
+
+
+
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     await giveStore.getGiveType();
-    await giveStore.giveOrder(period, '', '', '', '')
+    await giveStore.giveOrder(`${selectedChannel.value}`, period, '', '', '', '')
     if (userRole == 'supervisor' || userRole == 'area_manager') {
         await filter.getTeam(zone);
         await filter.getArea(period, zone, '');

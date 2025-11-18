@@ -79,7 +79,7 @@ const zone = localStorage.getItem('zone')
 
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone(period);
+    await filter.getZone('cash',period);
     if (userRole == 'supervisor' || userRole == 'area_manager') {
         await filter.getTeam(zone);
         await filter.getArea(period, zone, '');
