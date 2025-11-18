@@ -219,7 +219,7 @@ export default {
     mounted() {
         this.selectedType = 'year';
         // this.filter.getZone('cash',period);
-        this.fetchData();
+        // this.fetchData();
     },
     watch: {
         selectChannel() {
@@ -231,82 +231,82 @@ export default {
             this.selectedArea = ''
             if (newVal) {
                 this.filter.getArea(period, newVal, '');
-                this.fetchData();
+                // this.fetchData();
             }
         },
         selectedArea() {
-            this.fetchData();
+            // this.fetchData();
         }
     },
     methods: {
 
-        async fetchData() {
-            try {
-                this.isLoading = true;
-                await this.filter.getZone('cash',period); // Load zones
-                await this.routeStore.getRouteEffective('', period, '', '');
+        // async fetchData() {
+        //     try {
+        //         this.isLoading = true;
+        //         await this.filter.getZone('cash',period); // Load zones
+        //         await this.routeStore.getRouteEffective('', period, '', '');
 
-                let query = `/api/cash/order/getSummarybyArea?period=${period}&year=2025&type=${this.selectedType}`;
+        //         let query = `/api/cash/order/getSummarybyArea?period=${period}&year=2025&type=${this.selectedType}`;
 
-                if (this.selectedZone) {
-                    query += `&zone=${this.selectedZone}`;
-                }
+        //         if (this.selectedZone) {
+        //             query += `&zone=${this.selectedZone}`;
+        //         }
 
-                if (this.selectedArea) {
-                    query += `&area=${this.selectedArea}`;
-                }
+        //         if (this.selectedArea) {
+        //             query += `&area=${this.selectedArea}`;
+        //         }
 
-                console.log("$query", query);
-                console.log("Fetching API Data for type:", this.selectedType);
-                const responseBarChart = await api.get(
-                    query
-                )
-                const apiDataBar = responseBarChart.data.data;
-                console.log(apiDataBar);
+        //         console.log("$query", query);
+        //         console.log("Fetching API Data for type:", this.selectedType);
+        //         const responseBarChart = await api.get(
+        //             query
+        //         )
+        //         const apiDataBar = responseBarChart.data.data;
+        //         console.log(apiDataBar);
 
 
-                // const response = await axios.get<ApiResponse>(`${import.meta.env.VITE_API_URL}/api/cash/order/getSummaryItem?area=BE215&period=202504`);
-                // const apiDataLine = response.data.data;
-                // this.lineData = {
-                //     labels: Array.from({ length: 12 }, (_, i) => `${i + 1}`),
-                //     datasets: apiDataBar.map(item => ({
-                //         label: item.area,
-                //         data: item.summary,
-                //         backgroundColor: getRandomColor() // หรือสีคงที่ตามต้องการ
-                //     }))
-                // };
+        //         // const response = await axios.get<ApiResponse>(`${import.meta.env.VITE_API_URL}/api/cash/order/getSummaryItem?area=BE215&period=202504`);
+        //         // const apiDataLine = response.data.data;
+        //         // this.lineData = {
+        //         //     labels: Array.from({ length: 12 }, (_, i) => `${i + 1}`),
+        //         //     datasets: apiDataBar.map(item => ({
+        //         //         label: item.area,
+        //         //         data: item.summary,
+        //         //         backgroundColor: getRandomColor() // หรือสีคงที่ตามต้องการ
+        //         //     }))
+        //         // };
 
-                // this.barData = {
-                //     labels: Array.from({ length: 27 }, (_, i) => `R${i + 1}`),
-                //     datasets: apiDataBar.map(item => ({
-                //         label: item.area,
-                //         data: item.summary,
-                //         backgroundColor: getRandomColor() // หรือสีคงที่ตามต้องการ
-                //     }))
-                // }
+        //         // this.barData = {
+        //         //     labels: Array.from({ length: 27 }, (_, i) => `R${i + 1}`),
+        //         //     datasets: apiDataBar.map(item => ({
+        //         //         label: item.area,
+        //         //         data: item.summary,
+        //         //         backgroundColor: getRandomColor() // หรือสีคงที่ตามต้องการ
+        //         //     }))
+        //         // }
 
-                this.barData = {
-                    labels: Array.from({ length: apiDataBar[0].summary.length }, (_, i) => `${i + 1}`),
-                    datasets: apiDataBar.map(item => ({
-                        label: item.zone,
-                        data: item.summary,
-                        backgroundColor: getRandomColor() // หรือสีคงที่ตามต้องการ
-                    }))
-                };
+        //         this.barData = {
+        //             labels: Array.from({ length: apiDataBar[0].summary.length }, (_, i) => `${i + 1}`),
+        //             datasets: apiDataBar.map(item => ({
+        //                 label: item.zone,
+        //                 data: item.summary,
+        //                 backgroundColor: getRandomColor() // หรือสีคงที่ตามต้องการ
+        //             }))
+        //         };
 
-                function getRandomColor() {
-                    const r = Math.floor(Math.random() * 200);
-                    const g = Math.floor(Math.random() * 200);
-                    const b = Math.floor(Math.random() * 200);
-                    return `rgba(${r}, ${g}, ${b})`;
-                }
+        //         function getRandomColor() {
+        //             const r = Math.floor(Math.random() * 200);
+        //             const g = Math.floor(Math.random() * 200);
+        //             const b = Math.floor(Math.random() * 200);
+        //             return `rgba(${r}, ${g}, ${b})`;
+        //         }
 
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-                this.isLoading = false; // Stop loading
-            }
-        }
+        //     } catch (error) {
+        //         console.error('Error fetching data:', error);
+        //     } finally {
+        //         this.isLoading = false; // Stop loading
+        //     }
+        // }
     }
 }
 </script>
