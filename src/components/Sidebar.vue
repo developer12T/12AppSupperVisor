@@ -60,11 +60,11 @@ const menuItems = computed(() => [
         roles: ['admin', 'area_manager', 'sale_manager', 'dc', 'supervisor',],
         channel: ['CASH', "PC", "ADMIN"]
     },
-    { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/sale/order', submenu: null, roles: ['sale'] },
-    { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/sale/give', submenu: null, roles: ['sale'] },
-    { name: 'รายการคืนสินค้า', icon: 'mdi:autorenew', link: '/sale/refundtable', submenu: null, roles: ['sale'] },
-    { name: 'รายการใบเบิก', icon: 'mdi:box-clock-outline', link: '/sale/withdrawtable', submenu: null, roles: ['sale'] },
-    { name: 'เป้าหมาย', icon: 'mdi:target-arrow', link: '/sale/target', submenu: null, roles: ['sale', 'sale_manager', 'area_manager'] },
+    { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/sale/order', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
+    { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/sale/give', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
+    { name: 'รายการคืนสินค้า', icon: 'mdi:autorenew', link: '/sale/refundtable', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
+    { name: 'รายการใบเบิก', icon: 'mdi:box-clock-outline', link: '/sale/withdrawtable', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
+    { name: 'เป้าหมาย', icon: 'mdi:target-arrow', link: '/sale/target', submenu: null, roles: ['sale', 'sale_manager', 'area_manager'], channel: ['CASH', "PC"] },
 
     {
         name: 'รายงานต่างๆ',
@@ -169,9 +169,9 @@ onMounted(refreshSidebarData);
 
             <nav class="flex-1 mt-4">
                 <ul class="space-y-2">
-                    <li v-for="(item, index) in menuItems.filter(i =>
-                        i.roles.includes(userRole) &&
-                        i.channel.includes(platformType)
+                    <li v-for="(item, index) in (menuItems || []).filter(i =>
+                        (i?.roles || []).includes(userRole) &&
+                        (i?.channel || []).includes(platformType)
                     )" :key="index">
 
                         <div v-if="item.submenu">

@@ -210,6 +210,10 @@ const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 const selectedStatus = ref(route.query.status || '')
 const zone = localStorage.getItem('zone')
+const platformType = localStorage.getItem('platformType')
+
+let channel = ref('')
+
 
 const startday = computed(() => startDate.value.split('-')[2])
 const startmonth = computed(() => startDate.value.split('-')[1])
@@ -289,6 +293,8 @@ function endOfDay(d) {
 }
 
 async function onMonthChange() {
+
+
     // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
     // ตัวอย่าง:
 
@@ -296,7 +302,7 @@ async function onMonthChange() {
     // console.log('endDate:', endDate.value)
     if (startDate.value && endDate.value) {
         isLoading.value = true
-        await useOrderStore.fetchOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`, '', '')
+        await useOrderStore.fetchOrder(channel, '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`, '', '')
 
         //     await useOrderStore.fetchOrder(period, startDate.value, endDate.value)
         //     cardData.value = useOrderStore.order.data
@@ -364,10 +370,24 @@ function formatDate(dateStr) {
 }
 onMounted(async () => {
     isLoading.value = true
+    switch (platformType) {
+        case 'CASH':
+            channel = 'cash'
+            break;
+        case 'PC':
+            channel = 'pc'
+            break;
+
+        default:
+            channel = 'cash'
+            break;
+    }
+
+
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
-    await filter.getZone('cash',period);
-    await useOrderStore.fetchOrder(period, '', '')
+    await filter.getZone('cash', period);
+    await useOrderStore.fetchOrder(channel, '', '', '', '', '')
     // console.log(useOrderStore.order)
     // cardData.value = useOrderStore.order.data
     isLoading.value = false
