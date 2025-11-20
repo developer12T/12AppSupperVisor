@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', {
           { username: userLogin, password: passwordLogin },
           {
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json'
             }
           }
         )
@@ -49,6 +49,18 @@ export const useAuthStore = defineStore('auth', {
           localStorage.setItem('token', JSON.stringify(this.token))
           localStorage.setItem('role', this.role)
           localStorage.setItem('platformType', this.platformType)
+
+          switch (result.platformType) {
+            case 'CASH':
+              localStorage.setItem('channel', 'cash')
+              break
+            case 'PC':
+              localStorage.setItem('channel', 'pc')
+              break
+            default:
+              break
+          }
+
           this.statusCode = response.data['status']
         } else {
           this.validateLogin = user.message

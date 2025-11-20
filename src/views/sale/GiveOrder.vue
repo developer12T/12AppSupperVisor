@@ -172,6 +172,9 @@ const endday = computed(() => endDate.value.split('-')[2])
 const endmonth = computed(() => endDate.value.split('-')[1])
 const endyear = computed(() => endDate.value.split('-')[0])
 
+const platformType = localStorage.getItem('platformType')
+let channel = ref('')
+
 
 const filteredOrders = computed(() => {
     let data = Array.isArray(giveStore.give?.data) ? [...giveStore.give.data] : []
@@ -233,7 +236,7 @@ function endOfDay(d) {
 async function onMonthChange() {
     if (startDate.value && endDate.value) {
         isLoading.value = true
-        await giveStore.giveOrder('', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`, '', '')
+        await giveStore.giveOrder(channel, '', `${startyear.value}${startmonth.value}${startday.value}`, `${endyear.value}${endmonth.value}${endday.value}`, '', '')
         isLoading.value = false
     }
 }
@@ -294,10 +297,22 @@ function formatDate(dateStr) {
 }
 onMounted(async () => {
     isLoading.value = true
+    switch (platformType) {
+        case 'CASH':
+            channel = 'cash'
+            break;
+        case 'PC':
+            channel = 'pc'
+            break;
+
+        default:
+            channel = 'cash'
+            break;
+    }
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
-    await filter.getZone('cash',period);
-    await giveStore.giveOrder(period, '', '', '', '')
+    await filter.getZone('cash', period);
+    await giveStore.giveOrder(channel, period, '', '', '', '')
 
     // console.log(giveStore.give)
     // cardData.value = giveStore.give.data

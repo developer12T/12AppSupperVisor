@@ -317,7 +317,7 @@ function statusLabel(status) {
 
 async function approveStatus(statusBool) {
     await withdrawStore.approve(route.params.id, statusBool)
-    // window.location.reload()
+    window.location.reload()
 }
 
 async function addRemarkWarehouse() {

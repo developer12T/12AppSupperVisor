@@ -201,6 +201,7 @@ const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 
 const zone = localStorage.getItem('zone')
+const channel = localStorage.getItem('channel')
 
 
 async function exportExcel() {
@@ -220,7 +221,7 @@ async function onMonthChange() {
     console.log('เลือกเดือน:', month.value)
     console.log('เลือกปี:', year.value)
     // console.log('selectedMonth:', selectedMonth.value)
-    await store.getCustomerAll('cash', selectedZone.value, selectedArea.value, selectedTeam.value, year.value, month.value)
+    await store.getCustomerAll(channel, selectedZone.value, selectedArea.value, selectedTeam.value, year.value, month.value)
     customers.value = store.storeNew.data
     isLoading.value = false
 }
@@ -282,7 +283,7 @@ watch(selectedTeam, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, selectedZone.value, newVal);
-        await store.getCustomerAll('cash', selectedZone.value, selectedArea.value, newVal, getSafe(year.value),
+        await store.getCustomerAll(channel, selectedZone.value, selectedArea.value, newVal, getSafe(year.value),
             getSafe(month.value),)
         customers.value = store.storeNew.data
         isLoading.value = false
@@ -293,7 +294,7 @@ watch(selectedArea, async (newVal) => {
 
     if (newVal) {
         isLoading.value = true
-        await store.getCustomerAll('cash', selectedZone.value, newVal, selectedTeam.value, getSafe(year.value),
+        await store.getCustomerAll(channel, selectedZone.value, newVal, selectedTeam.value, getSafe(year.value),
             getSafe(month.value))
         customers.value = store.storeNew.data
         isLoading.value = false
@@ -314,7 +315,7 @@ watch(selectedZone, async (newVal) => {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
         await filter.getTeam(newVal);
-        await store.getCustomerAll('cash', newVal, selectedArea.value, selectedTeam.value, getSafe(year.value),
+        await store.getCustomerAll(channel, newVal, selectedArea.value, selectedTeam.value, getSafe(year.value),
             getSafe(month.value))
         customers.value = store.storeNew.data
         isLoading.value = false
@@ -337,8 +338,8 @@ const filteredStores = computed(() => {
 
 onMounted(async () => {
     isLoading.value = true
-    await store.getCustomerAll('cash', '', '', '', '', '')
-    await filter.getZone('cash', period);
+    await store.getCustomerAll(channel, '', '', '', '', '')
+    await filter.getZone(channel, period);
     if (userRole == 'supervisor' || userRole == 'area_manager') {
         await filter.getTeam(zone);
         await filter.getArea(period, zone, '');

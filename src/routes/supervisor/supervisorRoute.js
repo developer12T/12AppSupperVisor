@@ -165,7 +165,7 @@ const supervisorRoutes = [
       {
         path: 'sentstore',
         name: 'sentStore',
-        component: () => import('../../views/supervisor/CartDetail.vue')
+        component: () => import('../../views/supervisor/SentStore.vue')
       }
     ]
   }

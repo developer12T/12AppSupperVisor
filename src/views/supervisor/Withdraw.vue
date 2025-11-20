@@ -24,7 +24,7 @@
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
             </div>
-            
+
             <div class="ms-3">
                 <button @click="clearFilter"
                     class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
@@ -122,6 +122,7 @@ const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 const zone = localStorage.getItem('zone')
+const channel = localStorage.getItem('channel')
 
 function clearFilter() {
     selectedZone.value = ''
@@ -142,11 +143,11 @@ onMounted(async () => {
     if (route.query.area) {
 
     }
-    await filter.getZone('cash',period);
+    await filter.getZone(channel, period);
     if (userRole == 'dc') {
-        await withdrawStore.getWareHouseWithdraw('cash', period, warehouse, '', '', '', '') // fetch from API
+        await withdrawStore.getWareHouseWithdraw(channel, period, warehouse, '', '', '', '') // fetch from API
     } else {
-        await withdrawStore.getWithdraw('cash', period, '', '', selectedTeam.value, '', '', '', '') // fetch from API
+        await withdrawStore.getWithdraw(channel, period, '', '', selectedTeam.value, '', '', '', '') // fetch from API
 
     }
     cardData.value = withdrawStore.withdraw
@@ -222,7 +223,7 @@ watch(selectedZone, async (newVal) => {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
         await filter.getTeam(newVal);
-        await withdrawStore.getWithdraw('cash', period, newVal, selectedArea.value, selectedTeam.value, '', '', '', '')
+        await withdrawStore.getWithdraw(channel, period, newVal, selectedArea.value, selectedTeam.value, '', '', '', '')
         cardData.value = withdrawStore.withdraw
         isLoading.value = false
     }
@@ -242,7 +243,7 @@ watch(selectedTeam, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, selectedZone.value, newVal);
-        await withdrawStore.getWithdraw('cash', period, selectedZone.value, selectedArea.value, newVal, '', '', '', '')
+        await withdrawStore.getWithdraw(channel, period, selectedZone.value, selectedArea.value, newVal, '', '', '', '')
         cardData.value = withdrawStore.withdraw
         isLoading.value = false
     }
@@ -260,7 +261,7 @@ watch(selectedArea, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         console.log(selectedZone.value, newVal, selectedTeam.value)
-        await withdrawStore.getWithdraw('cash', period, selectedZone.value, newVal, selectedTeam.value, '', '', '', '')
+        await withdrawStore.getWithdraw(channel, period, selectedZone.value, newVal, selectedTeam.value, '', '', '', '')
         cardData.value = withdrawStore.withdraw
         isLoading.value = false
     }
