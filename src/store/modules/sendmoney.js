@@ -54,23 +54,38 @@ export const useSendmoney = defineStore('sendmoney', {
         console.error(error)
       }
     },
-    async downloadtoExcel (start, end, excel) {
+
+    async downloadtoExcel (start, end, excel, period, area) {
       try {
-        if (!/^\d{8}$/.test(start)) {
-          const nowTH = new Date(
-            new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
-          )
-          const y = nowTH.getFullYear()
-          const m = String(nowTH.getMonth() + 1).padStart(2, '0')
-          const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
-          start = `${y}${m}${d}` // YYYYMMDD
-          end = `${y}${m}${d}` // YYYYMMDD
+        if (period) {
+          start = ''
+          end = ''
+        } else {
+          period = ''
+          if (!/^\d{8}$/.test(start)) {
+            const nowTH = new Date(
+              new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
+            )
+            const y = nowTH.getFullYear()
+            const m = String(nowTH.getMonth() + 1).padStart(2, '0')
+            const d = String(nowTH.getDate()).padStart(2, '0') // ← ใช้ getDate() ไม่ใช่ getDay()
+            start = `${y}${m}${d}` // YYYYMMDD
+            end = `${y}${m}${d}` // YYYYMMDD
+          }
         }
+
+        // const response = await api.get(
+        //   `${
+        //     import.meta.env.VITE_API_URL
+        //   }/api/cash/sendmoney/sendmoneyToExcel?start=${start}&end=${end}&excel=${excel}`
+        // )
+
         const response = await api.get(
           `${
             import.meta.env.VITE_API_URL
-          }/api/cash/sendmoney/sendmoneyToExcel?start=${start}&end=${end}&excel=${excel}`
+          }/api/cash/sendmoney/sendmoneyToExcel?start=${start}&end=${end}&excel=${excel}&period=${period}&area=${area}`
         )
+        this.dailyData = []
 
         if (excel) {
           const url = window.URL.createObjectURL(new Blob([response.data]))
@@ -83,11 +98,14 @@ export const useSendmoney = defineStore('sendmoney', {
           window.URL.revokeObjectURL(url)
         } else {
           console.log('summaryDaily', response.data)
+
           this.dailyData = response.data.data
         }
       } catch (error) {
+        this.dailyData = []
         console.error(error)
       }
     }
+    
   }
 })

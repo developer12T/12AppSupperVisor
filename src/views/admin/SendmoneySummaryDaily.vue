@@ -2,8 +2,11 @@
     <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
     <div class="mb-2 flex justify-start">
         <div class="w-65 ms-3">
-            <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" range :enable-time-picker="false"
-                @update:model-value="onMonthChange" />
+            <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" :flow="['start', 'end']"
+                @update:model-value="onDateChange" range :enable-time-picker="false" :timezone="'Asia/Bangkok'" />
+        </div>
+        <div class="ms-2">
+            <VueDatePicker v-model="monthRange" format="MM/yyyy" month-picker @update:model-value="onMonthChange" />
         </div>
         <div class="ms-3">
             <select class="select select-info ms-3 text-center" v-model="selectedZone">
@@ -14,8 +17,7 @@
         <div class="ms-3">
             <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                 <option disabled value="">Select Team</option>
-                <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
-                    }}
+                <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
                 </option>
             </select>
         </div>
@@ -32,29 +34,38 @@
             <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                 <tr>
                     <th class="p-2 border">เขตการขาย</th>
+                    <th class="p-2 border">วันที่</th>
                     <th class="p-2 border">ยอดขาย</th>
                     <th class="p-2 border">ผลต่างใบเปลี่ยน</th>
                     <th class="p-2 border">รวมยอดขาย</th>
                     <th class="p-2 border">ยอดชำระเงิน</th>
+                    <th class="p-2 border">ยอดบันทึก</th>
                     <th class="p-2 border">ยอดส่งเงิน ขาด - เกิน</th>
                     <th class="p-2 border">รูปภาพ</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(prod, i) in dailyList" :key="prod.area" class="align-top">
+                <tr v-for="(prod, i) in dailyList" :key="prod.area + '-' + prod.date" class="align-top">
                     <td class="border p-2 text-center whitespace-pre">
                         <div class="">{{ prod.area }}</div>
+                    </td>
+                    <td class="border p-2 text-center whitespace-pre">
+                        <div class="">{{ prod.date }}</div>
                     </td>
                     <td class="text-right border p-2 text-center whitespace-pre">
                         <div class="">{{ formatNumber(prod.sale) }}</div>
                     </td>
                     <td class="text-right border p-2 text-center whitespace-pre">
-                        <div class="">{{ formatNumber(prod.refund) }}</div>
+                        <div class="">{{ formatNumber(prod.change - prod.refund) }}</div>
                     </td>
                     <td class="text-right border p-2 text-center whitespace-pre">
                         <div class="">{{ formatNumber(prod.totalSale) }}</div>
                     </td>
                     <td class="text-right border p-2 text-center whitespace-pre">
+                        <div class="">{{ formatNumber(prod.sendmoney) }}</div>
+                    </td>
+                    <td @click="openAlert(prod.area, prod.date)"
+                        class="text-right border p-2 text-center whitespace-pre">
                         <div class="">{{ formatNumber(prod.sendmoney) }}</div>
                     </td>
                     <td :class="{
@@ -63,17 +74,24 @@
                     }" class="text-right border p-2 text-center whitespace-pre">
                         <div>{{ formatNumber(prod.diff) }}</div>
                     </td>
+                    <!-- <td class="text-center border p-2 text-center whitespace-pre">
+                        <button class="btn btn-primary"
+                            @click="openImageModal(prod, (prod?.image && prod.image[0]) || '')">ดูรูปภาพ</button>
+                    </td> -->
                     <td class="text-center border p-2 text-center whitespace-pre">
-                        <button class="btn btn-primary" @click="openImageModal(prod)">ดูรูปภาพ</button>
+                        <button class="btn btn-primary"
+                            @click="openModal((prod?.image && prod.image[0]) || '')">ดูรูปภาพ</button>
                     </td>
                 </tr>
             </tbody>
             <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
                 <tr class="bg-gray-300 font-bold ">
                     <td class="border p-2 text-center">รวม</td>
+                    <td class="border p-2 text-center"></td>
                     <td class="border p-2 text-center">{{ formatNumber(Sumsale) }}</td>
                     <td class="border p-2 text-center">{{ formatNumber(totalRefund) }}</td>
                     <td class="border p-2 text-center">{{ formatNumber(totalSale) }}</td>
+                    <td class="border p-2 text-center">{{ formatNumber(totalSendmoney) }}</td>
                     <td class="border p-2 text-center">{{ formatNumber(totalSendmoney) }}</td>
                     <td :class="{
                         'bg-green-100 text-green-700': totalDiff >= 0,
@@ -85,38 +103,32 @@
 
         </table>
     </div>
-    <!-- Modal -->
-    <div v-if="showImageModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-xl p-6 w-full max-w-3xl max-h-[80vh] overflow-y-auto relative">
-            <h2 class="text-xl font-semibold mb-4">รูปภาพการส่งเงิน - {{ selectedAreaImage }} ยอดรวมส่ง {{
-                formatNumber(sendmoneyModal) }}
+    <div v-if="showModal" class="fixed inset-0 bg-black  flex items-center justify-center z-50">
+        <div @click="showModal = false" class="absolute inset-0"></div>
+        <img :src="modalImageSrc" class="max-w-full max-h-full z-10" />
+    </div>
+    
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-xl w-full">
+            <h2 class="font-bold text-lg mb-4">บันทึกยอดส่งเงิน
+                <br>เขต: {{ selectedAreaModel }} วันที่ {{ selectedDate }}
             </h2>
-            <button class="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-2xl"
-                @click="showImageModal = false">&times;</button>
             <table class="min-w-full border text-center text-sm bg-white">
-                <thead>
+                <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                     <tr>
-                        <th class="p-2 border">วันที่</th>
-                        <th class="p-2 border">รูป</th>
+                        <th class="p-2 border">ผลต่างใบเปลี่ยน</th>
+                        <th class="p-2 border">รวมยอดขาย</th>
+                        <th class="p-2 border">ยอดชำรยอด</th>
+                        <th class="p-2 border">ยอดบันทึก</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr v-for="(img, index) in selectedImages" :key="index">
-                        <td class="p-2 border">{{ extractDate(img) }}</td>
-                        <td class="p-2 border flex justify-center">
-                            <a :href="toImageUrl(img)" target="_blank" rel="noopener noreferrer">
-                                <img :src="toImageUrl(img)"
-                                    class="w-50 h-auto rounded shadow hover:scale-105 transition" />
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-
             </table>
+
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-neutral" @click="showAlert = false">ยกเลิก</button>
+            </div>
         </div>
     </div>
-
-
 </template>
 
 <script setup>
@@ -137,7 +149,29 @@ const filter = useFilter()
 const sendmoney = useSendmoney()
 const isLoading = ref(false);
 const viewType = ref('monthly')
+const modalImageSrc = ref('');
+const selectedDate = ref('');
+const selectedAreaModel = ref('');
+
+function formatYMD(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}${m}${d}`;
+}
+
+const flow = ['month', 'year', 'calendar'];
+
+
 const dateRange = ref();
+const monthRange = ref();
+
+// default today
+const now = new Date();
+dateRange.value = [now, now];
+
+
+
 
 const selectedZone = ref(route.query.zone || '')
 // const selectedArea = ref(route.query.area || '')
@@ -145,14 +179,23 @@ const selectedTeam = ref(route.query.team || '')
 
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const yyyy = today.getFullYear();
+
+// ถ้า month-picker ของ Nop ใช้ string:
+
+
 
 
 const sendmoneyModal = ref('')
+
 
 const showImageModal = ref(false)
 const selectedImages = ref([])
 const selectedArea = ref('')
 const selectedAreaImage = ref('')
+const showModal = ref(false);
+const showAlert = ref(false);
 
 function openImageModal(prod) {
     sendmoneyModal.value = prod.sendmoney
@@ -162,6 +205,60 @@ function openImageModal(prod) {
 }
 
 
+async function selectedMonth(value) {
+    console.log('value from datepicker:', value)
+}
+
+
+
+// function onDateChange(value) {
+//     dateRange.value = value;
+//     console.log(value)
+
+//     if (value && value[0]) {
+//         const d = new Date(value[0]);
+//         monthRange.value = `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+//         console.log('monthRange', monthRange)
+//     }
+// }
+
+async function onDateChange(value) {
+    dateRange.value = value;
+
+    if (value && value[0]) {
+        const d = value[0];
+
+        monthRange.value = {
+            month: d.getMonth(),   // 0–11
+            year: d.getFullYear()
+        };
+
+        await sendmoney.downloadtoExcel(formatDateToYYYYMMDD(value[0]), formatDateToYYYYMMDD(value[1]), false, '', selectedArea.value)
+
+    }
+}
+
+function openModal(imagePath) {
+    modalImageSrc.value = 'https://apps.onetwotrading.co.th/' + relativePath(imagePath);
+    showModal.value = true;
+}
+
+
+function openAlert(area, date) {
+    selectedAreaModel.value = area;
+    selectedDate.value = date;
+    // modalImageSrc.value = 'https://apps.onetwotrading.co.th/' + relativePath(imagePath);
+    showAlert.value = true;
+}
+
+
+function relativePath(imagePath) {
+    if (imagePath && imagePath.includes("/public")) {
+        return imagePath.split("/public")[1];
+    } else {
+        return "";
+    }
+}
 
 // ดึงวันที่จากชื่อไฟล์
 function extractDate(path) {
@@ -183,21 +280,6 @@ function toImageUrl(path) {
 // ข้อมูลสำหรับรายวัน
 const dailyList = computed(() => {
     let data = sendmoney.dailyData
-    if (selectedZone.value) {
-        data = data.filter(order =>
-            (order.area || '').startsWith(selectedZone.value)
-        )
-    }
-    if (selectedArea.value) {
-        data = data.filter(order => order.area === selectedArea.value);
-    }
-
-    if (selectedTeam.value) {
-        console.log()
-        data = data.filter(order =>
-            getTeam3(order.area) === selectedTeam.value
-        )
-    }
     return data;
 })
 
@@ -210,7 +292,7 @@ const Sumsale = computed(() => {
 
 const totalRefund = computed(() => {
     return dailyList.value.reduce((sum, order) => {
-        return sum + (Number(order.refund) || 0)
+        return sum + (Number(order.change) - Number(order.refund) || 0)
     }, 0)
 })
 
@@ -237,10 +319,16 @@ const totalDiff = computed(() => {
 const startDate = computed(() => formatDateToYYYYMMDD(dateRange.value[0]))
 const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
 
+function formatYyyyMm(obj) {
+    const y = obj.year;
+    const m = String(obj.month + 1).padStart(2, "0");
+    return `${y}${m}`;   // → "202508"
+}
+
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone('cash',period);
-    await sendmoney.downloadtoExcel('', '', false)
+    await filter.getZone('cash', period);
+    // await sendmoney.downloadtoExcel('', '', false)
     isLoading.value = false
 })
 
@@ -254,6 +342,14 @@ watch(selectedZone, async (newVal) => {
     }
 });
 
+watch(selectedArea, async (newVal) => {
+    if (newVal) {
+        // console.log(formatYyyyMm(monthRange.value))
+        // console.log(monthRange.value)
+        await sendmoney.downloadtoExcel(formatDateToYYYYMMDD(dateRange.value[0]), formatDateToYYYYMMDD(dateRange.value[1]), false, '', selectedArea.value)
+    }
+});
+
 watch(selectedTeam, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
     if (newVal) {
@@ -264,10 +360,54 @@ watch(selectedTeam, async (newVal) => {
 
 
 
-async function onMonthChange() {
+// async function onMonthChange(value) {
+//     monthRange.value = value;
+//     console.log(value)
+
+//     if (value) {
+//         const [mm, yyyy] = value.split('/');
+//         const newDate = new Date(`${yyyy}-${mm}-01T00:00:00`);
+
+//         // set dateRange ให้กระโดดไปเดือนเดียวกัน
+//         dateRange.value = [newDate, newDate];
+//     }
+//     // console.log(dateRange.value);
+//     // isLoading.value = true
+//     // await sendmoney.downloadtoExcel(startDate.value, endDate.value, false)
+//     // isLoading.value = false
+// }
+
+
+async function onMonthChange(value) {
+    let dateObj = null;
+
+    if (value instanceof Date) {
+        dateObj = value;
+    } else if (value?.year && value?.month) {
+        dateObj = new Date(value.year, value.month, 1);
+    } else if (value?.value instanceof Date) {
+        dateObj = value.value;
+    }
+
+    if (!dateObj) return;
+
+    const yyyy = dateObj.getFullYear();
+    const mm = dateObj.getMonth() + 1;
+
+    const firstDate = new Date(yyyy, mm - 1, 1);
+    const lastDate = new Date(yyyy, mm, 0);
+
+    monthRange.value = value;
+    dateRange.value = [firstDate, lastDate];
     isLoading.value = true
-    await sendmoney.downloadtoExcel(startDate.value, endDate.value, false)
+    // await sendmoney.downloadtoExcel(formatYMD(firstDate), formatYMD(endDate), false)
+    // console.log(firstDate)
+    // console.log(lastDate)
+    // console.log(value)
+    await sendmoney.downloadtoExcel(formatYMD(firstDate), formatYMD(lastDate), false, '', selectedArea.value)
+
     isLoading.value = false
 }
+
 
 </script>

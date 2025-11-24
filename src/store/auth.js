@@ -58,6 +58,7 @@ export const useAuthStore = defineStore('auth', {
               localStorage.setItem('channel', 'pc')
               break
             default:
+              localStorage.setItem('channel', 'cash')
               break
           }
 

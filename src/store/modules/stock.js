@@ -124,6 +124,8 @@ export const useStockStore = defineStore('stock', {
     },
     async downloadExcel (area, period) {
       try {
+        const channel = localStorage.getItem('channel')
+        setChannel(channel)
         const response = await api.post(
           `/api/cash/stock/stockToExcel`,
           {
@@ -165,6 +167,8 @@ export const useStockStore = defineStore('stock', {
     },
     async downloadExcelSummary (area, period) {
       try {
+        const channel = localStorage.getItem('channel')
+        setChannel(channel)
         const response = await api.post(
           `/api/cash/stock/stockToExcelSummary`,
           {

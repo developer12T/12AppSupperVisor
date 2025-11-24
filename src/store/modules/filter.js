@@ -96,32 +96,49 @@ export const useFilter = defineStore('filters', {
 
     async getZone (channel, period) {
       try {
+        const platformType = localStorage.getItem('platformType')
         setChannel(channel)
-        const response = await api.get(
-          `/api/cash/route/getZone?period=${period}`
-        )
+        const response = await api.post(`/api/cash/user/getArea`, {
+          zone: '',
+          team: '',
+          role: 'sale',
+          platformType: platformType
+        })
         const result = response.data.data
         this.zone = result
+        console.log('Zones', response.data.data)
         console.log('Zones', this.zone)
       } catch (error) {
         console.error(error)
       }
     },
+
     async getArea (period, zone, team) {
       try {
-        const response = await api.get(
-          `/api/cash/route/getArea?zone=${zone}&period=${period}&team=${team}`
-        )
+        const platformType = localStorage.getItem('platformType')
+        const response = await api.post(`/api/cash/user/getArea`, {
+          zone: zone,
+          team: team,
+          role: 'sale',
+          platformType: platformType
+        })
         const result = response.data.data
         this.area = result
-        console.log('Areas', this.area)
+        // console.log('Areas', this.area)
       } catch (error) {
         console.error(error)
       }
     },
     async getTeam (zone) {
       try {
-        const response = await api.get(`/api/cash/user/getTeam?zone=${zone}`)
+        let platformType = localStorage.getItem('platformType')
+
+        if (platformType == 'ADMIN') {
+          platformType = 'CASH'
+        }
+        const response = await api.get(
+          `/api/cash/user/getTeam?zone=${zone}&platformType=${platformType}`
+        )
         const result = response.data.data
         this.team = result
         console.log('Teams', this.team)

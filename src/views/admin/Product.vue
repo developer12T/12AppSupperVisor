@@ -13,7 +13,7 @@
             <select class="select select-info w-1/6" v-model="selectedChannel">
                 <option disabled value="">Select Channel</option>
                 <option value="cash">Cash</option>
-                <option value="credit">Credit</option>
+                <option value="pc">PC</option>
             </select>
 
             <select class="select select-info w-1/6" v-model="selectedBrand">

@@ -367,12 +367,13 @@ const selectedZone = ref('')
 const selectedArea = ref('')
 const isLoading = ref(false)
 
+const channel = localStorage.getItem('channel')
+
+
 function formatNumber(val) {
     if (val === null || val === undefined || isNaN(val)) return '-'
     return Number(val).toLocaleString()
 }
-
-
 
 
 watch(selectedZone, async (newVal) => {
@@ -423,7 +424,7 @@ watch(selectedArea, async (newVal) => {
 
 onMounted(async () => {
     // isLoading.value = true
-    await filter.getZone('cash',period);
+    await filter.getZone(channel, period);
     if (selectedZone.value) {
         await filter.getArea(period, selectedZone.value, '');
     }

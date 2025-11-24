@@ -2,7 +2,7 @@
     <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
     <div class="mb-2 flex justify-start">
         <div class="w-65 ms-3">
-            <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" range :enable-time-picker="false"
+            <VueDatePicker v-model="date" format="dd/MM/yyyy" range :enable-time-picker="false"
                 @update:model-value="onMonthChange" />
         </div>
         <div class="ms-3">

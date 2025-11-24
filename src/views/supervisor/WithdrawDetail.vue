@@ -98,7 +98,7 @@
                         <tr v-for="(item, idx) in data.listProduct ?? []" :key="item._id ?? idx"
                             class="hover:bg-blue-50">
                             <td class="border-t p-2">{{ idx + 1 }}</td>
-                            <td class="border-t p-2">{{ item.name ?? '-' }}</td>
+                            <td class="border-t p-2">{{ item.name ?? '-' }}<br> {{ item.id ?? '-' }}</td>
                             <td class="border-t p-2 text-right">{{ item.qty ?? 0 }}</td>
                             <td class="border-t p-2">{{ item.unit }}</td>
                             <td class="border-t p-2 text-right">{{ item.qtyPcs ?? 0 }}</td>
@@ -162,10 +162,6 @@
             </div>
         </div>
     </div>
-
-
-
-
     <div v-if="showAlertAddRemark" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
         <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
             <h2 class="font-bold text-lg mb-4 ">เพิ่มหมายเหตุการับของ</h2>
