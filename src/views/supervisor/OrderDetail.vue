@@ -25,12 +25,53 @@
                     <p><strong>รูปแบบการจ่ายเงิน:</strong> {{ orderStore.orderDetail?.paymentMethod || '-' }}</p>
                 </div>
                 <div>
-                    <p><strong>ชื่อร้าน:</strong> {{ orderStore.orderDetail.store?.name || '-' }}</p>
-                    <p><strong>เขต:</strong> {{ orderStore.orderDetail.store?.area || '-' }}</p>
-                    <p><strong>รหัสร้านค้า:</strong> {{ orderStore.orderDetail.store?.storeId || '-' }}</p>
-                    <p><strong>เบอร์โทร:</strong> {{ orderStore.orderDetail.store?.tel || '-' }}</p>
-                    <p><strong>ที่อยู่:</strong> {{ orderStore.orderDetail.store?.address || '-' }}</p>
+                    <p><strong>เขต:</strong>
+                        {{ orderStore.orderDetail.store?.area || '-' }}</p>
+                    <p><strong>รหัสร้านค้า:</strong>
+                        <span>
+                            {{ orderStore.orderDetail.store?.storeId || '-' }}
+                        </span>
+                    </p>
+                    <p><strong>ชื่อร้าน:</strong>
+                        <span v-if="!isEdit">{{ orderStore.orderDetail.store?.name || '-' }}</span>
+
+                        <input v-else v-model="editForm.name" class="input input-bordered w-full max-w-xs" />
+                    </p>
+
+                    <p><strong>เลขผู้เสียภาษี:</strong>
+                        <span v-if="!isEdit"> {{ orderStore.orderDetail.store?.taxId || '-' }}</span>
+                        <input v-else v-model="editForm.taxId" class="input input-bordered w-full max-w-xs" />
+                    </p>
+                    <p><strong>เบอร์โทร:</strong>
+                        <span v-if="!isEdit">
+                            {{ orderStore.orderDetail.store?.tel || '-' }}
+                        </span>
+                        <input v-else v-model="editForm.tel" class="input input-bordered w-full max-w-xs" />
+
+                    </p>
+
+                    <p><strong>ที่อยู่:</strong>
+                        <span v-if="!isEdit">
+                            {{ orderStore.orderDetail.store?.address || '-' }}
+                        </span>
+                        <textarea v-else v-model="editForm.address"
+                            class="textarea textarea-bordered w-full"></textarea>
+                    </p>
+                    <div class="mt-3">
+                        <button
+                            v-if="userRole == 'admin' || userRole == 'supervisor' || userRole == 'area_manager' || userRole == 'sale_manager'"
+                            class="w-[150px] btn btn-warning" @click="enableEdit()">
+                            <Icon icon="mdi:lead-pencil" width="24" height="24" />
+                            {{ isEdit ? "ปิดแก้ไข" : "แก้ไข" }}
+                        </button>
+                        <button v-if="isEdit" class="btn btn-success ms-3" @click="openConfrim">
+                            <Icon icon="mdi:content-save" width="24" height="24" />
+                            บันทึก
+                        </button>
+                    </div>
                 </div>
+
+
             </div>
 
             <!-- Product List -->
@@ -139,22 +180,61 @@
             </div>
         </div>
     </div>
+    <div v-if="editMode" class="fixed inset-0 bg-black bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">ยืนยันการบันทึกข้อมูล</h2>
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="btn" @click="editMode = false">ยกเลิก</button>
+                <button type="submit" @click="editStore" class="btn btn-primary">บันทึก</button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useOrder } from '../../store/modules/order'
+import { Icon } from '@iconify/vue'
+import { toast } from 'vue3-toastify';
 
 const isLoading = ref(false)
 const orderStore = useOrder()
 const route = useRoute()
 const router = useRouter()
+const userRole = localStorage.getItem('role')
+const editMode = ref(false)
+
 
 const orderId = computed(() => route.params.orderId)
 
 const expanded = reactive({})
 const toggle = (i) => (expanded[i] = !expanded[i])
+
+
+const province = ref("");
+const amphoe = ref("");
+const district = ref("");
+const zipcode = ref("");
+
+const provinceList = ref([]);
+const amphoeList = ref([]);
+const districtList = ref([]);
+
+const isEdit = ref(false)
+
+const editForm = ref({
+    name: "",
+    taxId: "",
+    tel: "",
+    address: "",
+})
+
+function openConfrim() {
+    editMode.value = true;
+}
+
+
 
 onMounted(async () => {
     isLoading.value = true
@@ -163,6 +243,84 @@ onMounted(async () => {
     console.log('orderStore:', orderStore.orderDetail)
     isLoading.value = false
 })
+
+function enableEdit() {
+    if (!isEdit.value) {
+        isEdit.value = true
+        editForm.value = {
+            name: orderStore.orderDetail.store?.name,
+            taxId: orderStore.orderDetail.store?.taxId,
+            tel: orderStore.orderDetail.store?.tel,
+            address: orderStore.orderDetail.store?.address,
+        }
+    } else {
+        isEdit.value = false
+    }
+}
+
+
+
+async function editStore() {
+    try {
+        const zipStr = (zipcode?.value ?? "").toString();
+
+        const data = {
+            name: editForm.value.name ?? "",
+            taxId: editForm.value.taxId ?? "",
+            tel: editForm.value.tel ?? "",
+            address: editForm.value.address ?? "",
+            province: province?.value ?? "",
+            provinceCode: zipStr.slice(0, 2),
+            subDistrict: amphoe?.value ?? "",
+            district: district?.value ?? "",
+            postCode: zipStr,
+        };
+
+        const data2 = {
+            name: editForm.value.name ?? "",
+            taxId: editForm.value.taxId ?? "",
+            tel: editForm.value.tel ?? "",
+            address: editForm.value.address ?? "",
+        };
+
+        // 🔥 เช็คว่ามีข้อมูลที่อยู่ครบจริง ๆ
+        const hasFullAddress =
+            !!province?.value &&
+            !!zipcode?.value &&
+            !!amphoe?.value &&
+            !!district?.value;
+
+        editMode.value = false;
+        isLoading.value = true;
+
+        // 🔥 ส่ง API ตามเงื่อนไข
+
+        await orderStore.editStoreOrder("cash", route.params.orderId, data2);
+
+        // toast(`บันทึกสำเร็จ`, {
+        //     theme: toast.THEME.COLORED,
+        //     type: toast.TYPE.WARNING,
+        //     dangerouslyHTMLString: true,
+        // });
+
+
+        // 🔄 โหลดข้อมูลใหม่
+        await orderStore.fetchOrderDetail(orderId.value)
+        isLoading.value = false;
+
+    } catch (error) {
+        console.error(error);
+
+        toast(`เกิดข้อผิดพลาด: ${error.message}`, {
+            theme: toast.THEME.COLORED,
+            type: toast.TYPE.ERROR,
+            dangerouslyHTMLString: true,
+        });
+
+        isLoading.value = false;
+    }
+}
+
 
 // Computed fields for summary
 const subtotal = computed(() =>

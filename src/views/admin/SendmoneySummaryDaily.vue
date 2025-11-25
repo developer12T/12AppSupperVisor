@@ -64,7 +64,7 @@
                     <td class="text-right border p-2 text-center whitespace-pre">
                         <div class="">{{ formatNumber(prod.sendmoney) }}</div>
                     </td>
-                    <td @click="openAlert(prod.area, prod.date)"
+                    <td @click="openAlert(prod.area, prod.date, prod.sale, (prod.change - prod.refund), prod.totalSale, prod.sendmoney, (prod?.image && prod.image[0]) || '')"
                         class="text-right border p-2 text-center whitespace-pre">
                         <div class="">{{ formatNumber(prod.sendmoney) }}</div>
                     </td>
@@ -107,24 +107,68 @@
         <div @click="showModal = false" class="absolute inset-0"></div>
         <img :src="modalImageSrc" class="max-w-full max-h-full z-10" />
     </div>
-    
+
     <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-        <div class="bg-white rounded-xl shadow-xl p-6 max-w-xl w-full">
-            <h2 class="font-bold text-lg mb-4">บันทึกยอดส่งเงิน
-                <br>เขต: {{ selectedAreaModel }} วันที่ {{ selectedDate }}
-            </h2>
+        <div class="bg-white rounded-xl shadow-xl p-6 w-[1000px]">
+            <div class="flex  justify-between">
+                <h2 class="font-bold text-lg mb-4">บันทึกยอดส่งเงิน
+                    <br>เขต: {{ selectedAreaModel }} วันที่ {{ selectedDate }}
+                </h2>
+                <div>
+                    <button class="me-2 btn btn-primary" @click="rotateAndOpen(modalImageSrc)"> หมุนรูป </button>
+                    <button class="btn btn-primary" @click="openImage(modalImageSrc)"> เปิดใหม่</button>
+                </div>
+            </div>
+
             <table class="min-w-full border text-center text-sm bg-white">
-                <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
+                <thead class="bg-blue-800 text-white" style=" top: 0; z-index: 10;">
                     <tr>
+                        <th class="p-2 border">ยอดขาย</th>
                         <th class="p-2 border">ผลต่างใบเปลี่ยน</th>
                         <th class="p-2 border">รวมยอดขาย</th>
-                        <th class="p-2 border">ยอดชำรยอด</th>
+                        <th class="p-2 border">ยอดชำระ</th>
                         <th class="p-2 border">ยอดบันทึก</th>
+                        <th class="p-2 border">รูป</th>
                     </tr>
                 </thead>
+                <tbody>
+                    <tr>
+                        <td class="border p-2 text-center whitespace-pre">
+                            {{ formatNumber(saleShow) }}
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            {{ formatNumber(diffShow) }}
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            {{ formatNumber(totalSaleShow) }}
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            {{ formatNumber(sendmoneyShow) }}
+                        </td>
+                        <td class="border p-2 text-center whitespace-pre">
+                            {{ formatNumber(sendmoneyShow) }}
+                        </td>
+                        <td>
+                            <img :src="modalImageSrc" :style="{
+                                transform: `rotate(${rotateDeg}deg)`
+                            }" class="max-w-[100px] max-h-full z-10" />
+
+                            <!-- <img :src="modalImageSrc"
+                                class="max-w-[100px] max-h-full z-10 transition-transform duration-300" :style="{
+                                    transform: `rotate(${rotateDeg}deg) scale(${isHover ? 10 : 1})`,
+                                    transformOrigin: 'center center'
+                                }" @mouseenter="isHover = true" @mouseleave="isHover = false" /> -->
+                        </td>
+                    </tr>
+                </tbody>
             </table>
 
-            <div class="flex justify-end gap-2">
+            <h4 class="mt-3">กรุณาใส่ยอดส่งเงิน</h4>
+            <input type="password" v-model="sendmoneySave" placeholder="1000"
+                class=" bg-black-50 border border-black-300  sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                required />
+            <div class="flex justify-end gap-2 mt-4">
+                <button class="btn btn-success" @click="showAlert = false">บันทึก</button>
                 <button class="btn btn-neutral" @click="showAlert = false">ยกเลิก</button>
             </div>
         </div>
@@ -143,6 +187,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 
 
 
+const isHover = ref(false);
 const router = useRouter()
 const route = useRoute()
 const filter = useFilter()
@@ -152,6 +197,12 @@ const viewType = ref('monthly')
 const modalImageSrc = ref('');
 const selectedDate = ref('');
 const selectedAreaModel = ref('');
+const sendmoneySave = ref('');
+
+const saleShow = ref('');
+const totalSaleShow = ref('');
+const diffShow = ref('');
+const sendmoneyShow = ref('');
 
 function formatYMD(date) {
     const y = date.getFullYear();
@@ -160,18 +211,18 @@ function formatYMD(date) {
     return `${y}${m}${d}`;
 }
 
+
+
 const flow = ['month', 'year', 'calendar'];
 
 
 const dateRange = ref();
 const monthRange = ref();
+const rotateDeg = ref(0);
 
 // default today
 const now = new Date();
 dateRange.value = [now, now];
-
-
-
 
 const selectedZone = ref(route.query.zone || '')
 // const selectedArea = ref(route.query.area || '')
@@ -184,11 +235,7 @@ const yyyy = today.getFullYear();
 
 // ถ้า month-picker ของ Nop ใช้ string:
 
-
-
-
 const sendmoneyModal = ref('')
-
 
 const showImageModal = ref(false)
 const selectedImages = ref([])
@@ -196,6 +243,22 @@ const selectedArea = ref('')
 const selectedAreaImage = ref('')
 const showModal = ref(false);
 const showAlert = ref(false);
+
+function rotateAndOpen(path) {
+    // const fullUrl = 'https://apps.onetwotrading.co.th' + relativePath(path);
+    // console.log(fullUrl)
+    rotateDeg.value = (rotateDeg.value + 90) % 360;
+    // openRotatedImage(path);
+}
+
+function openImage(path) {
+    // const fullUrl = 'https://apps.onetwotrading.co.th' + relativePath(path);
+    // console.log(fullUrl)
+    // rotateDeg.value = (rotateDeg.value + 90) % 360;
+    openRotatedImage(path, rotateDeg.value);
+}
+
+
 
 function openImageModal(prod) {
     sendmoneyModal.value = prod.sendmoney
@@ -208,6 +271,49 @@ function openImageModal(prod) {
 async function selectedMonth(value) {
     console.log('value from datepicker:', value)
 }
+
+
+function openRotatedImage(imgUrl, rotateDeg = 90) {
+    // const img = new Image();
+    // img.crossOrigin = "anonymous"; // ป้องกัน CORS ถ้ามี
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = imgUrl;
+    // console.log(imgUrl);
+
+    img.onload = () => console.log("OK");
+    img.onerror = () => console.log("CORS BLOCK");
+
+    img.onload = () => {
+        // สร้าง canvas เท่าขนาดรูป
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // หมุน 90 องศา: สลับ width/height
+        canvas.width = img.height;
+        canvas.height = img.width;
+
+        // ย้ายจุดหมุนไป center
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+
+        // หมุน
+        ctx.rotate((rotateDeg * Math.PI) / 180);
+
+        // วาดรูปกลับเข้ามาที่ canvas
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+
+        // แปลงเป็นรูปใหม่ (Base64)
+        const rotatedUrl = canvas.toDataURL("image/jpeg");
+
+        // เปิดแท็บใหม่โชว์รูปเลย
+        const newWin = window.open();
+        newWin.document.write(`<img src="${rotatedUrl}" style="max-width:100%; height:auto;" />`);
+    };
+
+    img.src = imgUrl;
+}
+
 
 
 
@@ -244,9 +350,14 @@ function openModal(imagePath) {
 }
 
 
-function openAlert(area, date) {
+function openAlert(area, date, sale, diff, totalSale, sendmoney, imagePath) {
     selectedAreaModel.value = area;
     selectedDate.value = date;
+    saleShow.value = sale;
+    diffShow.value = diff;
+    totalSaleShow.value = totalSale;
+    sendmoneyShow.value = sendmoney;
+    modalImageSrc.value = 'https://apps.onetwotrading.co.th/' + relativePath(imagePath);
     // modalImageSrc.value = 'https://apps.onetwotrading.co.th/' + relativePath(imagePath);
     showAlert.value = true;
 }

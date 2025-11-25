@@ -2,39 +2,67 @@
     <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
     <div class="w-full">
         <h2 class="text-xl me-2 mb-2">รายละเอียดร้านค้า </h2>
-        <div
-            class="flex justify-between py-5 px-10  product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4">
-            <div class="w-150">
-                <div class="flex justify-start">
-                    <h2 class="card-title me-2">{{ storeDetail.name }}</h2>
-                    <div
-                        :class="storeDetail.status == '20' ? 'badge badge-success' : storeDetail.status == '90' ? 'badge badge-error' : 'badge badge-warning'">
-                        {{
-                            storeDetail.status == '20' ? 'อนุมัติ' : storeDetail.status == '90' ? 'ไม่อนุมัติ' :
-                                'ยังไม่ได้อนุมัติ'
-                        }} </div>
-                </div>
-                <div class="flex justify-between ">
-                    <div>
-                        <p class="text-x text-gray-600 msb-1">รหัสร้านค้า: {{ storeDetail.storeId }}</p>
-                        <p class="text-x text-gray-600 msb-1">รูท: {{ storeDetail.route }} </p>
-                        <p class="text-x text-gray-600 msb-1">ประเภท: {{ storeDetail.typeName }}</p>
-                        <p class="text-x text-gray-600 msb-1">lat: {{ storeDetail.latitude }}</p>
-                        <!-- <p class="text-x text-gray-600 msb-1"> ผู้อนุมัติ: {{ storeDetail?.approve?.appPerson ??
-                            'ไม่ระบุ' }}</p> -->
-                    </div>
-                    <div>
-                        <p class="text-x text-gray-600 msb-1">เลขผู้เสียภาษี: {{ storeDetail.taxId }}</p>
-                        <p class="text-x text-gray-600 msb-1">โซน: {{ storeDetail.zone }} เขต: {{ storeDetail.area }}
-                        </p>
-                        <p class="text-x text-gray-600 msb-1">เบอร์โทร: {{ storeDetail.tel }}</p>
-                        <p class="text-x text-gray-600 msb-1">long: {{ storeDetail.longtitude }}</p>
-                        <!-- <p class="text-x text-gray-600 msb-1">วันที่อนุมัติ: {{ formatDate(storeDetail.approve.dateAction) }}</p> -->
-                    </div>
-                </div>
+        <div class=" py-5 px-10  product-landscape-card card card-side bg-base-100 shadow-xl w-full mb-4">
+            <div class="w-[700px]">
+                <p class="text-x text-gray-600 msb-1">
+                    ชื่อร้านค้า:
+                    <span v-if="!isEdit">{{ storeDetail.name }}</span>
+                    <input v-else v-model="editForm.name" class="input input-bordered w-full max-w-xs" />
+                </p>
+                <p class="text-x text-gray-600 msb-1">
+                    เลขผู้เสียภาษี:
+                    <span v-if="!isEdit">{{ storeDetail.taxId }}</span>
+                    <input v-else v-model="editForm.taxId" class="input input-bordered w-full max-w-xs" />
+                </p>
+                <p class="text-x text-gray-600 msb-1">โซน: {{ storeDetail.zone }} เขต: {{ storeDetail.area }}
+                </p>
+                <p class="text-x text-gray-600 msb-1">รหัสร้านค้า: {{ storeDetail.storeId }}</p>
+                <p class="text-x text-gray-600 msb-1">รูท: {{ storeDetail.route }} </p>
+                <p class="text-x text-gray-600 msb-1">ประเภท: {{ storeDetail.typeName }}</p>
+                <p class="text-x text-gray-600 msb-1">lat: {{ storeDetail.latitude }}</p>
                 <p class="text-x text-gray-600">
-                    ที่อยู่: {{ storeDetail.address }} {{ storeDetail.subDistrict }}
-                    {{ storeDetail.district }} {{ storeDetail.province }} {{ storeDetail.postCode }}
+                    ที่อยู่:
+                    <span v-if="!isEdit">
+                        {{ storeDetail.address }} {{ storeDetail.subDistrict }}
+                        {{ storeDetail.district }} {{ storeDetail.province }} {{ storeDetail.postCode }}
+                    </span>
+                    <!-- <textarea v-else v-model="editForm.address" class="textarea textarea-bordered w-full"></textarea> -->
+                    <!-- จังหวัด -->
+
+                <div v-else>
+                    <input v-model="editForm.address" class="input input-bordered w-full max-w-xs" />
+                    <div class="mt-3">
+                        <select v-model="province" @change="onProvinceChange" class="me-4 select select-bordered">
+                            <option value="">เลือกจังหวัด</option>
+                            <option v-for="p in provinceList" :key="p" :value="p">
+                                {{ p }}
+                            </option>
+                        </select>
+                        <select v-model="amphoe" @change="onAmphoeChange" class="select select-bordered">
+                            <option value="">เลือกอำเภอ</option>
+                            <option v-for="a in amphoeList" :key="a" :value="a">
+                                {{ a }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mt-3">
+                        <!-- ตำบล -->
+                        <select v-model="district" @change="onDistrictChange" class=" me-4 select select-bordered">
+                            <option value="">เลือกตำบล</option>
+                            <option v-for="d in districtList" :key="d" :value="d">
+                                {{ d }}
+                            </option>
+                        </select>
+
+                        <!-- Zipcode -->
+                        <input class="input input-bordered" v-model="zipcode" placeholder="รหัสไปรษณีย์" readonly />
+                    </div>
+
+                    <button class="btn btn-success mt-3" @click="openConfrim">
+                        <Icon icon="mdi:content-save" width="24" height="24" />
+                        บันทึก
+                    </button>
+                </div>
                 </p>
                 <div class="card-actions justify-start mt-6">
                     <button class="btn btn-success"
@@ -65,10 +93,16 @@
                         <Icon icon="mdi:store-plus" width="24" height="24" />
                         นำเข้า M3
                     </button>
+                    <button v-if="storeDetail.status == '20' && (userRole == 'admin' || userRole == 'supervisor' ||
+                        userRole == 'area_manager' || userRole == 'sale_manager')" class="btn btn-warning"
+                        @click="enableEdit()">
+                        <Icon icon="mdi:lead-pencil" width="24" height="24" />
+                        {{ isEdit ? "ปิดแก้ไข" : "แก้ไข" }}
+                    </button>
                 </div>
             </div>
             <div>
-                <div class="flex justify-start">
+                <div class="flex justify-end">
                     <figure class="" v-for="(caption, idx) in ['ภาพร้านค้า', 'ภ.พ. 20', 'สำเนาบัตรประชาชน']" :key="idx">
                         <div class="flex flex-col items-center pt-10">
                             <div
@@ -86,10 +120,19 @@
                         </div>
                     </figure>
                 </div>
-
             </div>
         </div>
     </div>
+    <div v-if="editMode" class="fixed inset-0 bg-black bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">ยืนยันการบันทึกข้อมูล</h2>
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="btn" @click="editMode = false">ยกเลิก</button>
+                <button type="submit" @click="editStore" class="btn btn-primary">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
     <div v-if="showModal" class="fixed inset-0 bg-black  flex items-center justify-center z-50">
         <div @click="showModal = false" class="absolute inset-0"></div>
         <img :src="modalImageSrc" class="max-w-full max-h-full z-10" />
@@ -108,7 +151,6 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup>
@@ -120,6 +162,17 @@ import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
 import { toast } from 'vue3-toastify';
 import "vue3-toastify/dist/index.css";
+import addressData from "../../data/thai-address.json";  // ไฟล์ JSON ที่เก็บข้อมูล
+
+const province = ref("");
+const amphoe = ref("");
+const district = ref("");
+const zipcode = ref("");
+
+const provinceList = ref([]);
+const amphoeList = ref([]);
+const districtList = ref([]);
+
 
 const isLoading = ref(false)
 const store = useStoresStore()
@@ -131,6 +184,7 @@ const storeDetail = computed(() => store.storeDetail || { imageList: [] }) // �
 
 
 const showModal = ref(false);
+const editMode = ref(false)
 const showModalConfirm = ref(false);
 const showModalReject = ref(false);
 const modalImageSrc = ref('');
@@ -145,6 +199,14 @@ const period = today.getFullYear().toString() + String(today.getMonth() + 1).pad
 
 const userRole = localStorage.getItem('role')
 const platformType = localStorage.getItem('platformType')
+const isEdit = ref(false)
+
+const editForm = ref({
+    name: storeDetail.name,
+    taxId: storeDetail.taxId,
+    tel: storeDetail.tel,
+    address: storeDetail.address,
+})
 
 function formatDate(dateStr) {
     if (!dateStr) return ''
@@ -159,11 +221,12 @@ function formatDate(dateStr) {
 onMounted(async () => {
     isLoading.value = true
     await store.getDetailStore(route.params.storeid)
-    await filter.getZone('cash',period)
+    await filter.getZone('cash', period)
     await filter.getArea(period, zone, '');
     // สมมุติให้ store.loadSimilarStore() เป็น method ดึงร้านค้าที่คล้ายกัน
     // await store.checkSimilarStore(route.params.storeid) || []
     // similarStore.value = store.similarStore
+    provinceList.value = [...new Set(addressData.map(i => i.province))];
     isLoading.value = false
 })
 
@@ -173,8 +236,8 @@ async function toggleSwitch(storeData, status) {
     switch (status) {
         case 'store':
             storeData.store.status = storeData.store.status == '20' ? '90' : '20'
-            console.log(storeData.store.status)
-            console.log(storeData.store.storeId)
+            // console.log(storeData.store.status)
+            // console.log(storeData.store.storeId)
             await store.updateStoreStatusNoNewId({ storeId: storeData.store.storeId, status: storeData.store.status });
             break;
         default:
@@ -182,11 +245,150 @@ async function toggleSwitch(storeData, status) {
     }
 }
 
+function onProvinceChange() {
+    amphoe.value = "";
+    district.value = "";
+    zipcode.value = "";
+
+    amphoeList.value = [
+        ...new Set(
+            addressData
+                .filter(i => i.province === province.value)
+                .map(i => i.amphoe)
+        )
+    ];
+}
+function onAmphoeChange() {
+    district.value = "";
+    zipcode.value = "";
+
+    districtList.value = [
+        ...new Set(
+            addressData
+                .filter(i => i.province === province.value && i.amphoe === amphoe.value)
+                .map(i => i.district)
+        )
+    ];
+}
+
+function onDistrictChange() {
+    const match = addressData.find(
+        i =>
+            i.province === province.value &&
+            i.amphoe === amphoe.value &&
+            i.district === district.value
+    );
+
+    zipcode.value = match?.zipcode || "";
+}
+
+function openConfrim() {
+    editMode.value = true;
+}
 
 function openModal(imagePath) {
     modalImageSrc.value = 'https://apps.onetwotrading.co.th/' + relativePath(imagePath);
     showModal.value = true;
 }
+
+
+function enableEdit() {
+    if (!isEdit.value) {
+        storeDetail
+        isEdit.value = true
+        // province.value = storeDetail.value.province
+        // amphoe.value = storeDetail.value.subDistrict
+        // district.value = storeDetail.value.district
+        // zipcode.value = storeDetail.value.postCode
+        // console.log(storeDetail)
+
+        editForm.value = {
+            name: storeDetail.value.name,
+            taxId: storeDetail.value.taxId,
+            tel: storeDetail.value.tel,
+            address: storeDetail.value.address,
+        }
+    } else {
+        isEdit.value = false
+    }
+}
+
+
+async function editStore() {
+    try {
+        const zipStr = (zipcode?.value ?? "").toString();
+
+        const data = {
+            name: editForm.value.name ?? "",
+            taxId: editForm.value.taxId ?? "",
+            tel: editForm.value.tel ?? "",
+            address: editForm.value.address ?? "",
+            province: province?.value ?? "",
+            provinceCode: zipStr.slice(0, 2),
+            subDistrict: amphoe?.value ?? "",
+            district: district?.value ?? "",
+            postCode: zipStr,
+        };
+
+        const data2 = {
+            name: editForm.value.name ?? "",
+            taxId: editForm.value.taxId ?? "",
+            tel: editForm.value.tel ?? "",
+            address: editForm.value.address ?? "",
+        };
+
+        // 🔥 เช็คว่ามีข้อมูลที่อยู่ครบจริง ๆ
+        const hasFullAddress =
+            !!province?.value &&
+            !!zipcode?.value &&
+            !!amphoe?.value &&
+            !!district?.value;
+
+        editMode.value = false;
+        isLoading.value = true;
+
+        // 🔥 ส่ง API ตามเงื่อนไข
+        if (hasFullAddress) {
+            await store.editStore("cash", route.params.storeid, data);
+
+            toast(`บันทึกสำเร็จ (อัปเดตข้อมูลที่อยู่ครบ)`, {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.SUCCESS,
+                dangerouslyHTMLString: true,
+            });
+
+        } else {
+            await store.editStore("cash", route.params.storeid, data2);
+
+            toast(`บันทึกสำเร็จ (อัปเดตเฉพาะข้อมูลร้าน เพราะที่อยู่ไม่ครบ)`, {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.WARNING,
+                dangerouslyHTMLString: true,
+            });
+        }
+
+        // 🔄 โหลดข้อมูลใหม่
+        await store.getDetailStore(route.params.storeid);
+        isLoading.value = false;
+
+    } catch (error) {
+        console.error(error);
+
+        toast(`เกิดข้อผิดพลาด: ${error.message}`, {
+            theme: toast.THEME.COLORED,
+            type: toast.TYPE.ERROR,
+            dangerouslyHTMLString: true,
+        });
+
+        isLoading.value = false;
+    }
+}
+
+
+function cancelEdit() {
+    isEdit.value = false
+}
+
 
 const confirmAction = async () => {
     try {
@@ -211,6 +413,7 @@ watch(selectedZone, async (newVal) => {
     }
 });
 
+
 const rejectAction = async () => {
     try {
         isLoading.value = true
@@ -223,7 +426,6 @@ const rejectAction = async () => {
         showModalConfirm.value = false;
     }
 };
-
 
 
 function relativePath(imagePath) {
@@ -254,6 +456,8 @@ const openGoogleMap = (latitude, longitude) => {
     window.open(url, '_blank');
 };
 
+
+
 const insertStoreToM3 = async () => {
     await store.insertToM3(route.params.storeid);
     if (store.statusCode == 201) {
@@ -281,4 +485,5 @@ const cancelAction = () => {
     showModalConfirm.value = false;
     showModalReject.value = false;
 };
+
 </script>

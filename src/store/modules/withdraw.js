@@ -183,7 +183,7 @@ export const useWithdrawStore = defineStore('withdraws', {
       end
     ) {
       try {
-        // setChannel(channel)
+        setChannel(channel)
 
         let zone = ''
         let area = ''

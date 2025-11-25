@@ -104,8 +104,8 @@ const menuItems = computed(() => [
         channel: ['CASH', 'PC', "ADMIN"],
         submenu: [
             { icon: 'fluent:shifts-day-20-filled', name: 'ยอดส่งเงินรายวัน', link: '/admin/sendmoneyDaily', channel: ['CASH', "ADMIN"] },
-            { icon: 'material-symbols:calendar-month', name: 'ยอดส่งเงินประจำเดือน', link: '/supervisor/approve', channel: ['CASH', "ADMIN"] },
-            { icon: 'fluent:money-hand-16-filled', name: 'สรุปยอดเงิน', link: '/supervisor/withdraw', channel: ['CASH', "ADMIN"] },
+            // { icon: 'material-symbols:calendar-month', name: 'ยอดส่งเงินประจำเดือน', link: '/supervisor/approve', channel: ['CASH', "ADMIN"] },
+            // { icon: 'fluent:money-hand-16-filled', name: 'สรุปยอดเงิน', link: '/supervisor/withdraw', channel: ['CASH', "ADMIN"] },
         ],
 
     },

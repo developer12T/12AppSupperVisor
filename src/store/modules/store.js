@@ -39,6 +39,30 @@ export const useStoresStore = defineStore('stores', {
         console.error(error)
       }
     },
+    async editStore (channel, id, data) {
+      try {
+        const user = localStorage.getItem('fullName')
+
+        const response = await api.patch(`/api/cash/store/editStore/${id}`, {
+          name: data.name,
+          taxId: data.taxId,
+          tel: data.tel,
+          address: data.address,
+          subDistrict: data.subDistrict,
+          district: data.district,
+          province: data.province,
+          provinceCode: data.provinceCode,
+          postCode: data.postCode,
+          user: user
+        })
+
+        this.message = response.data.message
+        this.statusCode = response.data.status
+        console.log('statusCode',  this.statusCode)
+      } catch (error) {
+        console.error(error)
+      }
+    },
     async getDetailStore (storeId) {
       try {
         const response = await api.get(`/api/cash/store/${storeId}`)

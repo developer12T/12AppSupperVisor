@@ -5,9 +5,32 @@ export const useOrder = defineStore('order', {
   state: () => ({
     order: [],
     orderDetail: {},
-    message: ''
+    message: '',
+    statusCode: 0
   }),
   actions: {
+    async editStoreOrder (channel, id, data) {
+      try {
+        const user = localStorage.getItem('fullName')
+
+        const response = await api.patch(
+          `/api/cash/order/editOrderSale/${id}`,
+          {
+            name: data.name,
+            address: data.address,
+            taxId: data.taxId,
+            tel: data.tel,
+            user: user
+          }
+        )
+
+        this.message = response.data.message
+        this.statusCode = response.data.status
+        console.log('statusCode', this.statusCode)
+      } catch (error) {
+        console.error(error)
+      }
+    },
     async fetchOrder (channel, period, start, end, selectArea, selectZone) {
       try {
         setChannel(channel)
@@ -44,7 +67,7 @@ export const useOrder = defineStore('order', {
         this.order = response.data
         console.log('response', this.order)
       } catch (error) {
-        this.order = [];
+        this.order = []
         console.error(error)
       }
     },
