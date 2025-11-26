@@ -292,6 +292,7 @@ async function editStore() {
 
         editMode.value = false;
         isLoading.value = true;
+        isEdit.value = false;
 
         // 🔥 ส่ง API ตามเงื่อนไข
 
