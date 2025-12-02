@@ -219,9 +219,9 @@ const flow = ['month', 'year', 'calendar'];
 
 async function saveSendmoney() {
     await sendmoney.updateSendmoneyAcc(selectedAreaModel.value, selectedDate.value, sendmoneySave.value)
-    
+
     await sendmoney.downloadtoExcel(formatDateToYYYYMMDD(dateRange.value[0]), formatDateToYYYYMMDD(dateRange.value[1]), false, '', selectedArea.value)
-   
+
     showAlert.value = false
     // ... โค้ดบันทึก
 }
@@ -403,6 +403,17 @@ function toImageUrl(path) {
 // ข้อมูลสำหรับรายวัน
 const dailyList = computed(() => {
     let data = sendmoney.dailyData
+    if (selectedZone.value) {
+        data = data.filter(order =>
+            (order.area || '').startsWith(selectedZone.value)
+        )
+    }
+    if (selectedTeam.value) {
+        console.log()
+        data = data.filter(order =>
+            getTeam3(order.area) === selectedTeam.value
+        )
+    }
     return data;
 })
 
