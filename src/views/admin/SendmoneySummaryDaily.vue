@@ -64,9 +64,9 @@
                     <td class="text-right border p-2 text-center whitespace-pre">
                         <div class="">{{ formatNumber(prod.sendmoney) }}</div>
                     </td>
-                    <td @click="openAlert(prod.area, prod.date, prod.sale, (prod.change - prod.refund), prod.totalSale, prod.sendmoney, (prod?.image && prod.image[0]) || '')"
+                    <td @click="openAlert(prod.area, prod.date, prod.sale, (prod.change - prod.refund), prod.totalSale, prod.sendmoney, prod.sendmoneyAcc, (prod?.image && prod.image[0]) || '')"
                         class="text-right border p-2 text-center whitespace-pre">
-                        <div class="">{{ formatNumber(prod.sendmoney) }}</div>
+                        <div class="">{{ formatNumber(prod.sendmoneyAcc) }}</div>
                     </td>
                     <td :class="{
                         'bg-green-100 text-green-700': prod.diff > 0,
@@ -146,7 +146,7 @@
                             {{ formatNumber(sendmoneyShow) }}
                         </td>
                         <td class="border p-2 text-center whitespace-pre">
-                            {{ formatNumber(sendmoneyShow) }}
+                            {{ formatNumber(sendmoneyAccShow) }}
                         </td>
                         <td>
                             <img :src="modalImageSrc" :style="{
@@ -164,7 +164,7 @@
             </table>
 
             <h4 class="mt-3">กรุณาใส่ยอดส่งเงิน</h4>
-            <input type="password" v-model="sendmoneySave" placeholder="1000"
+            <input @keyup.enter="saveSendmoney" type="number" v-model="sendmoneySave"
                 class=" bg-black-50 border border-black-300  sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
                 required />
             <div class="flex justify-end gap-2 mt-4">
@@ -203,6 +203,7 @@ const saleShow = ref('');
 const totalSaleShow = ref('');
 const diffShow = ref('');
 const sendmoneyShow = ref('');
+const sendmoneyAccShow = ref('');
 
 function formatYMD(date) {
     const y = date.getFullYear();
@@ -214,6 +215,16 @@ function formatYMD(date) {
 
 
 const flow = ['month', 'year', 'calendar'];
+
+
+async function saveSendmoney() {
+    await sendmoney.updateSendmoneyAcc(selectedAreaModel.value, selectedDate.value, sendmoneySave.value)
+    
+    await sendmoney.downloadtoExcel(formatDateToYYYYMMDD(dateRange.value[0]), formatDateToYYYYMMDD(dateRange.value[1]), false, '', selectedArea.value)
+   
+    showAlert.value = false
+    // ... โค้ดบันทึก
+}
 
 
 const dateRange = ref();
@@ -350,13 +361,14 @@ function openModal(imagePath) {
 }
 
 
-function openAlert(area, date, sale, diff, totalSale, sendmoney, imagePath) {
+function openAlert(area, date, sale, diff, totalSale, sendmoney, sendmoneyAcc, imagePath) {
     selectedAreaModel.value = area;
     selectedDate.value = date;
     saleShow.value = sale;
     diffShow.value = diff;
     totalSaleShow.value = totalSale;
     sendmoneyShow.value = sendmoney;
+    sendmoneyAccShow.value = sendmoneyAcc;
     modalImageSrc.value = 'https://apps.onetwotrading.co.th/' + relativePath(imagePath);
     // modalImageSrc.value = 'https://apps.onetwotrading.co.th/' + relativePath(imagePath);
     showAlert.value = true;
@@ -439,7 +451,7 @@ function formatYyyyMm(obj) {
 onMounted(async () => {
     isLoading.value = true
     await filter.getZone('cash', period);
-    // await sendmoney.downloadtoExcel('', '', false)
+    await sendmoney.downloadtoExcel('', '', false, '', '')
     isLoading.value = false
 })
 

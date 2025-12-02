@@ -140,6 +140,7 @@ onMounted(async () => {
     }
     await filter.getTeam(selectedZone.value);
     await filter.getArea(period, zone, '');
+    console.log(channel)
     if (route.query.area) {
 
     }

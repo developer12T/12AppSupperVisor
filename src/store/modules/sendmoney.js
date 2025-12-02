@@ -105,7 +105,25 @@ export const useSendmoney = defineStore('sendmoney', {
         this.dailyData = []
         console.error(error)
       }
+    },
+
+    async updateSendmoneyAcc (area, date, sendmoney) {
+      try {
+        const response = await api.patch(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/sendmoney/updateSndmoneyAcc`,
+          {
+            area: area,
+            date: date,
+            sendmoneyAcc: sendmoney
+          }
+        )
+        console.log('summaryDaily', response.data)
+        // this.dailyData = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
     }
-    
   }
 })

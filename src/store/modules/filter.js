@@ -124,7 +124,13 @@ export const useFilter = defineStore('filters', {
         })
         const result = response.data.data
         this.area = result
-        // console.log('Areas', this.area)
+        console.log('Areas', {
+          zone: zone,
+          team: team,
+          role: 'sale',
+          platformType: platformType
+        })
+        console.log('Areas', this.area)
       } catch (error) {
         console.error(error)
       }
