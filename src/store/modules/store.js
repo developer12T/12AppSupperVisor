@@ -109,7 +109,7 @@ export const useStoresStore = defineStore('stores', {
         }
 
         const response = await api.get(
-          `/api/cash/store/getStore?type=new&zone=${zone}&area=${area}&team=${team}&year=${year}&month=${month}`
+          `/api/cash/store/getStore?type=all&zone=${zone}&area=${area}&team=${team}&year=${year}&month=${month}`
         )
 
         const result = response.data

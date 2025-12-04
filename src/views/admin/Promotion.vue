@@ -20,7 +20,6 @@
             <router-link to="/admin/newpromotion">
                 <button class="btn btn-primary">เพิ่มโปรโมชั่น</button>
             </router-link>
-
         </div>
 
         <label class="input input-bordered flex items-center gap-2 w-64">
