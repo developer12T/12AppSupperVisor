@@ -1,33 +1,48 @@
 <template>
     <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
-    <div class="mb-2 flex justify-start">
-        <div class="w-65 ms-3">
-            <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" :flow="['start', 'end']"
-                @update:model-value="onDateChange" range :enable-time-picker="false" :timezone="'Asia/Bangkok'" />
+    <div class="flex justify-between">
+        <div class="mb-2 flex justify-start">
+            <div class="w-65 ms-3">
+                <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" :flow="['start', 'end']"
+                    @update:model-value="onDateChange" range :enable-time-picker="false" :timezone="'Asia/Bangkok'" />
+            </div>
+            <div class="ms-2">
+                <VueDatePicker v-model="monthRange" format="MM/yyyy" month-picker @update:model-value="onMonthChange" />
+            </div>
+            <div class="ms-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedZone">
+                    <option disabled value="">Select Zone</option>
+                    <option value="all">ทั้งหมด</option>
+                    <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
+                </select>
+            </div>
+            <div class="ms-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedTeam">
+                    <option disabled value="">Select Team</option>
+                    <option value="all">ทั้งหมด</option>
+                    <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
+                    </option>
+                </select>
+            </div>
+            <div class="ms-3">
+                <select class="select select-info ms-3 text-center" v-model="selectedArea">
+                    <option disabled value="">Select Area</option>
+                    <option value="all">ทั้งหมด</option>
+                    <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
+                </select>
+            </div>
         </div>
-        <div class="ms-2">
-            <VueDatePicker v-model="monthRange" format="MM/yyyy" month-picker @update:model-value="onMonthChange" />
-        </div>
-        <div class="ms-3">
-            <select class="select select-info ms-3 text-center" v-model="selectedZone">
-                <option disabled value="">Select Zone</option>
-                <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
-            </select>
-        </div>
-        <div class="ms-3">
-            <select class="select select-info ms-3 text-center" v-model="selectedTeam">
-                <option disabled value="">Select Team</option>
-                <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
-                </option>
-            </select>
-        </div>
-        <div class="ms-3">
-            <select class="select select-info ms-3 text-center" v-model="selectedArea">
-                <option disabled value="">Select Area</option>
-                <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
-            </select>
+        <div>
+            <div class="me-10">
+                <select class="select select-info ms-3 text-center" v-model="selectedChannel">
+                    <option disabled value="">Select Channel</option>
+                    <option value="cash">CASH</option>
+                    <option value="pc">PC</option>
+                </select>
+            </div>
         </div>
     </div>
+
     <div class="overflow-x-auto rounded-xl"
         style="min-height: 450px; max-height: 480px; max-width: 90vw; overflow-y: auto;">
         <table class="min-w-full border text-center text-sm bg-white">
@@ -102,6 +117,11 @@
             </tfoot>
 
         </table>
+    </div>
+    <div class="flex justify-start mt-2">
+        <div class="ms-2">
+            <button class="btn btn-success text-white" @click="dowloadExcelFile">Export Excel</button>
+        </div>
     </div>
     <div v-if="showModal" class="fixed inset-0 bg-black  flex items-center justify-center z-50">
         <div @click="showModal = false" class="absolute inset-0"></div>
@@ -204,6 +224,7 @@ const totalSaleShow = ref('');
 const diffShow = ref('');
 const sendmoneyShow = ref('');
 const sendmoneyAccShow = ref('');
+const selectedChannel = ref('cash')
 
 function formatYMD(date) {
     const y = date.getFullYear();
@@ -220,11 +241,18 @@ const flow = ['month', 'year', 'calendar'];
 async function saveSendmoney() {
     await sendmoney.updateSendmoneyAcc(selectedAreaModel.value, selectedDate.value, sendmoneySave.value)
 
-    await sendmoney.downloadtoExcel(formatDateToYYYYMMDD(dateRange.value[0]), formatDateToYYYYMMDD(dateRange.value[1]), false, '', selectedArea.value)
+    await sendmoney.downloadtoExcel(selectedChannel.value, formatDateToYYYYMMDD(dateRange.value[0]), formatDateToYYYYMMDD(dateRange.value[1]), false, '', selectedArea.value)
 
     showAlert.value = false
     // ... โค้ดบันทึก
 }
+
+// watch(selectedChannel, async (newVal) => {
+//     if (newVal) {
+//         await giveStore.giveOrder(`${selectedChannel.value}`, '', `${startDate.value}`, `${endDate.value}`, '', '')
+//     }
+// });
+
 
 
 const dateRange = ref();
@@ -269,20 +297,12 @@ function openImage(path) {
     openRotatedImage(path, rotateDeg.value);
 }
 
-
-
 function openImageModal(prod) {
     sendmoneyModal.value = prod.sendmoney
     selectedAreaImage.value = prod.area
     selectedImages.value = prod.image || []
     showImageModal.value = true
 }
-
-
-async function selectedMonth(value) {
-    console.log('value from datepicker:', value)
-}
-
 
 function openRotatedImage(imgUrl, rotateDeg = 90) {
     // const img = new Image();
@@ -350,8 +370,21 @@ async function onDateChange(value) {
             year: d.getFullYear()
         };
 
-        await sendmoney.downloadtoExcel(formatDateToYYYYMMDD(value[0]), formatDateToYYYYMMDD(value[1]), false, '', selectedArea.value)
+        await sendmoney.downloadtoExcel(selectedChannel.value, formatDateToYYYYMMDD(value[0]), formatDateToYYYYMMDD(value[1]), false, '', selectedArea.value)
 
+    }
+}
+
+async function dowloadExcelFile() {
+    // console.log(monthRange.value.month)
+    // console.log(monthRange.value.year)
+    console.log(formatYyyyMm(monthRange.value))
+    try {
+        // monthRange.value.month
+        console.log(monthRange.value.month)
+        await sendmoney.downloadtoExcel(selectedChannel.value, '', '', true, formatYyyyMm(monthRange.value), selectedArea.value)
+    } catch (error) {
+        console.log(error)
     }
 }
 
@@ -403,15 +436,22 @@ function toImageUrl(path) {
 // ข้อมูลสำหรับรายวัน
 const dailyList = computed(() => {
     let data = sendmoney.dailyData
-    if (selectedZone.value) {
+    if (selectedZone.value && selectedZone.value !== 'all') {
         data = data.filter(order =>
             (order.area || '').startsWith(selectedZone.value)
         )
     }
-    if (selectedTeam.value) {
+    if (selectedTeam.value && selectedTeam.value !== 'all') {
         console.log()
         data = data.filter(order =>
             getTeam3(order.area) === selectedTeam.value
+        )
+    }
+
+    if (selectedArea.value && selectedArea.value !== 'all') {
+        console.log()
+        data = data.filter(order =>
+            (order.area || '').startsWith(selectedArea.value)
         )
     }
     return data;
@@ -462,7 +502,18 @@ function formatYyyyMm(obj) {
 onMounted(async () => {
     isLoading.value = true
     await filter.getZone('cash', period);
-    await sendmoney.downloadtoExcel('', '', false, '', '')
+    // dateRange.value
+    console.log('dateRange.value', dateRange.value)
+
+    if (dateRange.value[0] && dateRange.value[1]) {
+        const d = dateRange.value[0];
+        monthRange.value = {
+            month: d.getMonth(),   // 0–11
+            year: d.getFullYear()
+        };
+        await sendmoney.downloadtoExcel(selectedChannel.value, formatDateToYYYYMMDD(dateRange.value[0]), formatDateToYYYYMMDD(dateRange.value[1]), false, '', selectedArea.value)
+    }
+    // await sendmoney.downloadtoExcel(selectedChannel.value, '', '', false, '', '')
     isLoading.value = false
 })
 
@@ -472,17 +523,30 @@ watch(selectedZone, async (newVal) => {
         selectedTeam.value = ''
         selectedArea.value = ''
         filter.getArea(period, newVal, selectedTeam.value);
-        filter.getTeam(newVal);
+        filter.getTeam(selectedChannel.value, newVal);
     }
 });
 
-watch(selectedArea, async (newVal) => {
+
+
+watch(selectedChannel, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    selectedZone.value = ''
+    selectedTeam.value = ''
     if (newVal) {
-        // console.log(formatYyyyMm(monthRange.value))
-        // console.log(monthRange.value)
-        await sendmoney.downloadtoExcel(formatDateToYYYYMMDD(dateRange.value[0]), formatDateToYYYYMMDD(dateRange.value[1]), false, '', selectedArea.value)
+        await filter.getZone(newVal, period);
+        await sendmoney.downloadtoExcel(newVal, formatDateToYYYYMMDD(dateRange.value[0]), formatDateToYYYYMMDD(dateRange.value[1]), false, '', selectedArea.value)
     }
 });
+
+
+// watch(selectedArea, async (newVal) => {
+//     if (newVal) {
+//         // console.log(formatYyyyMm(monthRange.value))
+//         // console.log(monthRange.value)
+//         await sendmoney.downloadtoExcel(selectedChannel.value, formatDateToYYYYMMDD(dateRange.value[0]), formatDateToYYYYMMDD(dateRange.value[1]), false, '', selectedArea.value)
+//     }
+// });
 
 watch(selectedTeam, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
@@ -538,7 +602,7 @@ async function onMonthChange(value) {
     // console.log(firstDate)
     // console.log(lastDate)
     // console.log(value)
-    await sendmoney.downloadtoExcel(formatYMD(firstDate), formatYMD(lastDate), false, '', selectedArea.value)
+    await sendmoney.downloadtoExcel(selectedChannel.value, formatYMD(firstDate), formatYMD(lastDate), false, '', selectedArea.value)
 
     isLoading.value = false
 }

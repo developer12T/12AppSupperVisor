@@ -337,7 +337,7 @@ watch(selectedZone, async (newVal) => {
     // });
     if (newVal) {
         filter.getArea(period, newVal, selectedTeam.value);
-        filter.getTeam(newVal);
+        filter.getTeam('cash',newVal);
     }
 });
 

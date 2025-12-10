@@ -280,7 +280,7 @@ watch(selectedZone, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
-        await filter.getTeam(newVal);
+        await filter.getTeam('cash',newVal);
         customers.value = store.storeNew.data
         isLoading.value = false
     }

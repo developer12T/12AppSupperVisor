@@ -20,6 +20,8 @@ export function formatToYYYYMM (date) {
   return `${y}${String(m).padStart(2, '0')}`
 }
 
+
+
 export function formatCurrency (value) {
   return new Intl.NumberFormat('th-TH', {
     style: 'currency',
@@ -50,6 +52,7 @@ export function endOfDay (d) {
   x.setHours(23, 59, 59, 999)
   return x
 }
+
 export function getTeam3 (area = '') {
   const firstTwo = area.substring(0, 2) // index 0–1
   const thirdChar = area.substring(3, 4) // index 3

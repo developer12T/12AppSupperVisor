@@ -135,13 +135,16 @@ export const useFilter = defineStore('filters', {
         console.error(error)
       }
     },
-    async getTeam (zone) {
+    async getTeam (channel, zone) {
       try {
         let platformType = localStorage.getItem('platformType')
 
-        if (platformType == 'ADMIN') {
+        if (platformType == 'ADMIN' && channel == 'cash') {
           platformType = 'CASH'
+        } else {
+          platformType = 'PC'
         }
+
         const response = await api.get(
           `/api/cash/user/getTeam?zone=${zone}&platformType=${platformType}`
         )

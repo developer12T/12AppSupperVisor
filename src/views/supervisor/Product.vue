@@ -199,7 +199,7 @@ watch(selectedZone, async (newVal) => {
     // });
     if (newVal) {
         await filter.getArea(period, newVal, selectedTeam.value);
-        await filter.getTeam(newVal);
+        await filter.getTeam('cash',newVal);
         await reportStore.getSummary18SKU(newVal, selectedArea.value, selectedTeam.value)
         rawData.value = reportStore.summary18SKU
         headers.value = rawData.value.map(item => `${item.group} ${item.groupCodeM3}`)
