@@ -14,7 +14,7 @@
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
                     <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam
-                    }}
+                        }}
                     </option>
                 </select>
             </div>
@@ -30,6 +30,12 @@
                     class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
                     <Icon icon="mdi:broom" width="24" height="24" />
                     เคลีย
+                </button>
+            </div>
+            <div class="ms-auto" v-if="platformType == 'PC'">
+                <button @click="SyncAddress"
+                    class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
+                    Sync Address
                 </button>
             </div>
         </div>
@@ -54,15 +60,15 @@
                         <div class="text-sm text-gray-500">พื้นที่: <span class="font-semibold">{{ item.area }}</span>
                         </div>
                         <div class="text-sm text-gray-500">Sale: <span class="font-semibold">{{ item.sale.fullname
-                        }}</span>
+                                }}</span>
                         </div>
                     </div>
                     <div class="flex justify-between">
                         <div class="text-sm text-gray-500">ประเภท: <span class="font-semibold">{{ item.orderTypeName
-                        }}</span>
+                                }}</span>
                         </div>
                         <div class="text-sm text-gray-500">เบอร์โทร: <span class="font-semibold">{{ item.sale.tel
-                        }}</span>
+                                }}</span>
                         </div>
                     </div>
                     <div class="flex justify-between">
@@ -99,7 +105,6 @@ import { useWithdrawStore } from '../../store/modules/withdraw'
 import { useFilter } from '../../store/modules/filter'
 import { Icon } from '@iconify/vue'
 
-
 const filter = useFilter()
 const userRole = localStorage.getItem('role')
 const warehouse = localStorage.getItem('warehouse')
@@ -117,13 +122,13 @@ const withdrawStore = useWithdrawStore()
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
-
+const showSyncAddress = ref('')
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 const zone = localStorage.getItem('zone')
 const channel = localStorage.getItem('channel')
-
+const platformType = localStorage.getItem('platformType')
 function clearFilter() {
     selectedZone.value = ''
     selectedArea.value = ''
@@ -131,8 +136,31 @@ function clearFilter() {
     window.location.assign('/supervisor/withdraw')
 }
 
+let isSyncing = false;
+
+async function SyncAddress() {
+    if (isSyncing) return; // ❗ กันกดซ้ำ
+
+    isSyncing = true;      // ล็อกการกดปุ่ม
+
+    if (platformType === 'PC') {
+        try {
+            await withdrawStore.CiaddrAddToWithdraw(channel);
+            await withdrawStore.addAllPlace(channel);
+            alert("✔️ Sync Address สำเร็จแล้ว!");
+        } catch (err) {
+            console.error(err);
+            alert("❌ Sync ล้มเหลว!");
+        } finally {
+            isSyncing = false;  // ปลดล็อกเมื่อเสร็จ
+        }
+    }
+}
+
+
 
 onMounted(async () => {
+
     isLoading.value = true
     if (userRole == 'supervisor' || userRole == 'area_manager') {
         await filter.getTeam(zone);
@@ -140,7 +168,7 @@ onMounted(async () => {
     }
     await filter.getTeam(selectedZone.value);
     await filter.getArea(period, zone, '');
-    console.log(channel)
+    // console.log(channel)
     if (route.query.area) {
 
     }
