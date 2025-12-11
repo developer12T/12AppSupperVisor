@@ -269,7 +269,7 @@ watch(selectedZone, async (newVal) => {
     // });
     if (newVal) {
         filter.getArea(period, newVal, selectedTeam.value);
-        filter.getTeam(newVal);
+        filter.getTeam(selectedChannel.value, newVal);
     }
 });
 
@@ -293,7 +293,7 @@ onMounted(async () => {
     isLoading.value = true
     // await filter.getTeam(selectedZone.value);
     // await filter.getArea(period, zone, '');
-    await filter.getZone('cash',period);
+    await filter.getZone('cash', period);
     // await useOrderStore.fetchOrder(period, '', '')
     await store.getCustomerAll(`${selectedChannel.value}`, '', '', '', '', '')
     // console.log(useOrderStore.order)

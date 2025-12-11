@@ -109,7 +109,7 @@ watch(selectedZone, async (newVal) => {
     // })
     if (newVal) {
         await filter.getArea(period, newVal)
-        await filter.getTeam(newVal)
+        await filter.getTeam('cash',newVal)
         await reportStore.getSummaryProduct(newVal)
     }
     isLoading.value = false

@@ -55,7 +55,7 @@ export const useSendmoney = defineStore('sendmoney', {
       }
     },
 
-    async downloadtoExcel (start, end, excel, period, area) {
+    async downloadtoExcel (channel, start, end, excel, period, area) {
       try {
         if (period) {
           start = ''
@@ -77,30 +77,41 @@ export const useSendmoney = defineStore('sendmoney', {
         // const response = await api.get(
         //   `${
         //     import.meta.env.VITE_API_URL
-        //   }/api/cash/sendmoney/sendmoneyToExcel?start=${start}&end=${end}&excel=${excel}`
+        //   }/api/cash/sendmoney/sendmoneyToExcel?channel=${channel}&start=${start}&end=${end}&excel=${excel}&period=${period}&area=${area}`,
+        //   // { responseType: 'blob' }
         // )
 
-        const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
-          }/api/cash/sendmoney/sendmoneyToExcel?start=${start}&end=${end}&excel=${excel}&period=${period}&area=${area}`
-        )
-        this.dailyData = []
+        // let response
 
-        if (excel) {
+        if (excel === 'true' || excel === true) {
+          const response = await api.get(
+            `${
+              import.meta.env.VITE_API_URL
+            }/api/cash/sendmoney/sendmoneyToExcel?channel=${channel}&start=${start}&end=${end}&excel=${excel}&period=${period}&area=${area}`,
+            { responseType: 'blob' }
+          )
           const url = window.URL.createObjectURL(new Blob([response.data]))
           const link = document.createElement('a')
           link.href = url
-          link.setAttribute('download', `SendMoney_${start}_${end}.xlsx`) // ชื่อไฟล์
+          link.setAttribute('download', `SendMoney_${period}.xlsx`) // ชื่อไฟล์
           document.body.appendChild(link)
           link.click()
           document.body.removeChild(link)
           window.URL.revokeObjectURL(url)
         } else {
-          console.log('summaryDaily', response.data)
-
+          this.dailyData = []
+          const response = await api.get(
+            `${
+              import.meta.env.VITE_API_URL
+            }/api/cash/sendmoney/sendmoneyToExcel?channel=${channel}&start=${start}&end=${end}&excel=${excel}&period=${period}&area=${area}`
+          )
+          console.log('summaryDaily_${}', response.data)
           this.dailyData = response.data.data
         }
+
+        // if (excel) {
+        // } else {
+        // }
       } catch (error) {
         this.dailyData = []
         console.error(error)

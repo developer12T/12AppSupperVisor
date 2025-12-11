@@ -251,7 +251,7 @@ watch(selectedZone, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
-        await filter.getTeam(newVal);
+        await filter.getTeam('cash',newVal);
         await withdrawStore.getWithdraw(channel, period, newVal, selectedArea.value, selectedTeam.value, '', '', '', '')
         cardData.value = withdrawStore.withdraw
         isLoading.value = false

@@ -96,19 +96,20 @@ const menuItems = computed(() => [
         ],
 
     },
-    {
-        name: 'รายงานส่งเงิน',
-        icon: 'noto:money-with-wings',
-        link: '#',
-        roles: ['admin'],
-        channel: ['CASH', 'PC', "ADMIN"],
-        submenu: [
-            { icon: 'fluent:shifts-day-20-filled', name: 'ยอดส่งเงินรายวัน', link: '/admin/sendmoneyDaily', channel: ['CASH', "ADMIN"] },
-            // { icon: 'material-symbols:calendar-month', name: 'ยอดส่งเงินประจำเดือน', link: '/supervisor/approve', channel: ['CASH', "ADMIN"] },
-            // { icon: 'fluent:money-hand-16-filled', name: 'สรุปยอดเงิน', link: '/supervisor/withdraw', channel: ['CASH', "ADMIN"] },
-        ],
+    // {
+    //     name: 'รายงานส่งเงิน',
+    //     icon: 'noto:money-with-wings',
+    //     link: '#',
+    //     roles: ['admin'],
+    //     channel: ['CASH', 'PC', "ADMIN"],
+    //     submenu: [
+    //         { icon: 'fluent:shifts-day-20-filled', name: 'ยอดส่งเงินรายวัน', link: '/admin/sendmoneyDaily', channel: ['CASH', "ADMIN"] },
+    //         // { icon: 'material-symbols:calendar-month', name: 'ยอดส่งเงินประจำเดือน', link: '/supervisor/approve', channel: ['CASH', "ADMIN"] },
+    //         // { icon: 'fluent:money-hand-16-filled', name: 'สรุปยอดเงิน', link: '/supervisor/withdraw', channel: ['CASH', "ADMIN"] },
+    //     ],
 
-    },
+    // },
+    { name: 'รายงานส่งเงิน', icon: 'noto:money-with-wings', link: '/admin/sendmoneyDaily', submenu: null, roles: ['admin'], channel: ['CASH', 'PC', "ADMIN"] },
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['supervisor'], badge: storeModel.count, channel: ['CASH', 'PC', "ADMIN"] },
     { name: 'ส่งร้านค้า', icon: 'mdi:store-edit', link: '/supervisor/sentstore', submenu: null, roles: ['supervisor'], channel: ['PC', "ADMIN"] },
     { name: 'อนุมัติใบเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['supervisor', 'dc',], badge: withdrawStore.count, channel: ['CASH', 'PC', "ADMIN"] },
@@ -194,7 +195,7 @@ onMounted(refreshSidebarData);
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                        }}</span>
+                                            }}</span>
 
                                     </router-link>
                                 </li>

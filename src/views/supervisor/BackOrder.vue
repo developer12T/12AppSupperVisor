@@ -312,7 +312,7 @@ watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
     if (newVal) {
         filter.getArea(period, newVal, selectedTeam.value);
-        filter.getTeam(newVal);
+        filter.getTeam('cash',newVal);
     }
 });
 
