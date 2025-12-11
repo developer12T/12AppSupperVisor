@@ -84,10 +84,10 @@
                         <div class="">{{ formatNumber(prod.sendmoneyAcc) }}</div>
                     </td>
                     <td :class="{
-                        'bg-green-100 text-green-700': prod.diff > 0,
-                        'bg-red-100 text-red-700': prod.diff < 0,
+                        'bg-green-100 text-green-700': prod.diffAcc > 0,
+                        'bg-red-100 text-red-700': prod.diffAcc < 0,
                     }" class="text-right border p-2 text-center whitespace-pre">
-                        <div>{{ formatNumber(prod.diff) }}</div>
+                        <div>{{ formatNumber(prod.diffAcc) }}</div>
                     </td>
                     <!-- <td class="text-center border p-2 text-center whitespace-pre">
                         <button class="btn btn-primary"
@@ -484,7 +484,7 @@ const totalSale = computed(() => {
 
 const totalDiff = computed(() => {
     return dailyList.value.reduce((sum, order) => {
-        return sum + (Number(order.diff) || 0)
+        return sum + (Number(order.diffAcc) || 0)
     }, 0)
 })
 

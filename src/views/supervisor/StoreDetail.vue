@@ -16,6 +16,7 @@
                 </div>
                 <p class="text-sm text-gray-600 msb-1">รหัสร้านค้า: {{ storeDetail.storeId }}</p>
                 <p class="text-sm text-gray-600 msb-1">เลขผู้เสียภาษี: {{ storeDetail.taxId }}</p>
+                <p class="text-sm text-gray-600 msb-1">เบอร์โทร: {{ storeDetail.tel }}</p>
                 <p class="text-sm text-gray-600 msb-1">รูท: {{ storeDetail.route }} </p>
                 <p class="text-sm text-gray-600 msb-1">โซน: {{ storeDetail.zone }} เขต: {{ storeDetail.area }} </p>
                 <p class="text-sm text-gray-600 msb-1">ประเภท: {{ storeDetail.typeName }}</p>

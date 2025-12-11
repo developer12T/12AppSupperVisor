@@ -42,6 +42,19 @@ export const useStoresStore = defineStore('stores', {
     async editStore (channel, id, data) {
       try {
         const user = localStorage.getItem('fullName')
+        
+        console.log(`/api/cash/store/editStore/${id}`, {
+          name: data.name,
+          taxId: data.taxId,
+          tel: data.tel,
+          address: data.address,
+          subDistrict: data.subDistrict,
+          district: data.district,
+          province: data.province,
+          provinceCode: data.provinceCode,
+          postCode: data.postCode,
+          user: user
+        })
 
         const response = await api.patch(`/api/cash/store/editStore/${id}`, {
           name: data.name,
@@ -58,7 +71,7 @@ export const useStoresStore = defineStore('stores', {
 
         this.message = response.data.message
         this.statusCode = response.data.status
-        console.log('statusCode',  this.statusCode)
+        console.log('statusCode', this.statusCode)
       } catch (error) {
         console.error(error)
       }
@@ -117,6 +130,36 @@ export const useStoresStore = defineStore('stores', {
         console.log('storeNew', this.storeNew)
       } catch (error) {
         this.storeNew = []
+        console.error(error)
+      }
+    },
+    async getStoreAll (channel, selectZone, selectArea, team, year, month, q) {
+      try {
+        setChannel(channel)
+        //   const token = JSON.parse(localStorage.getItem('token'));
+        let zone = ''
+        let area = ''
+        if (selectZone != '') {
+          zone = selectZone
+        } else {
+          zone = localStorage.getItem('zone')
+        }
+
+        if (selectArea != '') {
+          area = selectArea
+        } else {
+          area = localStorage.getItem('area')
+        }
+
+        const response = await api.get(
+          `/api/cash/store/getStore?type=all&zone=${zone}&area=${area}&team=${team}&year=${year}&month=${month}&q=${q}`
+        )
+
+        const result = response.data
+        this.storeAll = result
+        console.log('storeAll', this.storeAll)
+      } catch (error) {
+        this.storeAll = []
         console.error(error)
       }
     },

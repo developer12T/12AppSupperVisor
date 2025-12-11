@@ -54,7 +54,8 @@ const menuItems = computed(() => [
             { icon: 'mdi:autorenew', name: 'รายการเปลี่ยนสินค้า', link: '/supervisor/refundtable', channel: ["CASH", , "ADMIN"] },
             { icon: 'mdi:box-clock-outline', name: 'รายการใบเบิก', link: '/supervisor/withdrawtable', channel: ["CASH", 'PC', "ADMIN"] },
             { icon: 'mdi:credit-card-refund', name: 'รายการโอนจากเครดิต', link: '/supervisor/credit', channel: ["CASH", "ADMIN"] },
-            { icon: 'mdi:store-clock', name: 'รายการร้านค้า', link: '/supervisor/storenewtable', channel: ["CASH", 'PC', "ADMIN"] },
+            { icon: 'mdi:store-clock', name: 'รายการร้านค้าใหม่', link: '/supervisor/storenewtable', channel: ["CASH", 'PC', "ADMIN"] },
+            { icon: 'mdi:store', name: 'รายการร้านค้าทั้งหมด', link: '/supervisor/storetable', channel: ["CASH", 'PC', "ADMIN"] },
 
         ],
         roles: ['admin', 'area_manager', 'sale_manager', 'dc', 'supervisor',],

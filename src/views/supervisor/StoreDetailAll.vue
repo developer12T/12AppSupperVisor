@@ -14,6 +14,12 @@
                     <span v-if="!isEdit">{{ storeDetail.taxId }}</span>
                     <input v-else v-model="editForm.taxId" class="input input-bordered w-full max-w-xs" />
                 </p>
+                <p class="text-x text-gray-600 msb-1">
+                    เบอร์โทร: 
+                    <span v-if="!isEdit">{{ storeDetail.tel }}</span>
+                    <input v-else v-model="editForm.tel" class="input input-bordered w-full max-w-xs" />
+                </p>
+
                 <p class="text-x text-gray-600 msb-1">โซน: {{ storeDetail.zone }} เขต: {{ storeDetail.area }}
                 </p>
                 <p class="text-x text-gray-600 msb-1">รหัสร้านค้า: {{ storeDetail.storeId }}</p>

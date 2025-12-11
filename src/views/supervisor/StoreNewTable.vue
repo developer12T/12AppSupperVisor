@@ -2,7 +2,7 @@
     <div class="p-6 bg-gray-50">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">รายการร้านค้าทั้งหมด</h2>
+            <h2 class="text-2xl font-bold mb-6">รายการร้านค้าเปิดใหม่</h2>
             <label class="input ms-3 input-bordered flex items-center gap-2 w-64">
                 <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -13,13 +13,9 @@
                 </svg>
                 <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
             </label>
-            <!-- <div class="w-65 ms-3">
+            <div class="w-65 ms-3">
                 <VueDatePicker v-model="dateRange" format="dd/MM/yyyy" range :enable-time-picker="false"
                     @update:model-value="onMonthChange" />
-            </div> -->
-
-            <div class="ms-2">
-                <VueDatePicker format="MM/yyyy" @update:model-value="onMonthChange" v-model="monthRange" month-picker />
             </div>
             <div class="ms-3" v-if="userRole != 'supervisor'">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
@@ -139,7 +135,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import { formatDate, formatCurrency, formatDateToYYYYMMDD, toDateOrNull, endOfDay, getTeam3, } from '../../utils/format'
 
-const monthRange = ref();
+
 const filter = useFilter()
 const userRole = localStorage.getItem('role')
 const router = useRouter()
@@ -165,11 +161,10 @@ const dateRange = ref();
 const startDate = computed(() => formatDateToYYYYMMDD(dateRange.value[0]))
 const endDate = computed(() => formatDateToYYYYMMDD(dateRange.value[1]))
 
-let debounceTimer = null
 
 const filteredOrders = computed(() => {
     // let data = useOrderStore.order.data;
-    let data = store.storeAll.data
+    let data = store.storeNew.data
     // Search filter (text input)
     const query = searchQuery.value.trim().toLowerCase();
     if (query) {
@@ -242,30 +237,7 @@ async function exportExcel() {
 }
 
 
-async function onMonthChange(value) {
-    let dateObj = null;
-    if (value instanceof Date) {
-        dateObj = value;
-    } else if (value?.year && value?.month) {
-        dateObj = new Date(value.year, value.month, 1);
-    } else if (value?.value instanceof Date) {
-        dateObj = value.value;
-    }
-
-    if (!dateObj) return;
-
-    const yyyy = dateObj.getFullYear();
-    const mm = dateObj.getMonth() + 1;
-
-    // const firstDate = new Date(yyyy, mm - 1, 1);
-    // const lastDate = new Date(yyyy, mm, 0);
-
-    monthRange.value = value;
-    console.log(formatYyyyMm(monthRange.value))
-
-    await store.getStoreAll(`${selectedChannel.value}`, '', '', '', formatYyyyMm(monthRange.value).slice(0, 4), formatYyyyMm(monthRange.value).slice(4, 6), '')
-
-
+async function onMonthChange() {
     // ส่งค่า month, year ไป filter API หรือฟังก์ชันอื่น
     // ตัวอย่าง:
 
@@ -278,22 +250,12 @@ async function onMonthChange(value) {
     // }
 }
 
-function formatYyyyMm(obj) {
-    const y = obj.year;
-    const m = String(obj.month + 1).padStart(2, "0");
-    return `${y}${m}`;   // → "202508"
-}
 
 
-
-async function clearFilter() {
-    isLoading.value = true
+function clearFilter() {
     selectedZone.value = ''
     selectedArea.value = ''
     selectedTeam.value = ''
-    searchQuery.value = ''
-    await store.getStoreAll(`${selectedChannel.value}`, '', '', '', period.slice(0, 4), period.slice(4, 6), '')
-    isLoading.value = false
 }
 
 watch(selectedZone, async (newVal) => {
@@ -320,36 +282,24 @@ watch(selectedTeam, async (newVal) => {
 });
 
 watch(selectedChannel, async (newVal) => {
-    selectedZone.value = ''
-    selectedArea.value = ''
-    selectedTeam.value = ''
     if (newVal) {
-        await store.getStoreAll(`${selectedChannel.value}`, '', '', '', '', '', '')
+        await store.getCustomerAll(`${selectedChannel.value}`, '', '', '', '', '')
+
     }
 });
 
 
-
-watch(searchQuery, (text) => {
-    clearTimeout(debounceTimer)
-
-    debounceTimer = setTimeout(async () => {
-        await store.getStoreAll(
-            `${selectedChannel.value}`,
-            '',
-            '',
-            '',
-            '',
-            '',
-            text
-        )
-    }, 1000)
-})
 onMounted(async () => {
     isLoading.value = true
+    // await filter.getTeam(selectedZone.value);
+    // await filter.getArea(period, zone, '');
     await filter.getZone('cash', period);
-    await store.getStoreAll(`${selectedChannel.value}`, '', '', '', period.slice(0, 4), period.slice(4, 6), '')
+    // await useOrderStore.fetchOrder(period, '', '')
+    await store.getCustomerAll(`${selectedChannel.value}`, '', '', '', '', '')
+    // console.log(useOrderStore.order)
+    // cardData.value = useOrderStore.order.data
     isLoading.value = false
+
 })
 
 

@@ -127,6 +127,10 @@ const supervisorRoutes = [
       },
       {
         path: 'storenewtable',
+        component: () => import('../../views/supervisor/StoreNewTable.vue')
+      },
+      {
+        path: 'storetable',
         component: () => import('../../views/supervisor/StoreTable.vue')
       },
       {
