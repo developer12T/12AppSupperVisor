@@ -10,7 +10,7 @@ export const useWithdrawStore = defineStore('withdraws', {
     status: 0
   }),
   actions: {
-    async approve (id, status) {
+    async approve(id, status) {
       try {
         // setChannel(channel)
         const user = localStorage.getItem('fullName')
@@ -27,7 +27,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async approveWithdrawCredit (channel, id, statusApprove) {
+    async approveWithdrawCredit(channel, id, statusApprove) {
       try {
         let status = ''
         setChannel(channel)
@@ -58,7 +58,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async addRemark (channel, id, remark) {
+    async addRemark(channel, id, remark) {
       try {
         setChannel(channel)
         const user = localStorage.getItem('fullName')
@@ -72,7 +72,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async cancelWithdraw (channel, id) {
+    async cancelWithdraw(channel, id) {
       try {
         setChannel(channel)
         const user = localStorage.getItem('fullName')
@@ -88,7 +88,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async getWithdrawCreditTable (
+    async getWithdrawCreditTable(
       channel,
       period,
       selectZone,
@@ -130,7 +130,7 @@ export const useWithdrawStore = defineStore('withdraws', {
       }
     },
 
-    async getWithdrawTable (
+    async getWithdrawTable(
       channel,
       period,
       selectZone,
@@ -171,7 +171,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async getWithdraw (
+    async getWithdraw(
       channel,
       period,
       selectZone,
@@ -214,8 +214,8 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    
-    async getWareHouseWithdraw (
+
+    async getWareHouseWithdraw(
       channel,
       period,
       warehouse,
@@ -242,7 +242,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async getWithdrawDetail (id) {
+    async getWithdrawDetail(id) {
       try {
         // setChannel(channel)
         const response = await api.get(`/api/cash/distribution/detail/${id}`)
@@ -253,7 +253,7 @@ export const useWithdrawStore = defineStore('withdraws', {
       }
     },
 
-    async getCountPending (selectZone) {
+    async getCountPending(selectZone) {
       try {
         let zone = ''
         let area = ''
@@ -279,7 +279,7 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-    async downloadExcelBackOrder (period) {
+    async downloadExcelBackOrder(period) {
       try {
         // ถ้าไม่ได้ส่งมา หรือฟอร์แมตไม่ใช่ YYYYMMDD ให้ใช้ "วันนี้" ตามเวลาไทย
         // if (!/^\d{8}$/.test(start)) {
@@ -310,6 +310,37 @@ export const useWithdrawStore = defineStore('withdraws', {
       } catch (error) {
         console.error(error)
       }
+    },
+    async CiaddrAddToWithdraw(channel) {
+      try {
+        setChannel(channel)
+        const response = await api.post(
+          `/api/cash/distribution/place/CiaddrAddToWithdraw`,
+        )
+
+        this.CiaddrAddToWithdrawStatus = response.data.status
+        console.log('CiaddrAddToWithdraw', response.data)
+
+      } catch (error) {
+        console.error(error?.response?.data || error)
+      }
+    },
+
+    async addAllPlace(channel) {
+      try {
+        setChannel(channel)
+        const response = await api.post(
+          `/api/cash/distribution/place/addAllPlace`,
+        )
+
+        this.addAllPlaceStatus = response.data.status
+        console.log('addAllPlace', response.data)
+
+      } catch (error) {
+        console.error(error?.response?.data || error)
+      }
     }
-  }
+
+  },
+
 })
