@@ -1,35 +1,55 @@
 <template>
     <div class="flex justify-start gap-6 mb-3">
-        <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
-            <select class="select select-info ms-3 text-center mb-3" v-model="selectedZone">
+        <div>
+            <select class="select select-info ms-3 text-center mb-2" v-model="selectedZone">
                 <option disabled value="">Select Zone</option>
                 <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
             </select>
+            <select class="select select-info ms-3 text-center mb-2" v-model="selectedTeam">
+                <option disabled value="">Select Team</option>
+                <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
+                </option>
+            </select>
             <select class="select select-info ms-3 text-center" v-model="selectedArea">
                 <option disabled value="">Select Area</option>
-                <option v-for="area in filter.area" :key="area" :value="area.area">{{ area?.area ?? checkinData.value.area  }}</option>
+                <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
             </select>
+            <button class="btn btn-primary ms-3 mt-3 text-center" @click="clearFilter">ล้างตัวเลือก</button>
         </div>
-        <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
 
+
+        <!-- <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
             <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                 <option disabled value="">Select Team</option>
                 <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
                 </option>
             </select>
             <button class="btn btn-primary ms-3 mt-3 text-center" @click="clearFilter">ล้างตัวเลือก</button>
-        </div>
-        <router-link :to="selectedArea ? `/supervisor/polylineroute2/${selectedArea}` : ''" custom
+        </div> -->
+        <!-- <router-link :to="selectedArea ? `/supervisor/polylineroute2/${selectedArea}` : ''" custom
             v-slot="{ navigate, href }">
-            <div :class="[
+            <a :href="selectedArea ? href : 'javascript:void(0)'" target="_blank" rel="noopener noreferrer">
+                <div :class="[
+                    'bg-base-100 shadow-md rounded-xl p-6 flex justify-center flex-col items-center w-48',
+                    !selectedArea && 'opacity-60 pointer-events-none cursor-not-allowed'
+                ]" :style="!selectedArea ? 'filter: grayscale(80%)' : ''" @click="selectedArea && navigate()">
+                    <Icon icon="mdi:map-marker-distance" class="h-20 w-20" color="red" />
+                    <h2>ดู Line การเช็คอิน</h2>
+                    <p class="text-sm text-gray-500">(เลือกเขตก่อน)</p>
+                </div>
+            </a>
+        </router-link> -->
+        <router-link :to="selectedArea ? `/supervisor/polylineroute2/${selectedArea}` : ''" custom v-slot="{ href }">
+            <a :href="selectedArea ? href : null" target="_blank" rel="noopener noreferrer" :class="[
                 'bg-base-100 shadow-md rounded-xl p-6 flex justify-center flex-col items-center w-48',
                 !selectedArea && 'opacity-60 pointer-events-none cursor-not-allowed'
-            ]" :style="!selectedArea ? 'filter: grayscale(80%)' : ''" @click="selectedArea && navigate()">
+            ]" :style="!selectedArea ? 'filter: grayscale(80%)' : ''">
                 <Icon icon="mdi:map-marker-distance" class="h-20 w-20" color="red" />
                 <h2>ดู Line การเช็คอิน</h2>
                 <p class="text-sm text-gray-500">(เลือกเขตก่อน)</p>
-            </div>
+            </a>
         </router-link>
+
 
         <div class="card bg-base-100 shadow-xl p-4 w-full max-w-xs">
             <div class="flex items-center justify-between mb-2">
@@ -98,11 +118,11 @@
         </div>
     </div>
     <div v-if="showExcel === 'true'" class="w-full text-right">
-  <button class="btn btn-success text-white mb-3" @click="exportExcel()">
-    Export Excel
-  </button>
-</div>
-    
+        <button class="btn btn-success text-white mb-3" @click="exportExcel()">
+            Export Excel
+        </button>
+    </div>
+
 
 
     <div class="overflow-auto max-h-[600px] w-full border rounded-lg shadow">
@@ -165,10 +185,10 @@
                         <td class="text-center p-2 border-r border-black">{{ item.storeAll }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeTotal }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeSell }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ 
+                        <td class="text-center p-2 border-r border-black">{{
                             item.storeNotSell + item.storeCheckInNotSell
-                            }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storeAll - item.storeTotal  }}</td>
+                        }}</td>
+                        <td class="text-center p-2 border-r border-black">{{ item.storeAll - item.storeTotal }}</td>
                         <td class="text-right p-2  border-r border-black">{{ formatCurrency(item.summary) }}</td>
                         <td class="text-right p-2 border-r border-black">
                             {{ new Intl.NumberFormat('th-TH').format(item.totalqty || 0) }}
@@ -180,28 +200,28 @@
                 </template>
             </tbody>
 
-<tfoot v-if="routeStore.total?.length" class="bg-success text-white sticky bottom-0 z-10 font-semibold">
-  <tr>
-    <td class="p-2 border-r border-black text-center">{{ routeStore.total[0].route }}</td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].storeAll }}</td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].storeTotal }}</td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].storeSell }}</td>
-    <td class="text-center p-2 border-r border-black">
-      {{ (routeStore.total[0].storeNotSell || 0) + (routeStore.total[0].storeCheckInNotSell || 0) }}
-    </td>
-    <td class="text-center p-2 border-r border-black">
-      {{ (routeStore.total[0].storeAll || 0) - (routeStore.total[0].storeTotal || 0) }}
-    </td>
-    <td class="text-right p-2 border-r border-black">
-      {{ formatCurrency(routeStore.total[0].summary) }}
-    </td>
-    <td class="text-right p-2 border-r border-black">
-      {{ new Intl.NumberFormat('th-TH').format(routeStore.total[0].totalqty || 0) }}
-    </td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].percentVisit }}</td>
-    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].percentEffective }}</td>
-  </tr>
-</tfoot>
+            <tfoot v-if="routeStore.total?.length" class="bg-success text-white sticky bottom-0 z-10 font-semibold">
+                <tr>
+                    <td class="p-2 border-r border-black text-center">{{ routeStore.total[0].route }}</td>
+                    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].storeAll }}</td>
+                    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].storeTotal }}</td>
+                    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].storeSell }}</td>
+                    <td class="text-center p-2 border-r border-black">
+                        {{ (routeStore.total[0].storeNotSell || 0) + (routeStore.total[0].storeCheckInNotSell || 0) }}
+                    </td>
+                    <td class="text-center p-2 border-r border-black">
+                        {{ (routeStore.total[0].storeAll || 0) - (routeStore.total[0].storeTotal || 0) }}
+                    </td>
+                    <td class="text-right p-2 border-r border-black">
+                        {{ formatCurrency(routeStore.total[0].summary) }}
+                    </td>
+                    <td class="text-right p-2 border-r border-black">
+                        {{ new Intl.NumberFormat('th-TH').format(routeStore.total[0].totalqty || 0) }}
+                    </td>
+                    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].percentVisit }}</td>
+                    <td class="text-center p-2 border-r border-black">{{ routeStore.total[0].percentEffective }}</td>
+                </tr>
+            </tfoot>
 
 
 
@@ -265,15 +285,15 @@ function formatCurrency(value) {
 
 onMounted(async () => {
     isLoading.value = true;
-    await filter.getZone('cash',period);
+    await filter.getZone('cash', period);
     if (selectedZone.value) {
         await filter.getArea(period, selectedZone.value, selectedTeam.value);
         // showExcel.value = 'true'
-    //     await filter.getTeam(selectedZone.value);
+        //     await filter.getTeam(selectedZone.value);
     }
     // if (selectedArea.value) {
-        // console.log("testsssssssss",checkinData)
-        
+    // console.log("testsssssssss",checkinData)
+
 
     // }
     // await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
@@ -285,18 +305,18 @@ onMounted(async () => {
     }
 
     await routeStore.getCheckin(period, checkinData.value.area, selectedTeam.value);
-    
+
     isLoading.value = false;
     // showExcel.value = 'true'
 })
 
 async function exportExcel() {
-  try {
-    await routeStore.getExcelCheckin(selectedArea.value, period, '', selectedZone.value)
-    console.log('✅ Export success')
-  } catch (err) {
-    console.error('❌ Export failed:', err)
-  }
+    try {
+        await routeStore.getExcelCheckin(selectedArea.value, period, '', selectedZone.value)
+        console.log('✅ Export success')
+    } catch (err) {
+        console.error('❌ Export failed:', err)
+    }
 }
 
 watch(selectedTeam, async (newVal) => {
@@ -327,38 +347,39 @@ watch(() => route.query.team, (val) => {
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
     selectedTeam.value = '' // Reset area when zone changes
-    // router.replace({
-    //     query: {
-    //         ...route.query,
-    //         zone: newVal,
-    //         area: '',
-    //         team: ''
-    //     }
-    // });
+    router.replace({
+        query: {
+            ...route.query,
+            zone: newVal,
+            area: '',
+            team: ''
+        }
+    });
     if (newVal) {
         filter.getArea(period, newVal, selectedTeam.value);
-        filter.getTeam('cash',newVal);
+        filter.getTeam('cash', newVal);
     }
 });
 
 watch(selectedArea, async (newVal) => {
-    // router.replace({
-    //     query: {
-    //         ...route.query,
-    //         area: newVal
-    //     }
-    // });
+    router.replace({
+        query: {
+            ...route.query,
+            area: newVal
+        }
+    });
     if (newVal) {
         isLoading.value = true;
-        await filter.getZone('cash',period);
-        if (selectedZone.value) {
-            await filter.getArea(period, selectedZone.value, selectedArea.value);
+        await filter.getZone('cash', period);
+        // if (selectedZone.value) {
+        //     await filter.getArea(period, selectedZone.value, selectedArea.value);
 
-        }
+        // }
         if (selectedArea.value) {
             await routeStore.getCheckin(period, selectedArea.value);
             showExcel.value = 'true'
         }
+
         await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
         await routeStore.getCheckin(period, newVal);
         await new Promise(resolve => setTimeout(resolve, 2000))
