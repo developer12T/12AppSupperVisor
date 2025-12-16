@@ -27,6 +27,7 @@ const supervisorRoutes = [
         path: 'checkin',
         component: () => import('../../views/supervisor/CheckIn.vue')
       },
+
       {
         path: 'checkinAll',
         component: () => import('../../views/supervisor/CheckInAll.vue')
@@ -170,6 +171,10 @@ const supervisorRoutes = [
         path: 'sentstore',
         name: 'sentStore',
         component: () => import('../../views/supervisor/SentStore.vue')
+      },
+      {
+        path: 'targetvisit',
+        component: () => import('../../views/supervisor/TargetVisitRoute.vue')
       }
     ]
   }

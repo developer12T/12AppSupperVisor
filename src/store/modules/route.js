@@ -7,8 +7,10 @@ export const useRouteStore = defineStore('checkin', {
     polyline: [],
     routesStore: [],
     checkIn: [],
-    total:[],
+    total: [],
     routeInStore: [],
+    target: {},
+    compare: {},
     visit: '',
     effective: '',
     totalStoreAll: 0,
@@ -73,18 +75,20 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getCheckin (period, area) {
+    async getCheckin (period, zone, team, area) {
       try {
         const response = await api.post(
           `${import.meta.env.VITE_API_URL}/api/cash/route/getRouteEffective`,
           {
+            zone: zone,
             area: area,
             period: period
           }
         )
-        
+
         this.checkIn = response.data.data
-        this.total = response.data.totalByArea
+        this.total = response.data.total
+        console.log('checkIn', this.checkIn)
         console.log('total', this.total)
       } catch (error) {
         console.error(error)
@@ -105,6 +109,8 @@ export const useRouteStore = defineStore('checkin', {
         this.totalStorePending = response.data.totalStorePending
         this.totalStoreNotSell = response.data.totalStoreNotSell
         this.totalStoreCheckInNotSell = response.data.totalStoreCheckInNotSell
+        this.target = response.data.target
+        this.compare = response.data.compare
       } catch (error) {
         console.error(error)
       }
@@ -116,10 +122,10 @@ export const useRouteStore = defineStore('checkin', {
           {
             // area: area,
             period: period,
-            excel: 'true',
+            excel: 'true'
           },
           {
-            responseType: 'blob', // สำคัญมาก! สำหรับไฟล์
+            responseType: 'blob' // สำคัญมาก! สำหรับไฟล์
           }
         )
         const url = window.URL.createObjectURL(new Blob([response.data]))
@@ -133,8 +139,6 @@ export const useRouteStore = defineStore('checkin', {
       } catch (error) {
         console.error(error)
       }
-    },
-
-
+    }
   }
 })

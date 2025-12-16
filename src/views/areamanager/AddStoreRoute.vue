@@ -242,13 +242,15 @@ const isLoading = ref(false);
 const selectedRoute = ref(null)
 const showExcel = ref(null)
 const totalRow = ref('')
+
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
 
-
 const filteredData = computed(() => {
     let data = routeStore.checkIn
+
+
     if (selectedZone.value) {
         data = data.filter(order =>
             (order.area || '').startsWith(selectedZone.value)
@@ -265,113 +267,67 @@ const filteredData = computed(() => {
 })
 
 
-const totalStore = computed(() =>
-    filteredData.value.reduce(
-        (sum, o) =>
-            !['R25', 'R26'].includes(o.route)
-                ? sum + Number(o.storeAll || 0)
-                : sum,
-        0
-    )
-)
+const totalStore = computed(() => {
+    return filteredData.value.reduce((sum, order) => {
+        if (order.route !== "R25" || order.route !== "R26") {
+            return sum + (Number(order.storeAll) || 0)
+        }
+        return sum
+    }, 0)
+})
+
+const totalstoreSell = computed(() => {
+    return filteredData.value.reduce((sum, order) => {
+        return sum + (Number(order.storeSell) || 0)
+    }, 0)
+})
+
+const totalstoreNotSell = computed(() => {
+    return filteredData.value.reduce((sum, order) => {
+        return sum + (Number(order.storeNotSell) || 0)
+    }, 0)
+})
+
+const totalstorePending = computed(() => {
+    return filteredData.value.reduce((sum, order) => {
+        return sum + (Number(order.storePending) || 0)
+    }, 0)
+})
 
 
-const totalstoreSell = computed(() =>
-    filteredData.value.reduce(
-        (sum, o) =>
-            !['R25', 'R26'].includes(o.route)
-                ? sum + Number(o.storeSell || 0)
-                : sum,
-        0
-    )
-)
+const totalSummary = computed(() => {
+    return filteredData.value.reduce((sum, order) => {
+        return sum + (Number(order.summary) || 0)
+    }, 0)
+})
 
-const totalQTY = computed(() =>
-    filteredData.value.reduce(
-        (sum, o) =>
-            !['R25', 'R26'].includes(o.route)
-                ? sum + Number(o.totalqty || 0)
-                : sum,
-        0
-    )
-)
 
-const totalSummary = computed(() =>
-    filteredData.value.reduce(
-        (sum, o) =>
-            !['R25', 'R26'].includes(o.route)
-                ? sum + Number(o.summary || 0)
-                : sum,
-        0
-    )
-)
+const totalQTY = computed(() => {
+    return filteredData.value.reduce((sum, order) => {
+        return sum + (Number(order.totalqty) || 0)
+    }, 0)
+})
 
-const totalstorePending = computed(() =>
-    filteredData.value.reduce(
-        (sum, o) =>
-            !['R25', 'R26'].includes(o.route)
-                ? sum + Number(o.storePending || 0)
-                : sum,
-        0
-    )
-)
-const totalstoreNotSell = computed(() =>
-    filteredData.value.reduce(
-        (sum, o) =>
-            !['R25', 'R26'].includes(o.route)
-                ? sum + Number(o.storeNotSell || 0)
-                : sum,
-        0
-    )
-)
-
-const EXCLUDE_ROUTES = ['R25', 'R26']
 
 const totalPercentVisit = computed(() => {
-    let sum = 0
-    let totalWeight = 0
-
-    filteredData.value.forEach(o => {
-        if (EXCLUDE_ROUTES.includes(o.route)) return
-
-        const weight = Number(o.storeAll) || 0
-        const percent = Number(o.percentVisit) || 0
-
-        sum += percent * weight
-        totalWeight += weight
-    })
-
-    return totalWeight ? +(sum / totalWeight).toFixed(2) : 0
+    return filteredData.value.reduce((sum, order) => {
+        return sum + (Number(order.percentVisit) || 0)
+    }, 0)
 })
 
 const totalPercentEffective = computed(() => {
-    let sum = 0
-    let totalWeight = 0
-
-    filteredData.value.forEach(o => {
-        if (EXCLUDE_ROUTES.includes(o.route)) return
-
-        const weight = Number(o.storeAll) || 0
-        const percent = Number(o.percentEffective) || 0
-
-        sum += percent * weight
-        totalWeight += weight
-    })
-
-    return totalWeight ? +(sum / totalWeight).toFixed(2) : 0
+    return filteredData.value.reduce((sum, order) => {
+        return sum + (Number(order.percentEffective) || 0)
+    }, 0)
 })
 
 
-const totalstoreTotal = computed(() =>
-    filteredData.value.reduce(
-        (sum, o) =>
-            !['R25', 'R26'].includes(o.route)
-                ? sum + Number(o.storeTotal || 0)
-                : sum,
-        0
-    )
-)
 
+const totalstoreTotal = computed(() => {
+    return filteredData.value.reduce((sum, order) => {
+        return sum + (Number(order.storeTotal) || 0)
+    }, 0)
+})
 
 function showDetail(item, routeCode, routeId) {
     selectedRoute.value = item

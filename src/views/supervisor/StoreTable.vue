@@ -345,13 +345,13 @@ watch(searchQuery, (text) => {
         )
     }, 1000)
 })
+
 onMounted(async () => {
     isLoading.value = true
     await filter.getZone('cash', period);
     await store.getStoreAll(`${selectedChannel.value}`, '', '', '', period.slice(0, 4), period.slice(4, 6), '')
     isLoading.value = false
 })
-
 
 
 </script>

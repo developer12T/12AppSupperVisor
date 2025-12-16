@@ -2,6 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router'
 import adminRoutes from '../routes/admin/adminRoute'
 import saleRoutes from '../routes/sale'
 import supervisorRoutes from '../routes/supervisor/supervisorRoute'
+import areamanagerRoute from '../routes/areamanager/areamanagerRoute'
 import Dashboard from '../views/Dashboard.vue'
 // import Layout from '../Layout.vue'
 const Layout = () => import('@/Layout.vue')
@@ -19,6 +20,7 @@ const routes = [
   { path: '/403', component: () => import('../views/403.vue') },
   ...adminRoutes,
   ...supervisorRoutes,
+  ...areamanagerRoute,
   ...saleRoutes
 ]
 

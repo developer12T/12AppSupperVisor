@@ -42,6 +42,17 @@ const menuItems = computed(() => [
         roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'],
         channel: ['CASH', "PC", "ADMIN"],
     },
+    {
+        name: 'จัดการ Route',
+        icon: 'mdi:routes',
+        link: '#',
+        submenu: [
+            { icon: 'ic:baseline-route', name: 'ปรับ Route', link: '/areamanager/changeroute', channel: ['CASH', "ADMIN"] },
+            { icon: 'mdi:store-marker', name: 'เพิ่มร้านค้าใหม่เข้า Route', link: '/areamanager/addstoreroute', channel: ['CASH', "PC", "ADMIN"] },
+        ],
+        roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'dc'],
+        channel: ['CASH', "PC", "ADMIN"]
+    },
     // { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/supervisor/order', submenu: null, roles: ['supervisor', 'admin',] },
     // { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/supervisor/give', submenu: null, roles: ['supervisor', 'admin',] },
     {
@@ -74,6 +85,7 @@ const menuItems = computed(() => [
         submenu: [
             // { icon: 'mdi:chart-areaspline', name: 'รายงานยอดขาย', link: '/supervisor/report', channel: ['CASH', "PC"] },
             { icon: 'mdi:routes', name: 'รายงานการเข้าเยี่ยม', link: '/supervisor/checkin', channel: ['CASH', "ADMIN"] },
+            { icon: 'mdi:target-arrow', name: 'เป้าการเข้าเยี่ยม', link: '/supervisor/targetvisit', channel: ['CASH', "ADMIN"] },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product', channel: ['CASH', "PC", "ADMIN"] },
             // { icon: 'mdi:money-100', name: 'รายการส่งเงิน', link: '/supervisor/sendmoney', channel: ['CASH', "PC"] },
             { icon: 'mdi:box-clock-outline', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute', channel: ['CASH', "PC", "ADMIN"] },
@@ -196,7 +208,7 @@ onMounted(refreshSidebarData);
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                            }}</span>
+                                        }}</span>
 
                                     </router-link>
                                 </li>
