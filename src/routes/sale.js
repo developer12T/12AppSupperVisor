@@ -58,6 +58,19 @@ const saleRoutes = [
       {
         path: 'target',
         component: () => import('../views/sale/TargetSale.vue')
+      },
+
+      {
+        path: 'changeRoute',
+        component: () => import('../views/sale/ChangeRoute.vue')
+      },
+      {
+        path: 'changeRoute/:id',
+        component: () => import('../views/sale/ChangeRouteDetail.vue')
+      },
+      {
+        path: 'addnewstoreroute',
+        component: () => import('../views/sale/AddNewStoreToRoute.vue')
       }
     ]
   }

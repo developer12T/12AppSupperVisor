@@ -16,10 +16,6 @@ const withdrawStore = useWithdrawStore()
 const storeModel = useStoresStore()
 const refundStore = useRefundStock()
 const route = useRoute();
-
-
-
-
 const SignOut = async () => {
     store.logout()
     console.log('ออกจากระบบสําเร็จ')
@@ -73,6 +69,8 @@ const menuItems = computed(() => [
         channel: ['CASH', "PC", "ADMIN"]
     },
     { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/sale/order', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
+    { name: 'ปรับรูท', icon: 'ic:baseline-route', link: '/sale/changeRoute', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
+    { name: 'เพิ่มร้านค้าใหม่เข้า Route', icon: 'ic:baseline-route', link: '/sale/addnewstoreroute', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
     { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/sale/give', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
     { name: 'รายการคืนสินค้า', icon: 'mdi:autorenew', link: '/sale/refundtable', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
     { name: 'รายการใบเบิก', icon: 'mdi:box-clock-outline', link: '/sale/withdrawtable', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },

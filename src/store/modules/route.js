@@ -4,11 +4,15 @@ import api from '../../utils/axios'
 export const useRouteStore = defineStore('checkin', {
   state: () => ({
     routes: [],
+    routeChanges: [],
+    routeChangeStores: [],
     polyline: [],
     routesStore: [],
     checkIn: [],
     total: [],
     routeInStore: [],
+    routeAll: [],
+    routeAlltoal: {},
     target: {},
     compare: {},
     visit: '',
@@ -30,6 +34,67 @@ export const useRouteStore = defineStore('checkin', {
         )
         console.log('polyline', response.data)
         this.polyline = response.data.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async getRouteChangeStore (id) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getRouteChange?id=${id}`
+        )
+        console.log('getRouteChangeStore', response.data)
+        this.routeChangeStores = response.data.data.listStore
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getRouteChangeSale (period, area) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getRoute?area=${area}&period=${period}`
+        )
+        console.log('getRouteChangeSale', response.data)
+        this.routeChanges = response.data.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getRouteChangeAreaManger (period, area, startDate, endDate) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/polylineRoute?area=${area}&period=${period}&startDate=${startDate}&endDate=${endDate}`
+        )
+        console.log('polyline', response.data)
+        this.polyline = response.data.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async getDayRoute (period, zone, team, area) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getRouteEffectiveByDay`,
+          {
+            zone: zone,
+            area: area,
+            period: period
+          }
+        )
+        console.log('routeAll', response.data)
+        // console.log('routeAlltotal', response.total)
+        this.routeAll = response.data.data
+        this.routeAlltoal = response.data.total
       } catch (error) {
         console.log(error)
       }
@@ -94,7 +159,7 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getRouteEffective (area, period, route, zone) {
+    async getRouteEffective (period, route, zone, team, area) {
       try {
         const response = await api.get(
           `${

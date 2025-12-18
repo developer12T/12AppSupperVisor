@@ -1,5 +1,7 @@
 <template>
     <div class="target-page">
+        <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
+
         <!-- Header -->
         <header class="header">
             <h1>✅ เป้าหมายการเข้าเยี่ยม</h1>
@@ -22,42 +24,88 @@
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
             </div>
+            <div class="ms-3">
+                <input
+                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                    type="month" v-model="monthRange" @update:model-value="onMonthChange">
+                </input>
+            </div>
+
         </header>
+        <div class="">
+            <div class="flex justify-between">
+                <div>
+                    <h1 class="text-xl">Zone:{{ selectedZone == "" ? "ทั้งหมด" : selectedZone }} Team:{{ selectedTeam ==
+                        "" ?
+                        "ทั้งหมด" : selectedTeam }} Area:{{
+                            selectedArea == "" ? "ทั้งหมด" : selectedArea }}</h1>
+                </div>
+                <div>
+                    <h1 class="text-xl">เดือน:{{ monthRange == "" ? period : monthRange }}
+                    </h1>
+                </div>
+            </div>
+
+        </div>
         <!-- Metrics Summary -->
         <section class="summary">
             <div class="card">
-                <div class="label">เป้าหมายการเข้าเยี่ยม</div>
-                <div class="value">{{ formatNum(routeStore?.target?.visit ?? 0) }}</div>
+
+                <div class="label">
+                    <Icon icon="mdi:target-arrow" width="24" height="24" style="color: #f00" /> เป้าหมายการเข้าเยี่ยม
+                </div>
+                <div class="value text-right">{{ formatNum(routeStore?.target?.visit ?? 0) }}</div>
             </div>
             <div class="card">
-                <div class="label">เป้าหมายร้านค้าที่ขายได้</div>
-                <div class="value">{{ formatNum(routeStore?.target?.sale ?? 0) }}</div>
+                <div class="label">
+                    <Icon icon="mdi:target-arrow" width="24" height="24" style="color: #f00" /> เป้าหมายร้านค้าที่ซื้อ
+                </div>
+                <div class="value text-right">{{ formatNum(routeStore?.target?.sale ?? 0) }}</div>
             </div>
             <div class="card">
-                <div class="label">ร้านค้าทั้งหมด</div>
-                <div class="value">{{ formatNum(routeStore?.totalStoreAll ?? 0) }}</div>
+                <div class="label">
+                    <Icon icon="mdi:store" width="24" height="24" style="color: #000" /> ร้านค้าทั้งหมด
+                </div>
+                <div class="value text-right">{{ formatNum(routeStore?.totalStoreAll ?? 0) }}</div>
             </div>
             <div class="card">
-                <div class="label">ร้านค้าที่ไม่ได้เข้าเยี่ยม</div>
-                <div class="value">{{ formatNum(routeStore?.totalStorePending ?? 0) }}</div>
+                <div class="label">
+                    <Icon icon="mdi:store-clock" width="24" height="24" style="color: #ff9d00" />
+                    ร้านค้าที่ไม่ได้เข้าเยี่ยม
+                </div>
+                <div class="value text-right">{{ formatNum(routeStore?.totalStorePending ?? 0) }}</div>
             </div>
         </section>
         <section class="summary">
             <div class="card">
                 <div class="label">เข้าเยี่ยมแล้ว</div>
-                <div class="value">{{ formatNum(routeStore?.totalStoreCheckInNotSell ?? 0) }}</div>
+                <div class="value text-right">{{ formatNum(routeStore?.totalStoreCheckInNotSell ?? 0) }}</div>
             </div>
             <div class="card">
                 <div class="label">ร้านค้าที่ขายได้</div>
-                <div class="value">{{ formatNum(routeStore?.totalStoreSell ?? 0) }}</div>
+                <div class="value text-right">{{ formatNum(routeStore?.totalStoreSell ?? 0) }}</div>
             </div>
-            <div class="card">
-                <div class="label">เปอร์เซ็นที่เข้าเยี่ยมได้</div>
-                <div class="value">{{ routeStore?.compare?.visitVsTarget + "%" ?? 0 + "%" }}</div>
+            <div class="card" :class="visitTargetClass">
+                <div class="flex justify-between">
+                    <div class="label">เปอร์เซ็นที่เข้าเยี่ยม</div>
+                    <div class="value text-right">
+                        {{ routeStore?.compare?.visitVsTarget + "%" ?? 0 + "%" }}
+                    </div>
+                </div>
+                <div class="value text-right">{{
+                    formatNum(routeStore?.totalStoreCheckInNotSell ?? 0) }}/{{
+                        formatNum(routeStore?.target?.visit ?? 0) }}</div>
             </div>
-            <div class="card">
-                <div class="label">เปอร์เซ็นที่ขายได้</div>
-                <div class="value">{{ routeStore?.compare?.effectiveVsTarget + "%" ?? 0 + "%" }}</div>
+            <div class="card" :class="effectiveTargetClass">
+                <div class="flex justify-between">
+                    <div class="label">เปอร์เซ็นที่ขายได้</div>
+                    <div class="value text-right">
+                        {{ routeStore?.compare?.effectiveVsTarget + "%" ?? 0 + "%" }}
+                    </div>
+                </div>
+                <div class="value text-right">{{
+                    formatNum(routeStore?.totalStoreSell ?? 0) }}/{{
+                        formatNum(routeStore?.target?.sale ?? 0) }}</div>
             </div>
         </section>
 
@@ -68,78 +116,45 @@
 
         <!-- Data Table -->
         <section class="table-wrap">
-            <table class="table">
+            <table class="table border-collapse ">
                 <thead>
                     <tr>
-                        <th @click="setSort('period')">Period</th>
-                        <!-- <th @click="setSort('zone')">Zone</th>
-                        <th @click="setSort('area')">Area</th> -->
-                        <th @click="setSort('productGroup')">Group</th>
-                        <!-- <th @click="setSort('storeId')">Store</th> -->
-                        <th class="num" @click="setSort('target')">Target</th>
-                        <th class="num" @click="setSort('actual')">Actual</th>
-                        <th class="num" @click="setSort('attainment')">Achv%</th>
-                        <th class="num" @click="setSort('variance')">Variance</th>
-                        <th @click="setSort('unit')">Unit</th>
-                        <!-- <th>Actions</th> -->
+                        <th class="text-center">วันที่</th>
+                        <th class="text-center">รวมการเช็คอิน</th>
+                        <th class="text-center">ร้านที่ซื้อ</th>
+                        <th class="text-center">ร้านค้าไม่ซื้อ</th>
+                        <th class="text-center">ร้านค้าที่เช็คอิน</th>
+                        <!-- <th class="text-center">รวม</th> -->
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="r in visibleRows" :key="r.id">
-                        <td>{{ formatPeriod(r.period) }}</td>
-                        <!-- <td>{{ r.zone }}</td>
-                        <td>{{ r.area }}</td> -->
-                        <td>{{ r.productGroup || '-' }}</td>
-                        <!-- <td>{{ r.storeId || '-' }}</td> -->
-                        <td class="num" :title="String(r.target)">
-                            <template v-if="editingId === r.id">
-                                <input class="input-num" type="number" min="0" step="0.01"
-                                    v-model.number="editBuffer.target" />
-                            </template>
-                            <template v-else>
-                                {{ formatNum(r.target, r.unit) }}
-                            </template>
+                    <tr v-for="r in visibleRows" :key="r.day">
+                        <td class="text-center border">{{ formatPeriod(r.day) }}</td>
+
+                        <td class="text-right border">
+                            {{ r.storeCheckIn || '-' }}
                         </td>
-                        <td class="num" :title="String(r.actual)">
-                            <template v-if="editingId === r.id">
-                                <input class="input-num" type="number" min="0" step="0.01"
-                                    v-model.number="editBuffer.actual" />
-                            </template>
-                            <template v-else>
-                                {{ formatNum(r.actual, r.unit) }}
-                            </template>
-                        </td>
-                        <td class="num">
-                            <span class="badge" :class="attainmentClass(r)">{{ attainment(r).toFixed(1) }}%</span>
-                        </td>
-                        <td class="num" :class="{ neg: (r.actual - r.target) < 0, pos: (r.actual - r.target) >= 0 }">{{
-                            formatNum(r.actual -
-                                r.target, r.unit) }}</td>
-                        <td>
-                            <template v-if="editingId === r.id">
-                                <select v-model="editBuffer.unit">
-                                    <option v-for="u in unitOptions" :key="u" :value="u">{{ u }}</option>
-                                </select>
-                            </template>
-                            <template v-else>
-                                {{ r.unit }}
-                            </template>
-                        </td>
-                        <!-- <td class="actions">
-                            <template v-if="editingId === r.id">
-                                <button class="btn primary sm" @click="saveEdit(r.id)">Save</button>
-                                <button class="btn ghost sm" @click="cancelEdit">Cancel</button>
-                            </template>
-                            <template v-else>
-                                <button class="btn sm" @click="startEdit(r)">Edit</button>
-                                <button class="btn ghost sm" @click="removeRow(r.id)">Delete</button>
-                            </template>
-                        </td> -->
+                        <td class="text-right border">{{ r.storeSell || '-' }}</td>
+                        <td class="text-right border">{{ r.storeNotSell || '-' }}</td>
+                        <td class="text-right border">{{ r.storeVisit || '-' }}</td>
+                        <!-- <td class="text-right border">{{ r.storeCheckIn || '-' }}</td> -->
+
+
                     </tr>
-                    <tr v-if="visibleRows.length === 0">
+                    <tr v-if="routeStore.routeAll.length === 0">
                         <td colspan="11" class="empty">No data / ไม่มีข้อมูล</td>
                     </tr>
                 </tbody>
+                <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
+                    <tr class="bg-gray-300 font-bold ">
+                        <td class="text-center">รวม</td>
+                        <td class="text-right">{{ routeStore?.routeAlltoal?.storeCheckIn }}</td>
+                        <td class="text-right">{{ routeStore?.routeAlltoal?.storeSell }}</td>
+                        <td class="text-right">{{ routeStore?.routeAlltoal?.storeNotSell }}</td>
+                        <td class="text-right">{{ routeStore?.routeAlltoal?.storeVisit }}</td>
+
+                    </tr>
+                </tfoot>
             </table>
             <div class="table-footer">
                 <div class="rows">Rows: {{ visibleRows.length }}</div>
@@ -155,16 +170,19 @@
 </template>
 
 <script lang="ts" setup>
+import { Icon } from '@iconify/vue'
 import VueDatePicker from '@vuepic/vue-datepicker';
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { Bar } from 'vue-chartjs'
 import { useRouter, useRoute } from 'vue-router'
 import { useRouteStore } from '../../store/modules/route'
 import { useFilter } from '../../store/modules/filter'
 import 'chart.js/auto'
+import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
 
 const filter = useFilter()
 const routeStore = useRouteStore()
+const monthRange = ref();
 
 
 const filteredDataRoute = computed(() => {
@@ -183,7 +201,26 @@ const filteredDataRoute = computed(() => {
     return data;
 })
 
+function formatPeriodYYYYMM(v) {
+    if (!v) return ''
+    return v.replace('-', '')
+}
 
+const visitTargetClass = computed(() => {
+    const v = routeStore?.compare?.visitVsTarget ?? 0
+
+    if (v >= 80) return 'good'
+    if (v >= 50) return 'warn'
+    return 'bad'
+})
+
+const effectiveTargetClass = computed(() => {
+    const v = routeStore?.compare?.effectiveVsTarget ?? 0
+
+    if (v >= 80) return 'good'
+    if (v >= 50) return 'warn'
+    return 'bad'
+})
 
 // --- Types ---
 export type Unit = 'THB' | 'PCS' | 'CTN'
@@ -201,13 +238,7 @@ export interface TargetRow {
 
 // ---- Demo Data (replace with API results) ----
 const rows = ref<TargetRow[]>([
-    { id: '1', period: '202508', groupCode: "G01", productGroup: 'ผงปรุงรสฟ้าไทย 10 กรัม -165 กรัม', target: 250000, targetQty: 40, targetAll: 40, actual: 225400, unit: 'THB' },
-    { id: '2', period: '202508', groupCode: "G02", productGroup: 'ผงปรุงรสฟ้าไทย 425 กรัม - 20 kg', target: 150000, targetQty: 40, actual: 162000, unit: 'THB' },
-    { id: '3', period: '202508', groupCode: "G03", productGroup: 'ผงปรุงรสเติมทิพ (ทุกขนาด)', target: 120000, targetQty: 40, actual: 98000, unit: 'THB' },
-    // { id: '4', period: '202509', zone: 'NE', area: 'NE236', storeId: 'VNE2500901', productGroup: 'CHILI', target: 180000, actual: 210000, unit: 'THB' },
-    // { id: '5', period: '202509', zone: 'IT', area: 'IT211', storeId: 'VIT2500102', productGroup: 'HERB', target: 95000, actual: 72000, unit: 'THB' },
-    // { id: '6', period: '202509', zone: 'IT', area: 'IT211', storeId: 'VIT2500133', productGroup: 'HERB', target: 4000, actual: 4200, unit: 'PCS' },
-    // { id: '7', period: '202509', zone: 'BE', area: 'BE211', storeId: 'VMB2401201', productGroup: 'LIME', target: 3600, actual: 3300, unit: 'CTN' },
+
 ])
 
 // ---- Filters ----
@@ -227,6 +258,7 @@ const route = useRoute()
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
+const isLoading = ref(false)
 
 const unitOptions = ['THB', 'PCS', 'CTN'] as const
 const periodOptions = computed(() => Array.from(new Set(rows.value.map(r => r.period))).sort())
@@ -237,6 +269,7 @@ const areaOptions = computed(() => Array.from(new Set(rows.value.map(r => r.area
 // keys: period | zone | area | productGroup | storeId | target | actual | unit | attainment | variance
 const sortKey = ref<'period' | 'zone' | 'area' | 'productGroup' | 'storeId' | 'target' | 'actual' | 'unit' | 'attainment' | 'variance'>('period')
 const sortDir = ref<1 | -1>(-1) // default newest first for period
+const selectedChannel = ref('cash')
 
 function setSort(key: typeof sortKey.value) {
     if (sortKey.value === key) {
@@ -266,18 +299,7 @@ const filteredRowsRoute = computed(() => {
 })
 const filteredRows = computed(() => {
     const q = search.value.toLowerCase()
-    return rows.value.filter(r => {
-        if (period.value && r.period !== period.value) return false
-        if (zone.value && r.zone !== zone.value) return false
-        if (area.value && r.area !== area.value) return false
-        if (unit.value && r.unit !== unit.value) return false
-        if (q) {
-            const hay = `${r.zone} ${r.area} ${r.productGroup ?? ''} ${r.storeId ?? ''}`.toLowerCase()
-            if (!hay.includes(q)) return false
-        }
-        if (onlyBelow.value && r.actual >= r.target) return false
-        return true
-    })
+    return routeStore.routeAll
 })
 
 const sortedRows = computed(() => {
@@ -305,12 +327,23 @@ const sortedRows = computed(() => {
     })
 })
 
+async function onMonthChange(value) {
+    isLoading.value = true
+    console.log(formatPeriodYYYYMM(value))
+
+    await routeStore.getRouteEffective(formatPeriodYYYYMM(value), '', selectedZone.value, selectedTeam.value, selectedArea.value,);
+    await routeStore.getDayRoute(formatPeriodYYYYMM(value), selectedZone.value, selectedTeam.value, selectedArea.value);
+
+
+    isLoading.value = false
+}
+
 // ---- Paging ----
 const page = ref(1)
-const pageSize = ref(10)
+const pageSize = ref(25)
 const startIndex = computed(() => (page.value - 1) * pageSize.value)
 const endIndex = computed(() => page.value * pageSize.value)
-const visibleRows = computed(() => sortedRows.value.slice(startIndex.value, endIndex.value))
+const visibleRows = computed(() => routeStore.routeAll.slice(startIndex.value, endIndex.value))
 
 // ---- Summary ----
 const totalTarget = computed(() => filteredRows.value.reduce((s, r) => s + (r.unit === unitDisplay.value || unitDisplay.value === 'THB' ? r.target : r.target), 0))
@@ -446,11 +479,63 @@ function exportCSV() {
 }
 
 onMounted(async () => {
+    isLoading.value = true
     await filter.getZone('cash', period);
-    await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
-
+    await routeStore.getRouteEffective(period, '', selectedZone.value, selectedTeam.value, selectedArea.value,);
+    await routeStore.getDayRoute(period, '', '', '');
+    isLoading.value = false
     // Reset to first page when filters change
 })
+
+watch(selectedZone, async (newVal) => {
+    selectedArea.value = '' // Reset area when zone changes
+    selectedTeam.value = ''
+    if (newVal) {
+        isLoading.value = true
+        if (monthRange.value) {
+            await routeStore.getRouteEffective(formatPeriodYYYYMM(monthRange.value), '', newVal, selectedTeam.value, selectedArea.value,);
+            await routeStore.getDayRoute(formatPeriodYYYYMM(monthRange.value), newVal, selectedTeam.value, selectedArea.value);
+        } else {
+            await routeStore.getRouteEffective(period, '', newVal, selectedTeam.value, selectedArea.value,);
+            await routeStore.getDayRoute(period, newVal, selectedTeam.value, selectedArea.value);
+        }
+
+        filter.getArea(period, newVal, selectedTeam.value);
+        filter.getTeam(selectedChannel.value, newVal);
+        isLoading.value = false
+    }
+});
+
+watch(selectedTeam, async (newVal) => {
+    selectedArea.value = ''
+    if (newVal) {
+        isLoading.value = true
+        if (monthRange.value) {
+            await routeStore.getRouteEffective(formatPeriodYYYYMM(monthRange.value), '', selectedZone.value, newVal, selectedArea.value,);
+            await routeStore.getDayRoute(formatPeriodYYYYMM(monthRange.value), selectedZone.value, newVal, selectedArea.value);
+        } else {
+            await routeStore.getRouteEffective(period, '', selectedZone.value, newVal, selectedArea.value,);
+            await routeStore.getDayRoute(period, selectedZone.value, newVal, selectedArea.value);
+        }
+        filter.getArea(period, selectedZone.value, newVal);
+        isLoading.value = false
+    }
+});
+
+watch(selectedArea, async (newVal) => {
+    if (newVal) {
+        isLoading.value = true
+        if (monthRange.value) {
+            await routeStore.getRouteEffective(formatPeriodYYYYMM(monthRange.value), '', selectedZone.value, selectedTeam.value, newVal,);
+            await routeStore.getDayRoute(formatPeriodYYYYMM(monthRange.value), selectedZone.value, selectedTeam.value, newVal);
+        } else {
+            await routeStore.getRouteEffective(period, '', selectedZone.value, selectedTeam.value, newVal,);
+            await routeStore.getDayRoute(period, selectedZone.value, selectedTeam.value, newVal);
+        }
+    }
+});
+
+
 </script>
 
 <style scoped>
@@ -517,29 +602,33 @@ onMounted(async () => {
     padding: 12px;
     background: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    /* background-color: white; */
 }
 
 .card .label {
     font-size: 20px;
-    color: #666;
+    color: black;
+
 }
 
 .card .value {
-    font-weight: 700;
+    font-weight: 500;
+    color: black;
+    /* align-items: end; */
     font-size: 18px;
     margin-top: 6px;
 }
 
-.card .value.good {
-    color: #067a00;
+.card.good {
+    border: 5px solid #067a00;
 }
 
-.card .value.warn {
-    color: #a36b00;
+.card.warn {
+    border: 5px solid #a36b00;
 }
 
-.card .value.bad {
-    color: #b00020;
+.card.bad {
+    border: 5px solid #b00020;
 }
 
 .chart-wrap {
@@ -569,9 +658,9 @@ onMounted(async () => {
 
 .table thead th {
     position: sticky;
+    color: white;
     top: 0;
-    background: #fafafa;
-    text-align: left;
+    background: #00569D;
     padding: 10px;
     border-bottom: 1px solid #eee;
     cursor: pointer;

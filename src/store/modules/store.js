@@ -155,7 +155,7 @@ export const useStoresStore = defineStore('stores', {
           `/api/cash/store/getStore?type=all&zone=${zone}&area=${area}&team=${team}&year=${year}&month=${month}&q=${q}`
         )
 
-        const result = response.data
+        const result = response.data.data
         this.storeAll = result
         console.log('storeAll', this.storeAll)
       } catch (error) {
