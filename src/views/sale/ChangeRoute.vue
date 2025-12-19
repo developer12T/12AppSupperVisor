@@ -2,8 +2,9 @@
     <div class="p-6 bg-gray-50 min-h-screen">
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
 
-        <div class="flex justify-start">
-            <h2 class="text-2xl font-bold mb-6">ปรับรูท</h2>
+        <div class="flex justify-between">
+            <h2 class="text-2xl font-bold mb-6">ปรับรูทอ้างอิงจาก</h2>
+            <h2 class="text-2xl font-bold mb-6"> Period : {{ period }} -> {{ periodnext }}</h2>
 
         </div>
 
@@ -111,7 +112,8 @@ const getSafe = v => (typeof v === 'string' ? v : '');
 const cardData = ref([]);
 const routeStores = useRouteStore()
 const today = new Date();
-const period = today.getFullYear().toString() + String(today.getMonth() - 2).padStart(2, '0');
+const period = today.getFullYear().toString() + String(today.getMonth()).padStart(2, '0');
+const periodnext = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
 const showSyncAddress = ref('')
 const selectedZone = ref(route.query.zone || '')
@@ -157,7 +159,7 @@ const getProgressColor = (item) => {
 onMounted(async () => {
 
     isLoading.value = true
-    await routeStores.getRouteChangeSale('202511', area)
+    await routeStores.getRouteChangeSale(period, area)
     cardData.value = routeStores.routeChanges
 
     isLoading.value = false

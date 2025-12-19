@@ -6,6 +6,7 @@ export const useRouteStore = defineStore('checkin', {
     routes: [],
     routeChanges: [],
     routeChangeStores: [],
+    routeAddStores: [],
     polyline: [],
     routesStore: [],
     checkIn: [],
@@ -22,7 +23,8 @@ export const useRouteStore = defineStore('checkin', {
     totalStoreSell: 0,
     totalStoreNotSell: 0,
     totalStoreCheckInNotSell: 0,
-    message: ''
+    message: '',
+    statusCode: 0
   }),
   actions: {
     async getPolyLine (period, area, startDate, endDate) {
@@ -65,6 +67,22 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
+    async addNewStoreToRoute (routeId, storeId) {
+      try {
+        const response = await api.post(
+          `${import.meta.env.VITE_API_URL}/api/cash/route/addNewStoreToRoute`,
+          {
+            id: routeId,
+            storeId: storeId
+          }
+        )
+        console.log('addNewStoreToRoute', response.data)
+        this.message = response.data.message
+        this.statusCode = response.data.status
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async getRouteChangeAreaManger (period, area, startDate, endDate) {
       try {
         const response = await api.get(
@@ -74,6 +92,20 @@ export const useRouteStore = defineStore('checkin', {
         )
         console.log('polyline', response.data)
         this.polyline = response.data.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async getNewStoreToRoute (period, zone, team, area) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getNewStoreToRoute?period=${period}&area=${area}&zone=${zone}&team=${team}`
+        )
+        console.log('routeAddStores', response.data)
+        this.routeAddStores = response.data.data
       } catch (error) {
         console.log(error)
       }

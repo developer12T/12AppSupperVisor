@@ -71,6 +71,10 @@ const saleRoutes = [
       {
         path: 'addnewstoreroute',
         component: () => import('../views/sale/AddNewStoreToRoute.vue')
+      },
+      {
+        path: 'addnewstoreroute/:id',
+        component: () => import('../views/sale/AddNewStoreToRouteDetail.vue')
       }
     ]
   }
