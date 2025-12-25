@@ -331,8 +331,8 @@ async function editStore() {
             address: editForm.value.address ?? "",
             province: province?.value ?? "",
             provinceCode: zipStr.slice(0, 2),
-            subDistrict: amphoe?.value ?? "",
-            district: district?.value ?? "",
+            subDistrict: district?.value ?? "",
+            district: amphoe?.value ?? "",
             postCode: zipStr,
         };
 

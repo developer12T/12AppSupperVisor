@@ -4,7 +4,9 @@ import api from '../../utils/axios'
 export const useRouteStore = defineStore('checkin', {
   state: () => ({
     routes: [],
+    routesApproval: [],
     routeChanges: [],
+    routeChangesNew: [],
     routeChangeStores: [],
     routeAddStores: [],
     polyline: [],
@@ -27,6 +29,36 @@ export const useRouteStore = defineStore('checkin', {
     statusCode: 0
   }),
   actions: {
+    async getAreaApproval (period) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getAreaApproval?period=${period}`
+        )
+        console.log('routesApproval', response.data)
+        this.routesApproval = response.data.data
+      } catch (error) {
+        this.routesApproval = []
+        console.log(error)
+      }
+    },
+
+    async getChangeNew (id) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getRouteChange?id=${id}`
+        )
+        console.log('routeChangesNew', response.data)
+        this.routeChangesNew = response.data.data.listStore
+      } catch (error) {
+        this.routeChangesNew = []
+        console.log(error)
+      }
+    },
+
     async getPolyLine (period, area, startDate, endDate) {
       try {
         const response = await api.get(
@@ -54,17 +86,84 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
-    async getRouteChangeSale (period, area) {
+    async getRouteChangeSale (period, zone, team, area) {
       try {
         const response = await api.get(
           `${
             import.meta.env.VITE_API_URL
-          }/api/cash/route/getRoute?area=${area}&period=${period}`
+          }/api/cash/route/getRoute?area=${area}&period=${period}&zone=${zone}&team=${team}`
         )
         console.log('getRouteChangeSale', response.data)
         this.routeChanges = response.data.data
       } catch (error) {
         console.log(error)
+      }
+    },
+    async addStoreToRouteChange (routeId, storeId) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/addStoreToRouteChange`,
+          {
+            id: routeId,
+            storeId: storeId
+          }
+        )
+
+        console.log('addStoreToRouteChange', response.data)
+        this.message = response.data.message
+        this.statusCode = response.data.status
+      } catch (error) {
+        console.error('addStoreToRouteChange error:', error)
+
+        // ✅ แยกกรณี error ให้ชัด
+        if (error.response) {
+          // backend ตอบมา (4xx / 5xx)
+          this.message = error.response.data?.message || 'เกิดข้อผิดพลาดจากระบบ'
+          this.statusCode = error.response.status
+        } else if (error.request) {
+          // request ออกไป แต่ไม่ได้ response กลับมา
+          this.message = 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้'
+          this.statusCode = 503
+        } else {
+          // error จากฝั่ง frontend
+          this.message = error.message || 'เกิดข้อผิดพลาด'
+          this.statusCode = 500
+        }
+      }
+    },
+    async deleteStoreToRouteChange (routeId, storeId) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/deleteStoreToRouteChange`,
+          {
+            id: routeId,
+            storeId: storeId
+          }
+        )
+
+        console.log('deleteStoreToRouteChange', response.data)
+        this.message = response.data.message
+        this.statusCode = response.data.status
+      } catch (error) {
+        console.error('deleteStoreToRouteChange error:', error)
+        // ✅ แยกกรณี error ให้ชัด
+        if (error.response) {
+          // backend ตอบมา (4xx / 5xx)
+          this.message = error.response.data?.message || 'เกิดข้อผิดพลาดจากระบบ'
+          this.statusCode = error.response.status
+        } else if (error.request) {
+          // request ออกไป แต่ไม่ได้ response กลับมา
+          this.message = 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้'
+          this.statusCode = 503
+        } else {
+          // error จากฝั่ง frontend
+          this.message = error.message || 'เกิดข้อผิดพลาด'
+          this.statusCode = 500
+        }
       }
     },
     async addNewStoreToRoute (routeId, storeId) {
@@ -76,11 +175,26 @@ export const useRouteStore = defineStore('checkin', {
             storeId: storeId
           }
         )
+
         console.log('addNewStoreToRoute', response.data)
         this.message = response.data.message
         this.statusCode = response.data.status
       } catch (error) {
-        console.log(error)
+        console.error('addNewStoreToRoute error:', error)
+        // ✅ แยกกรณี error ให้ชัด
+        if (error.response) {
+          // backend ตอบมา (4xx / 5xx)
+          this.message = error.response.data?.message || 'เกิดข้อผิดพลาดจากระบบ'
+          this.statusCode = error.response.status
+        } else if (error.request) {
+          // request ออกไป แต่ไม่ได้ response กลับมา
+          this.message = 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้'
+          this.statusCode = 503
+        } else {
+          // error จากฝั่ง frontend
+          this.message = error.message || 'เกิดข้อผิดพลาด'
+          this.statusCode = 500
+        }
       }
     },
     async getRouteChangeAreaManger (period, area, startDate, endDate) {
@@ -111,6 +225,26 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
+    async approveNewStoreToRoute (id, status) {
+      try {
+        const user = localStorage.getItem('fullName')
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/approveNewStoreToRoute`,
+          {
+            id: id,
+            user: user,
+            status: status
+          }
+        )
+        // console.log('routeAddStores', response.data)
+        this.message = response.data.message
+        this.statusCode = response.data.status
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async getDayRoute (period, zone, team, area) {
       try {
         const response = await api.post(

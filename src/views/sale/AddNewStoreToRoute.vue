@@ -31,7 +31,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="flex justify-between">
                         <div class="text-sm text-gray-500">
                             ทั้งหมด:
@@ -147,17 +146,10 @@ const getProgressColor = (item) => {
 
 
 onMounted(async () => {
-
     isLoading.value = true
-    await routeStores.getRouteChangeSale(period, area)
+    await routeStores.getRouteChangeSale(period, '', '', area)
     cardData.value = routeStores.routeChanges
-
     isLoading.value = false
 })
-
-
-
-
-
 
 </script>

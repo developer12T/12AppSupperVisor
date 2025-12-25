@@ -14,7 +14,6 @@
                 <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
 
             </label>
-            <button class="ms-3 btn btn-success">บันทึก</button>
         </div>
 
         <div class="flex justify-between">
@@ -42,7 +41,6 @@
                             <th class="p-2 border">ประเภท</th>
                             <th class="p-2 border">สถานะ</th>
                             <th class="p-2 border">ลบ</th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -54,7 +52,7 @@
                             <td class="p-2 border">{{ item.typeName }}</td>
                             <td class="p-2 border">{{ item.statusText }}</td>
                             <td class="p-2 border  text-center">
-                                <button @click="deleteToStoreChange(item)" class="btn btn-active btn-error">>></button>
+                                <button @click="openAlertDelete(item)" class="btn btn-active btn-error">>></button>
                             </td>
                             <!-- <td class="p-2 border">{{ item.date }}</td> -->
                         </tr>
@@ -73,11 +71,8 @@
                     <div class="flex justify-between">
                         <h1>
                             {{ storeAllData?.length || 0 }} ร้านค้า
-
                         </h1>
-
                     </div>
-
                 </div>
 
                 <table class="table-auto w-full border shadow-md">
@@ -98,7 +93,7 @@
                         <tr v-for="(item, index) in visibleRowsStoreAll" :key="item._id"
                             class="hover:bg-blue-50 cursor-pointer">
                             <td class="p-2 border">
-                                <button @click="addToStoreChange(item)" class="btn btn-active btn-success">
+                                <button @click="openAlert(item)" class="btn btn-active btn-success">
                                     << </button>
                             </td>
                             <td class="p-2 border">{{ startIndex + index + 1 }}</td>
@@ -131,6 +126,26 @@
             </div>
         </div>
     </div>
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4"> ย้ายร้าน</h2>
+            <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการอนุมัติร้าน ?</p>
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-success" @click="addToStoreChange()">ย้ายร้าน</button>
+                <button class="btn btn-neutral" @click="showAlert = false">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+    <div v-if="showAlertD" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4"> ลบร้านนี้ออก</h2>
+            <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการลบ ?</p>
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-error" @click="deleteToStoreChange()">ลบร้าน</button>
+                <button class="btn btn-neutral" @click="showAlertD = false">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -141,11 +156,16 @@ import { useFilter } from '../../store/modules/filter'
 import { useRouteStore } from '../../store/modules/route'
 import { useStoresStore } from '../../store/modules/store'
 import { Icon } from '@iconify/vue'
+import { toast } from 'vue3-toastify';
+import "vue3-toastify/dist/index.css";
 
 const route = useRoute()
+const showAlert = ref(false)
+const showAlertD = ref(false)
 const isLoading = ref(false)
 const selectedMonth = ref('') // format: YYYY-MM
 const storeChange = ref([])
+const itemSelected = ref()
 
 const month = computed(() => selectedMonth.value.split('-')[1])
 const year = computed(() => selectedMonth.value.split('-')[0])
@@ -194,6 +214,17 @@ watch(searchQuery, () => {
 })
 
 
+function openAlert(item) {
+    itemSelected.value = item;
+    showAlert.value = true;
+}
+
+function openAlertDelete(item) {
+    itemSelected.value = item;
+    showAlertD.value = true;
+
+}
+
 const allowedSortKeys = [
     'period',
     'zone',
@@ -210,39 +241,71 @@ const hasNextPage = computed(() => {
     return endIndex.value < store.storeAll.length
 })
 
-const addToStoreChange = (item) => {
-    // 🔒 กันซ้ำ (ถ้ามีอยู่แล้วไม่เพิ่ม)
-    const confirmed = confirm(
-        `ยืนยันเพิ่มร้าน ${item.name || item.storeId} เข้า Route ${route.params.id} ?`
-    )
-    if (!confirmed) return
-    const exists = storeChange.value.some(
-        s => s.storeId === item.storeId
-    )
-    if (exists) return
+const addToStoreChange = async () => {
+    try {
+        // 🔒 กันซ้ำ (ถ้ามีอยู่แล้วไม่เพิ่ม
+        await routeStores.addStoreToRouteChange(route.params.id, itemSelected.value.storeId)
 
-    // ➕ เพิ่มเข้า storeChange
-    storeChange.value.push({
-        ...item,
-        statusText: 'เพิ่มใหม่'
-    })
-
-    // ❌ เอาออกจาก storeAll (optional แต่แนะนำ)
-    // store.storeAll = store.storeAll.filter(
-    //     s => s.storeId !== item.storeId
-    // )
+        if (routeStores.statusCode === 201) {
+            // ➕ เพิ่มเข้า storeChange
+            storeChange.value.push({
+                ...itemSelected.value,
+                statusText: 'เพิ่มใหม่'
+            })
+            toast('เพิ่มร้านค้าเข้า Route สำเร็จ', {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.SUCCESS,
+                dangerouslyHTMLString: true
+            })
+        } else if (routeStores.statusCode === 409) {
+            toast('ร้านค้านี้มีอยู่ใน Route แล้ว', {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.WARNING,
+                dangerouslyHTMLString: true
+            })
+        } else {
+            toast('เกิดข้อผิดพลาดในการเพิ่มร้านค้า', {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.ERROR,
+                dangerouslyHTMLString: true
+            })
+        }
+        showAlert.value = false;
+    } catch (error) {
+        toast(error, {
+            theme: toast.THEME.COLORED,
+            type: toast.TYPE.ERROR,
+            dangerouslyHTMLString: true
+        })
+        console.error('Error adding store to route change:', error);
+    }
 }
 
 
-const deleteToStoreChange = (item) => {
-    const confirmed = confirm(
-        `ยืนยันลบร้าน ${item.name || item.storeId} ออกจาก Route ?`
-    )
-    if (!confirmed) return
+const deleteToStoreChange = async () => {
+    try {
+        await routeStores.deleteStoreToRouteChange(route.params.id, itemSelected.value.storeId)
 
-    storeChange.value = storeChange.value.filter(
-        s => s.storeId !== item.storeId
-    )
+        if (routeStores.statusCode === 200) {
+            toast('ลบร้านค้าออกจาก Route สำเร็จ', {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.SUCCESS,
+                dangerouslyHTMLString: true
+            })
+        }
+        storeChange.value = storeChange.value.filter(
+            s => s.storeId !== itemSelected.value.storeId
+        )
+        showAlertD.value = false;
+    } catch (error) {
+        toast(error, {
+            theme: toast.THEME.COLORED,
+            type: toast.TYPE.ERROR,
+            dangerouslyHTMLString: true
+        })
+        // console.error('Error adding store to route change:', error);
+    }
+
 }
 
 
@@ -250,8 +313,9 @@ onMounted(async () => {
 
     isLoading.value = true
     await routeStores.getRouteChangeStore(route.params.id)
+    await routeStores.getChangeNew(route.params.id)
     await store.getStoreAll('cash', '', area, '', '', '', '')
-    storeChange.value = routeStores.routeChangeStores
+    storeChange.value = routeStores.routeChangesNew.length > 0 ? routeStores.routeChangesNew : routeStores.routeChangeStores
     storeAllData.value = store.storeAll
     // console.log()
     // cardData.value = routeStores.routeChanges

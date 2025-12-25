@@ -1,8 +1,10 @@
 <template>
-    <div class="flex justify-start gap-6 mb-3">
-        <div>
+    <div class="flex justify-between gap-6 mb-3">
+        <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
+        <div class="flex">
             <select class="select select-info ms-3 text-center mb-2" v-model="selectedZone">
                 <option disabled value="">Select Zone</option>
+                <option value="all">ทั้งหมด</option>
                 <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
             </select>
             <select class="select select-info ms-3 text-center mb-2" v-model="selectedTeam">
@@ -14,211 +16,134 @@
                 <option disabled value="">Select Area</option>
                 <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
             </select>
-            <button class="btn btn-primary ms-3 mt-3 text-center" @click="clearFilter">ล้างตัวเลือก</button>
+            <button class="btn btn-primary ms-3 text-center" @click="clearFilter">ล้างตัวเลือก</button>
         </div>
-
-
-        <!-- <div class="bg-base-100 shadow-md rounded-xl p-6 flex flex-col items-center w-48">
-            <select class="select select-info ms-3 text-center" v-model="selectedTeam">
-                <option disabled value="">Select Team</option>
-                <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
-                </option>
-            </select>
-            <button class="btn btn-primary ms-3 mt-3 text-center" @click="clearFilter">ล้างตัวเลือก</button>
-        </div> -->
-        <!-- <router-link :to="selectedArea ? `/supervisor/polylineroute2/${selectedArea}` : ''" custom
-            v-slot="{ navigate, href }">
-            <a :href="selectedArea ? href : 'javascript:void(0)'" target="_blank" rel="noopener noreferrer">
-                <div :class="[
-                    'bg-base-100 shadow-md rounded-xl p-6 flex justify-center flex-col items-center w-48',
-                    !selectedArea && 'opacity-60 pointer-events-none cursor-not-allowed'
-                ]" :style="!selectedArea ? 'filter: grayscale(80%)' : ''" @click="selectedArea && navigate()">
-                    <Icon icon="mdi:map-marker-distance" class="h-20 w-20" color="red" />
-                    <h2>ดู Line การเช็คอิน</h2>
-                    <p class="text-sm text-gray-500">(เลือกเขตก่อน)</p>
-                </div>
-            </a>
-        </router-link> -->
-        <router-link :to="selectedArea ? `/supervisor/polylineroute2/${selectedArea}` : ''" custom v-slot="{ href }">
-            <a :href="selectedArea ? href : null" target="_blank" rel="noopener noreferrer" :class="[
-                'bg-base-100 shadow-md rounded-xl p-6 flex justify-center flex-col items-center w-48',
-                !selectedArea && 'opacity-60 pointer-events-none cursor-not-allowed'
-            ]" :style="!selectedArea ? 'filter: grayscale(80%)' : ''">
-                <Icon icon="mdi:map-marker-distance" class="h-20 w-20" color="red" />
-                <h2>ดู Line การเช็คอิน</h2>
-                <p class="text-sm text-gray-500">(เลือกเขตก่อน)</p>
-            </a>
-        </router-link>
-
-
-        <div class="card bg-base-100 shadow-xl p-4 w-full max-w-xs">
-            <div class="flex items-center justify-between mb-2">
-                <h2 class="font-bold text-lg">Visit</h2>
-                <span v-if="isLoading" class="skeleton h-5 w-24 rounded"></span>
-                <span v-else :class="[
-                    routeStore.visit <= 80 ? 'text-red-500' :
-                        routeStore.visit <= 50 ? 'text-yellow-500' :
-                            'text-green-600',
-                    'font-semibold'
-                ]">
-                    {{ Number(routeStore.visit || 0).toFixed(2) }}%
-                </span>
+        <div class="flex">
+            <div class="flex justify-start">
+                <SegmentSwitch v-model="mode" :counts="counts" />
             </div>
-            <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                ร้านทั้งหมด:
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
-            </div>
-
-            <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                เยี่ยมแล้ว:
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreCheckInNotSell }}</span>
-            </div>
-            <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                รอเยี่ยม:
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStorePending }}</span>
-            </div>
-
-        </div>
-
-        <div class="card bg-base-100 shadow-xl p-4 w-full max-w-xs">
-            <div class="flex items-center justify-between mb-2">
-                <h2 class="font-bold text-lg">Effective</h2>
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else :class="[
-                    routeStore.effective <= 80 ? 'text-red-500' :
-                        routeStore.effective <= 50 ? 'text-yellow-500' :
-                            'text-green-600',
-                    'font-semibold'
-                ]">
-                    {{ Number(routeStore.effective || 0).toFixed(2) }}%
-                </span>
-            </div>
-            <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                ซื้อ:
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreSell }}</span>
-            </div>
-            <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                ไม่ซื้อ:
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreNotSell }}</span>
-            </div>
-            <div class="text-sm text-gray-500 mb-1 flex justify-between">
-                ร้านทั้งหมด:
-                <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
-            </div>
-
-            <!-- <progress class="progress w-full"
-                :class="percentageUsed >= 90 ? 'progress-error' : percentageUsed >= 70 ? 'progress-warning' : 'progress-success'"
-                :value="percentageUsed" max="100"></progress> -->
         </div>
     </div>
-    <div v-if="showExcel === 'true'" class="w-full text-right">
-        <button class="btn btn-success text-white mb-3" @click="exportExcel()">
-            Export Excel
-        </button>
-    </div>
-    <div class="overflow-auto max-h-[600px] w-full border rounded-lg shadow">
-        <table class="table w-full min-w-[800px] border-collapse">
-            <thead class="bg-primary text-white sticky top-0 z-10">
+    <div v-if="mode == 'approve'" class="overflow-x-auto rounded-xl mt-5"
+        style="min-height: 450px; max-height: 450px; max-width: 90vw; overflow-y: auto;">
+        <table class="min-w-full border text-center text-sm bg-white">
+            <thead class="bg-blue-800 text-white" style="position: sticky; top: 0; z-index: 10;">
                 <tr>
-                    <th v-if='selectedArea == ""' class="text-left p-2 ">Area </th>
-                    <th class="text-left p-2 ">Route</th>
-                    <th class="text-center p-2 ">ร้านทั้งหมด</th>
-                    <th class="text-center p-2 ">เยี่ยมแล้ว</th>
-                    <th class="text-center p-2 ">ซื้อ</th>
-                    <th class="text-center p-2 ">ไม่ซื้อ</th>
-                    <th class="text-center p-2 ">รอเยี่ยม</th>
-                    <th class="text-center p-2 ">ยอดขายรวม</th>
-                    <th class="text-center p-2 ">ยอดหีบ (CTN)</th>
-                    <th class="text-center p-2 ">เปอร์เซ็นต์การเข้าเยี่ยม</th>
-                    <th class="text-center p-2 ">เปอร์เซ็นต์การขายได้</th>
-
+                    <th class="p-2 border">No.</th>
+                    <th class="p-2 border">รหัส</th>
+                    <th class="p-2 border">รหัสร้าน</th>
+                    <th class="p-2 border">ชื่อร้าน</th>
+                    <th class="p-2 border">Route</th>
+                    <th class="p-2 border">อนุมัติ</th>
+                    <th class="p-2 border">ผู้อนุมัติ</th>
+                    <th class="p-2 border">สถานะ</th>
+                    <th class="p-2 border">วันที่อนุมัติ</th>
                 </tr>
             </thead>
             <tbody>
-                <template v-if="isLoading">
-                    <tr v-for="n in 5" :key="'skeleton-' + n">
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                        <td>
-                            <div class="h-4 bg-gray-300 rounded "></div>
-                        </td>
-                    </tr>
-                </template>
-                <template v-else>
-                    <tr v-for="(item, index) in filteredData" :key="index"
-                        class="hover:bg-blue-100 cursor-pointer border-black"
-                        @click="showDetail(item, item.route, item.routeId)">
-                        <td v-if='selectedArea == ""' class="p-2 border-r border-black">{{ item.area }}</td>
-                        <td class="p-2 border-r border-black">{{ item.route }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storeAll }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storeTotal }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storeSell }}</td>
-                        <td class="text-center p-2 border-r border-black">{{
-                            item.storeNotSell + item.storeCheckInNotSell
-                        }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.storeAll - item.storeTotal }}</td>
-                        <td class="text-right p-2  border-r border-black">{{ formatCurrency(item.summary) }}</td>
-                        <td class="text-right p-2 border-r border-black">
-                            {{ new Intl.NumberFormat('th-TH').format(item.totalqty || 0) }}
-                        </td>
-                        <td class="text-center p-2 border-r border-black">{{ item.percentVisit }}</td>
-                        <td class="text-center p-2 border-r border-black">{{ item.percentEffective }}</td>
-
-                    </tr>
-                </template>
-            </tbody>
-
-            <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
-                <tr class=" font-bold ">
-                    <td :colspan="selectedArea === '' ? 2 : 1" class="border p-2 text-black text-center">รวม</td>
-                    <td class="border p-2 text-black text-center">{{ totalStore }}</td>
-                    <td class="border p-2 text-black text-center">{{ totalstoreTotal }}</td>
-                    <td class="border p-2 text-black text-center">{{ totalstoreSell }}</td>
-                    <td class="border p-2 text-black text-center">{{ totalstoreNotSell }}</td>
-                    <td class="border p-2 text-black text-center">{{ totalstorePending }}</td>
-                    <td class="border p-2 text-black text-center">{{ formatCurrency(totalSummary) }}</td>
-                    <td class="border p-2 text-black text-center">{{ totalQTY }}</td>
-                    <td class="border p-2 text-black text-center">{{ totalPercentVisit }}</td>
-                    <td class="border p-2 text-black text-center">{{ totalPercentEffective }}</td>
-                    <!-- <td class="border p-2 text-center">รวมยอดขาย</td> -->
-                    <!-- <td colspan="7" class="border p-2 text-center">{{ formatCurrency(totalOrderAmount) }}</td> -->
+                <tr v-for="(item, index) in routeStores.routeAddStores" :key="item._id"
+                    class="hover:bg-blue-50 cursor-pointer">
+                    <td class="p-2 border">{{ index + 1 }}</td>
+                    <td class="p-2 border">{{ item.id }}</td>
+                    <td class="p-2 border">{{ item.storeId }}</td>
+                    <td class="p-2 border">{{ item.name }}</td>
+                    <td class="p-2 border">{{ item.route }}</td>
+                    <td class="p-2 border">
+                        <button @click="openAlert(item)" class="btn btn-primary text-center">
+                            อนุมัติ
+                        </button>
+                    </td>
+                    <td class="p-2 border">{{ item.approve?.appPerson ?? '-' }}</td>
+                    <td class="p-2 border" :class="statusTHBG(item.statusTH)">{{ item.statusTH }}</td>
+                    <td class="p-2 border text-center">{{ formatDateTime(item.approve?.dateAction ?? '') }}</td>
                 </tr>
-            </tfoot>
-
-
-
+            </tbody>
         </table>
+    </div>
+    <div v-if="mode == 'all'" class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
+        <div v-for="item in cardData" :key="item.id" class="bg-white rounded-xl shadow p-6 border flex flex-col gap-2">
+            <div>
+
+                <div class="flex justify-between items-center mb-3">
+                    <span class="font-bold text-lg text-gray-700">
+                        R{{ item.day }}
+                    </span>
+
+                    <!-- 🔴 Circular Progress -->
+                    <div class="relative w-16 h-16">
+                        <svg viewBox="0 0 120 120" class="w-full h-full">
+                            <!-- background -->
+                            <circle cx="60" cy="60" r="50" stroke="#eee" stroke-width="10" fill="none" />
+                            <!-- progress -->
+                            <circle cx="60" cy="60" r="50" :stroke="getProgressColor(item)" stroke-width="10"
+                                fill="none" stroke-linecap="round" :stroke-dasharray="circumference"
+                                :stroke-dashoffset="getDashOffset(item)" transform="rotate(-90 60 60)" />
+                        </svg>
+
+                        <!-- center text -->
+                        <div class="absolute inset-0 flex items-center justify-center text-sm font-semibold">
+                            {{ item.storeTotal }}/{{ item.storeAll }}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-sm text-gray-500">
+                        ทั้งหมด:
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <span class="font-semibold">{{ item.storeAll }}</span>
+
+                    </div>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-sm text-gray-500">
+                        เยี่ยม:
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <span class="font-semibold">{{ item.storeTotal }}</span>
+
+                    </div>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-sm text-gray-500">
+                        ซื้อ:
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <span class="font-semibold">{{ item.storeSell }}</span>
+
+                    </div>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-sm text-gray-500">
+                        ไม่ซื้อ:
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <span class="font-semibold">{{ item.storeNotSell }}</span>
+
+                    </div>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-sm text-gray-500">
+                        เช็คอิน:
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <span class="font-semibold">{{ item.storeCheckInNotSell }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4">อนุมัติร้านค้าใหม่ "{{ routeSelected?.name ?? "" }}" => {{
+                routeSelected?.route ?? "" }}</h2>
+            <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการอนุมัติร้าน {{ routeSelected?.storeId ?? "" }} ?</p>
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-success" @click="approveStatus(true)">อนุมัติ</button>
+                <button class="btn btn-error text-white" @click="approveStatus(false)">ไม่อนุมัติ</button>
+                <button class="btn btn-neutral" @click="showAlert = false">ยกเลิก</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -229,11 +154,15 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { useRouteStore } from '../../store/modules/route'
 import { useFilter } from '../../store/modules/filter'
 import { getTeam3 } from '../../utils/format'
+import { toast } from 'vue3-toastify';
+import "vue3-toastify/dist/index.css";
+import SegmentSwitch from '../../components/SegmentSwitch.vue'
+import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
 
 
+const mode = ref('approve')
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
-
 const router = useRouter()
 const route = useRoute()
 const routeStore = useRouteStore()
@@ -242,10 +171,53 @@ const isLoading = ref(false);
 const selectedRoute = ref(null)
 const showExcel = ref(null)
 const totalRow = ref('')
+const routeSelected = ref({})
+const showAlert = ref(false)
+const routeStores = useRouteStore()
+const cardData = ref([]);
+
+
 
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
+
+
+
+const radius = 50
+const circumference = 2 * Math.PI * radius
+
+
+const counts = computed(() => ({
+    approve: routeStores.routeAddStores.filter(item => item.statusTH === 'กำลังดำเนินการ').length
+}))
+
+
+
+function statusTHBG(status) {
+    switch (status) {
+        case 'กำลังดำเนินการ': return 'bg-yellow-100 text-yellow-700'
+        case 'อนุมัติ': return 'bg-green-100 text-green-700'
+        default: return status
+    }
+}
+
+function formatDateTime(isoString) {
+    if (isoString != '') {
+        const date = new Date(isoString)
+        const dd = String(date.getDate()).padStart(2, '0')
+        const mm = String(date.getMonth() + 1).padStart(2, '0')
+        const yyyy = date.getFullYear()
+        const hh = String(date.getHours()).padStart(2, '0')
+        const min = String(date.getMinutes()).padStart(2, '0')
+        return `${dd}-${mm}-${yyyy} ${hh}:${min}`
+    } else {
+        return ''
+    }
+
+}
+
+
 
 const filteredData = computed(() => {
     let data = routeStore.checkIn
@@ -329,6 +301,38 @@ const totalstoreTotal = computed(() => {
     }, 0)
 })
 
+async function approveStatus(statusBool) {
+    try {
+        await routeStores.approveNewStoreToRoute(routeSelected.value.id, statusBool)
+
+        if (routeStores.statusCode == 200) {
+            toast(`อนุมัติเรียบร้อย !`, {
+                "theme": toast.THEME.COLORED,
+                "type": toast.TYPE.SUCCESS,
+                "dangerouslyHTMLString": true
+            })
+        } else {
+            toast(`${routeStores.message}!`, {
+                "theme": toast.THEME.COLORED,
+                "type": toast.TYPE.ERROR,
+                "dangerouslyHTMLString": true
+            })
+        }
+
+        // window.location.reload();
+        // router.push('/areamanager/addstoreroute')
+
+    } catch (error) {
+        toast(`${error.message}!`, {
+            "theme": toast.THEME.COLORED,
+            "type": toast.TYPE.ERROR,
+            "dangerouslyHTMLString": true
+        })
+    }
+
+    // await withdrawStore.approve(route.params.id, statusBool)
+}
+
 function showDetail(item, routeCode, routeId) {
     selectedRoute.value = item
     router.push({ name: 'RouteDetail', params: { route: routeCode, routeId: routeId } })
@@ -346,7 +350,15 @@ function clearFilter() {
             team: ''
         }
     });
-    window.location.assign('/supervisor/checkin')
+    // window.location.assign('/supervisor/checkin')
+}
+
+
+function openAlert(item) {
+    routeSelected.value = item
+    console.log(routeSelected.value)
+    console.log(routeSelected.value.route)
+    showAlert.value = true;
 }
 
 function formatCurrency(value) {
@@ -366,12 +378,13 @@ onMounted(async () => {
     console.log('selectedArea.value', selectedArea.value)
     if (selectedZone.value) {
         await filter.getArea(period, selectedZone.value, selectedTeam.value);
-        // showExcel.value = 'true'
-        //     await filter.getTeam(selectedZone.value);
+        //showExcel.value = 'true'
+        //await filter.getTeam(selectedZone.value);
     }
     // console.log('route.query.team', route.query.team)
-    await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
-    await routeStore.getCheckin(period, selectedZone.value, selectedTeam.value, selectedArea.value);
+    await routeStores.getNewStoreToRoute(period, selectedZone.value, selectedTeam.value, selectedArea.value)
+    await routeStores.getRouteChangeSale(period, selectedZone.value, selectedTeam.value, selectedArea.value)
+    cardData.value = routeStores.routeChanges
     isLoading.value = false;
     // showExcel.value = 'true'
 })
@@ -396,6 +409,17 @@ watch(selectedTeam, async (newVal) => {
     });
     if (newVal) {
         filter.getArea(period, selectedZone.value, newVal);
+        if (mode == 'approve') {
+            isLoading.value = true;
+            await routeStores.getNewStoreToRoute(period, selectedZone.value, newVal, selectedArea.value)
+            isLoading.value = false;
+        } else {
+            isLoading.value = true;
+            await routeStores.getRouteChangeSale(period, selectedZone.value, newVal, selectedArea.value)
+            cardData.value = routeStores.routeChanges
+            isLoading.value = false;
+        }
+
     }
 });
 
@@ -413,6 +437,16 @@ watch(() => route.query.team, (val) => {
 watch(selectedZone, async (newVal) => {
     selectedArea.value = ''
     selectedTeam.value = ''
+    if (newVal === 'all') {
+        isLoading.value = true;
+        selectedZone.value = ''
+        newVal = ''
+        await routeStores.getRouteChangeSale(period, newVal, selectedTeam.value, selectedArea.value)
+        await routeStores.getNewStoreToRoute(period, newVal, selectedTeam.value, selectedArea.value)
+        cardData.value = routeStores.routeChanges
+        isLoading.value = false;
+    }
+
     router.replace({
         query: {
             ...route.query,
@@ -426,6 +460,17 @@ watch(selectedZone, async (newVal) => {
 
         filter.getArea(period, newVal, selectedTeam.value);
         filter.getTeam('cash', newVal);
+
+        if (mode == 'approve') {
+            isLoading.value = true;
+            await routeStores.getNewStoreToRoute(period, newVal, selectedTeam.value, selectedArea.value)
+            isLoading.value = false;
+        } else {
+            isLoading.value = true;
+            await routeStores.getRouteChangeSale(period, newVal, selectedTeam.value, selectedArea.value)
+            cardData.value = routeStores.routeChanges
+            isLoading.value = false;
+        }
     }
 });
 
@@ -448,11 +493,44 @@ watch(selectedArea, async (newVal) => {
             showExcel.value = 'true'
         }
 
-        await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
-        await routeStore.getCheckin(period, newVal);
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        if (mode == 'approve') {
+            isLoading.value = true;
+            await routeStores.getNewStoreToRoute(period, selectedZone.value, selectedTeam.value, newVal)
+            isLoading.value = false;
+        } else {
+            isLoading.value = true;
+            await routeStores.getRouteChangeSale(period, selectedZone.value, selectedTeam.value, newVal)
+            cardData.value = routeStores.routeChanges
+            isLoading.value = false;
+        }
+
         isLoading.value = false;
     }
 });
+
+
+const getDashOffset = (item) => {
+    const total = Number(item.storeAll) || 0
+    const visited = Number(item.storeTotal) || 0
+    if (total === 0) return circumference
+    const percent = visited / total
+    return circumference * (1 - percent)
+}
+
+const getPercent = (item) => {
+    const total = Number(item.storeAll) || 0
+    const visited = Number(item.storeTotal) || 0
+    if (total === 0) return 0
+    return (visited / total) * 100
+}
+
+const getProgressColor = (item) => {
+    const p = getPercent(item)
+    if (p < 40) return '#ef4444' // red-500
+    if (p < 70) return '#f59e0b' // amber-500
+    return '#22c55e'             // green-500
+}
+
+
 
 </script>

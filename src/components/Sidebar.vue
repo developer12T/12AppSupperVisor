@@ -43,8 +43,8 @@ const menuItems = computed(() => [
         icon: 'mdi:routes',
         link: '#',
         submenu: [
-            { icon: 'ic:baseline-route', name: 'ปรับ Route', link: '/areamanager/changeroute', channel: ['CASH', "ADMIN"] },
-            { icon: 'mdi:store-marker', name: 'เพิ่มร้านค้าใหม่เข้า Route', link: '/areamanager/addstoreroute', channel: ['CASH', "PC", "ADMIN"] },
+            { icon: 'ic:baseline-route', name: 'อนุมัติการปรับรูท', link: '/areamanager/changeroute', channel: ['CASH', "ADMIN"] },
+            { icon: 'mdi:store-marker', name: 'อนุมัติการเพิ่มร้านค้าใหม่', link: '/areamanager/addstoreroute', channel: ['CASH', "PC", "ADMIN"] },
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'dc'],
         channel: ['CASH', "PC", "ADMIN"]
@@ -69,7 +69,7 @@ const menuItems = computed(() => [
         channel: ['CASH', "PC", "ADMIN"]
     },
     { name: 'รายการออเดอร์', icon: 'mdi:receipt-text', link: '/sale/order', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
-    { name: 'ปรับรูท', icon: 'ic:baseline-route', link: '/sale/changeRoute', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
+    { name: 'ปรับรูท', icon: 'ic:baseline-route', link: '/sale/changeRoute', submenu: null, roles: ['sale'], channel: ['CASH', "PC", "ADMIN"] },
     { name: 'เพิ่มร้านค้าใหม่เข้า Route', icon: 'mdi:store-plus', link: '/sale/addnewstoreroute', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
     { name: 'รายการแจกสินค้า', icon: 'mdi:gift', link: '/sale/give', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
     { name: 'รายการคืนสินค้า', icon: 'mdi:autorenew', link: '/sale/refundtable', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
@@ -106,21 +106,7 @@ const menuItems = computed(() => [
             { icon: 'mdi:shop-location', name: 'อนุมัติร้านค้า Location', link: '/supervisor/storeapprovelatlong', channel: ['CASH', "PC", "ADMIN"] },
             { icon: 'mdi:store-marker', name: 'อนุมัติร้านค้าเข้า Route', link: '/supervisor/addnewstoretoroute', channel: ['CASH', "PC", "ADMIN"] },
         ],
-
     },
-    // {
-    //     name: 'รายงานส่งเงิน',
-    //     icon: 'noto:money-with-wings',
-    //     link: '#',
-    //     roles: ['admin'],
-    //     channel: ['CASH', 'PC', "ADMIN"],
-    //     submenu: [
-    //         { icon: 'fluent:shifts-day-20-filled', name: 'ยอดส่งเงินรายวัน', link: '/admin/sendmoneyDaily', channel: ['CASH', "ADMIN"] },
-    //         // { icon: 'material-symbols:calendar-month', name: 'ยอดส่งเงินประจำเดือน', link: '/supervisor/approve', channel: ['CASH', "ADMIN"] },
-    //         // { icon: 'fluent:money-hand-16-filled', name: 'สรุปยอดเงิน', link: '/supervisor/withdraw', channel: ['CASH', "ADMIN"] },
-    //     ],
-
-    // },
     { name: 'รายงานส่งเงิน', icon: 'noto:money-with-wings', link: '/admin/sendmoneyDaily', submenu: null, roles: ['admin'], channel: ['CASH', 'PC', "ADMIN"] },
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['supervisor'], badge: storeModel.count, channel: ['CASH', 'PC', "ADMIN"] },
     { name: 'ส่งร้านค้า', icon: 'mdi:store-edit', link: '/supervisor/sentstore', submenu: null, roles: ['supervisor'], channel: ['PC', "ADMIN"] },

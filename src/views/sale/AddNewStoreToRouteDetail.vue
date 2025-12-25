@@ -3,7 +3,7 @@
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <div class="flex justify-between">
             <div class="flex justify-start">
-                <h2 class="text-2xl font-bold mb-6">จัดร้านค้าเข้า Route</h2>
+                <h2 class="text-2xl font-bold mb-6">จัดร้านค้าเข้า Route {{ route.params.id.slice(11, 14) }}</h2>
                 <label class="input input-bordered flex items-center gap-2 w-64 ms-3">
                     <svg class="w-5 h-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -13,9 +13,7 @@
                         </g>
                     </svg>
                     <input v-model="searchQuery" type="search" class="grow" placeholder="Search" />
-
                 </label>
-                <button class="ms-3 btn btn-success">บันทึก</button>
             </div>
             <div class="flex justify-start">
                 <SegmentSwitch v-model="mode" :counts="counts" />
@@ -28,7 +26,7 @@
                 <div class="flex justify-between">
                     <div>
                         <h1>
-                            ร้านค้าก่อนหน้ามีทั้งหมด
+                            ร้านค้าในรูท มีทั้งหมด
                         </h1>
                     </div>
                     <div>
@@ -47,7 +45,7 @@
                             <th class="p-2 border">ชื่อร้าน</th>
                             <th class="p-2 border">ประเภท</th>
                             <th class="p-2 border">สถานะ</th>
-                            <th class="p-2 border">ลบ</th>
+                            <!-- <th class="p-2 border">ลบ</th> -->
 
                         </tr>
                     </thead>
@@ -59,9 +57,9 @@
                             <td class="p-2 border">{{ item.name }}</td>
                             <td class="p-2 border">{{ item.typeName }}</td>
                             <td class="p-2 border">{{ item.statusText }}</td>
-                            <td class="p-2 border  text-center">
+                            <!-- <td class="p-2 border  text-center">
                                 <button @click="deleteToStoreChange(item)" class="btn btn-active btn-error">>></button>
-                            </td>
+                            </td> -->
                             <!-- <td class="p-2 border">{{ item.date }}</td> -->
                         </tr>
                     </tbody>
@@ -73,9 +71,8 @@
                 <div class="flex justify-between">
                     <div>
                         <h1>
-                            ร้านค้าทั้งหมดของเขต {{ area || '-' }}
+                            ร้านค้าใหม่ทั้งหมดของเขต {{ area || '-' }}
                         </h1>
-
                     </div>
                     <div class="flex justify-between">
                         <h1>
@@ -105,8 +102,8 @@
                         <tr v-for="(item, index) in visibleRowsStoreAll" :key="item._id"
                             class="hover:bg-blue-50 cursor-pointer">
                             <td class="p-2 border">
-                                <button @click="addToStoreChange(item)" class="btn btn-active btn-success">
-                                    << </button>
+                                <button @click="openAlert(item)" class="btn btn-active btn-success">
+                                    เพิ่ม </button>
                             </td>
                             <td class="p-2 border">{{ startIndex + index + 1 }}</td>
                             <td class="p-2 border">{{ item.storeId }}</td>
@@ -178,6 +175,16 @@
             </div>
         </div>
     </div>
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4"> เพิ่มร้าน</h2>
+            <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการเพิ่มร้าน ?</p>
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-success" @click="addToStoreChange()">เพิ่มร้าน</button>
+                <button class="btn btn-neutral" @click="showAlert = false">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -224,9 +231,17 @@ const pageSize = ref(25)
 const startIndex = computed(() => (page.value - 1) * pageSize.value)
 const endIndex = computed(() => page.value * pageSize.value)
 
+const itemSelected = ref()
+const showAlert = ref(false)
+
 const counts = computed(() => ({
     approve: routeStores.routeAddStores.length
 }))
+
+function openAlert(item) {
+    itemSelected.value = item;
+    showAlert.value = true;
+}
 
 
 
@@ -271,43 +286,46 @@ const hasNextPage = computed(() => {
     return endIndex.value < storeAllData.length
 })
 
-const addToStoreChange = async (item) => {
-    // 🔒 กันซ้ำ (ถ้ามีอยู่แล้วไม่เพิ่ม)
-    const confirmed = confirm(
-        `ยืนยันเพิ่มร้าน ${item.name || item.storeId} เข้า Route ${route.params.id} ?`
-    )
-    if (!confirmed) return
-    const exists = storeChange.value.some(
-        s => s.storeId === item.storeId
-    )
-    if (exists) return
+const addToStoreChange = async () => {
+    try {
+        // 🔒 กันซ้ำ (ถ้ามีอยู่แล้วไม่เพิ่ม
+        await routeStores.addNewStoreToRoute(route.params.id, itemSelected.value.storeId)
 
-    // ➕ เพิ่มเข้า storeChange
-    storeChange.value.push({
-        ...item,
-        statusText: 'เพิ่มใหม่'
-    })
-
-    await routeStores.addNewStoreToRoute(
-        route.params.id, item.storeId
-    )
-    await routeStores.getNewStoreToRoute(period, '', '', area)
-
-    if (routeStores.statusCode === 200) {
-
-        toast('เพิ่มร้านค้าสำเร็จ', {
+        if (routeStores.statusCode === 201 || routeStores.statusCode === 200) {
+            // ➕ เพิ่มเข้า storeChange
+            storeChange.value.push({
+                ...itemSelected.value,
+                statusText: 'เพิ่มใหม่'
+            })
+            toast('เพิ่มร้านค้าเข้า Route สำเร็จ', {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.SUCCESS,
+                dangerouslyHTMLString: true
+            })
+        } else if (routeStores.statusCode === 409) {
+            toast('ร้านค้านี้มีอยู่ใน Route แล้ว', {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.WARNING,
+                dangerouslyHTMLString: true
+            })
+        } else {
+            toast('เกิดข้อผิดพลาดในการเพิ่มร้านค้า', {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.ERROR,
+                dangerouslyHTMLString: true
+            })
+        }
+        showAlert.value = false;
+        await routeStores.getNewStoreToRoute(period, '', '', area)
+     
+    } catch (error) {
+        toast(error, {
             theme: toast.THEME.COLORED,
-            type: toast.TYPE.SUCCESS,
+            type: toast.TYPE.ERROR,
             dangerouslyHTMLString: true
         })
+        console.error('Error adding store to route change:', error);
     }
-
-
-
-    // ❌ เอาออกจาก storeAll (optional แต่แนะนำ)
-    // store.storeAll = store.storeAll.filter(
-    //     s => s.storeId !== item.storeId
-    // )
 }
 
 
@@ -330,7 +348,7 @@ onMounted(async () => {
     await store.getCustomerAll('cash', '', area, '', '', '', '')
     storeChange.value = routeStores.routeChangeStores
     storeAllData.value = store.storeNew.data
-    // console.log()
+    // console.log() 
     // cardData.value = routeStores.routeChanges
 
     isLoading.value = false
