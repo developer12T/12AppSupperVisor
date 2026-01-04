@@ -18,6 +18,24 @@ const adminRoutes = [
         path: 'addstoreroute',
         component: () => import('../../views/areamanager/AddStoreRoute.vue')
         //   meta: { breadcrumb: 'รายละเอียด' }
+      },
+      {
+        path: 'changeroute/:area',
+        component: () =>
+          import('../../views/areamanager/ApproveChangeRoute.vue')
+        //   meta: { breadcrumb: 'รายละเอียด' }
+      },
+      {
+        path: 'changeroute/detail/:id',
+        component: () =>
+          import('../../views/areamanager/ApproveChangeRouteDetail.vue')
+        //   meta: { breadcrumb: 'รายละเอียด' }
+      },
+      {
+        path: 'polylineroute/:area',
+        component: () =>
+          import('../../views/areamanager/RouteToVisitMap.vue')
+        //   meta: { breadcrumb: 'รายละเอียด' }
       }
     ]
   }

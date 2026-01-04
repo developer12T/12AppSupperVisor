@@ -25,7 +25,7 @@
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
             </div>
-          
+
         </div>
         <table class="min-w-full border text-center text-sm bg-white">
             <thead class="bg-primary text-white sticky top-0 z-10">
@@ -36,9 +36,12 @@
                     <th class="text-center p-2 ">จำนวนที่ปรับ</th>
                     <th class="text-center p-2 ">ร้านค้าใหม่ทั้งหมด</th>
                     <th class="text-center p-2 ">สถานะ</th>
+                    <th class="text-center p-2 ">อนุมัติ</th>
+                    <th class="text-center p-2 ">อนุมัติ</th>
                 </tr>
             </thead>
             <tbody>
+
                 <tr v-for="(item, index) in filteredData" :key="index" class="hover:bg-gray-50 cursor-pointer">
                     <td class="p-2 border">{{ item.area }}</td>
                     <td class="p-2 border">{{ item.storeCount }}</td>
@@ -46,9 +49,25 @@
                     <td class="p-2 border">{{ item.addStoreToRoute }}</td>
                     <td class="p-2 border">{{ item.storeNew }}</td>
                     <td :class="statusTHBG(item.statusTH)" class="p-2 border">{{ item.statusTH }}</td>
+                    <td class="p-2 border  text-center">
+                        <button @click="openAlert(item)" class="btn btn-primary">อนุมัติ</button>
+                    </td>
+                    <td class="p-2 border  text-center">
+                        <button @click="openSupervisor(item.area)" class="btn btn-primary">ดูรายละเอียด</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div v-if="showAlert" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
+            <h2 class="font-bold text-lg mb-4"> อนุมัติการปรับรูท {{ itemSelected?.area }}</h2>
+            <p class="mb-6">คุณแน่ใจหรือไม่ว่าต้องการอนุมัติการปรับรูท ?</p>
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-success" @click="addToStoreChange()">อนุมัติ</button>
+                <button class="btn btn-neutral" @click="showAlert = false">ยกเลิก</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -72,6 +91,8 @@ const isLoading = ref(false);
 const selectedRoute = ref(null)
 const showExcel = ref(null)
 const totalRow = ref('')
+const showAlert = ref('')
+const itemSelected = ref()
 
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
@@ -86,23 +107,36 @@ function statusTHBG(status) {
     }
 }
 
+function openAlert(item) {
+    itemSelected.value = item;
+    showAlert.value = true;
+}
+
 
 const filteredData = computed(() => {
     let data = routeStore.routesApproval
 
 
-    // if (selectedZone.value) {
-    //     data = data.filter(order =>
-    //         (order.area || '').startsWith(selectedZone.value)
-    //     )
-    // }
+    if (selectedZone.value) {
+        data = data.filter(order =>
+            (order.area || '').startsWith(selectedZone.value)
+        )
+    }
 
-    // if (selectedTeam.value) {
-    //     console.log()
-    //     data = data.filter(order =>
-    //         getTeam3(order.area) === selectedTeam.value
-    //     )
-    // }
+
+    if (selectedArea.value) {
+        console.log()
+        data = data.filter(order =>
+            order.area === selectedArea.value
+        )
+    }
+
+    if (selectedTeam.value) {
+        console.log()
+        data = data.filter(order =>
+            getTeam3(order.area) === selectedTeam.value
+        )
+    }
     return data;
 })
 
@@ -119,9 +153,14 @@ function clearFilter() {
             team: ''
         }
     });
-    window.location.assign('/supervisor/checkin')
+    window.location.assign('/areamanager/changeroute')
 }
 
+
+const openSupervisor = (area) => {
+    const route = router.resolve(`/areamanager/changeroute/${area}`)
+    window.open(route.href, '_blank')
+}
 
 onMounted(async () => {
     isLoading.value = true;

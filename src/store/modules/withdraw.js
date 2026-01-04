@@ -129,7 +129,6 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-
     async getWithdrawTable(
       channel,
       period,
@@ -214,7 +213,6 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-
     async getWareHouseWithdraw(
       channel,
       period,
@@ -226,7 +224,6 @@ export const useWithdrawStore = defineStore('withdraws', {
     ) {
       try {
         setChannel(channel)
-
         const response = await api.get(
           `/api/cash/distribution/getwarehouse?type=pending&warehouse=${warehouse}&period=${period}&year=${year}&month=${month}&start=${start}&end=${end}`
         )
@@ -252,7 +249,6 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.log(error)
       }
     },
-
     async getCountPending(selectZone) {
       try {
         let zone = ''
@@ -325,7 +321,6 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.error(error?.response?.data || error)
       }
     },
-
     async addAllPlace(channel) {
       try {
         setChannel(channel)
@@ -340,7 +335,5 @@ export const useWithdrawStore = defineStore('withdraws', {
         console.error(error?.response?.data || error)
       }
     }
-
   },
-
 })
