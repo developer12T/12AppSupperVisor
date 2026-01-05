@@ -107,7 +107,18 @@ const menuItems = computed(() => [
             { icon: 'mdi:store-marker', name: 'อนุมัติร้านค้าเข้า Route', link: '/supervisor/addnewstoretoroute', channel: ['CASH', "PC", "ADMIN"] },
         ],
     },
-    { name: 'รายงานส่งเงิน', icon: 'noto:money-with-wings', link: '/admin/sendmoneyDaily', submenu: null, roles: ['admin'], channel: ['CASH', 'PC', "ADMIN"] },
+
+    {
+        name: 'รายการส่งเงิน',
+        icon: 'mdi:money',
+        link: '#',
+        roles: ['admin', 'area_manager', 'sale_manager'],
+        channel: ["ADMIN"],
+        submenu: [
+            { icon: 'noto:money-with-wings', name: 'รายงานส่งเงิน', link: '/admin/sendmoneyDaily', channel: ['CASH', "PC", "ADMIN"] },
+            { icon: 'mdi:content-save', name: 'บันทึกส่งเงิน', link: '/admin/saveSendmoneyDaily', channel: ['CASH', "PC", "ADMIN"] },
+        ],
+    },
     { name: 'อนุมัติร้านค้า', icon: 'mdi:store-clock', link: '/supervisor/approve', submenu: null, roles: ['supervisor'], badge: storeModel.count, channel: ['CASH', 'PC', "ADMIN"] },
     { name: 'ส่งร้านค้า', icon: 'mdi:store-edit', link: '/supervisor/sentstore', submenu: null, roles: ['supervisor'], channel: ['PC', "ADMIN"] },
     { name: 'อนุมัติใบเบิก', icon: 'mdi:box-clock-outline', link: '/supervisor/withdraw', submenu: null, roles: ['supervisor', 'dc',], badge: withdrawStore.count, channel: ['CASH', 'PC', "ADMIN"] },

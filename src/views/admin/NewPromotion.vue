@@ -100,6 +100,7 @@ import { usePromotionsStore } from '../../store/modules/promotion'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 import { toast } from 'vue3-toastify';
+import "vue3-toastify/dist/index.css";
 
 const router = useRouter()
 const optionStore = useOption()

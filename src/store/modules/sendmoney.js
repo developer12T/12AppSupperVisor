@@ -5,6 +5,7 @@ export const useSendmoney = defineStore('sendmoney', {
   state: () => ({
     sendmoney: [],
     monthlyData: [],
+    sendmoneyMonthyData: [],
     dailyData: [],
     statusCode: 0,
     message: ''
@@ -21,6 +22,22 @@ export const useSendmoney = defineStore('sendmoney', {
         )
         console.log('getSendmoney', response.data)
         this.sendmoney = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async saveSendmoneyMonthy (data) {
+      try {
+        // console.log('data to save', data)
+        const response = await api.post(
+          `${import.meta.env.VITE_API_URL}/api/cash/sendmoney/saveSendmoney`,
+          { data: data }
+        )
+        this.statusCode = response.data.status
+        this.message = response.data.message
+        console.log('saveSendmoneyMonthy', response.data)
+        // this.statusCode = response.data.statusCode
       } catch (error) {
         console.error(error)
       }
@@ -50,6 +67,20 @@ export const useSendmoney = defineStore('sendmoney', {
         )
         console.log('summaryDaily', response.data)
         this.dailyData = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async sendmoneySumByArea (channel, period) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/sendmoney/sendmoneySumByArea?period=${period}&channel=${channel}`
+        )
+        console.log('sendmoneySumByArea', response.data)
+        this.sendmoneyMonthyData = response.data.data
       } catch (error) {
         console.error(error)
       }

@@ -75,6 +75,12 @@ const adminRoutes = [
         path: 'sendmoneyDaily',
         component: () => import('../../views/admin/SendmoneySummaryDaily.vue')
         // meta: { breadcrumb: 'ใบสั่งจอง' }
+      },
+
+      {
+        path: 'saveSendmoneyDaily',
+        component: () => import('../../views/admin/SaveSendmoneyMonthy.vue')
+        // meta: { breadcrumb: 'ใบสั่งจอง' }
       }
     ]
   }

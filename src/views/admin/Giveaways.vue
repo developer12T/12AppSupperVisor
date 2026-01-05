@@ -72,6 +72,7 @@ import { useGiveAway } from '../../store/modules/giveaway'
 import VueMultiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.css'
 import { toast } from 'vue3-toastify';
+import "vue3-toastify/dist/index.css";
 
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
