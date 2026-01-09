@@ -107,7 +107,7 @@
                     <td class="border p-2 text-center">{{ formatNumber(totalRefund) }}</td>
                     <td class="border p-2 text-center">{{ formatNumber(totalSale) }}</td>
                     <td class="border p-2 text-center">{{ formatNumber(totalSendmoney) }}</td>
-                    <td class="border p-2 text-center">{{ formatNumber(totalSendmoney) }}</td>
+                    <td class="border p-2 text-center">{{ formatNumber(totalSendmoneyACC) }}</td>
                     <td :class="{
                         'bg-green-100 text-green-700': totalDiff >= 0,
                         'bg-red-100 text-red-700': totalDiff < 0,
@@ -118,6 +118,7 @@
 
         </table>
     </div>
+
     <div class="flex justify-start mt-2">
         <div class="ms-2">
             <button class="btn btn-success text-white" @click="dowloadExcelFile">Export Excel</button>
@@ -473,6 +474,12 @@ const totalRefund = computed(() => {
 const totalSendmoney = computed(() => {
     return dailyList.value.reduce((sum, order) => {
         return sum + (Number(order.sendmoney) || 0)
+    }, 0)
+})
+
+const totalSendmoneyACC = computed(() => {
+    return dailyList.value.reduce((sum, order) => {
+        return sum + (Number(order.sendmoneyAcc) || 0)
     }, 0)
 })
 

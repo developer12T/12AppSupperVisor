@@ -11,7 +11,6 @@
                 </h2>
             </div>
         </div>
-
         <table class="table-auto w-full border shadow-md">
             <thead class=" bg-gray-100">
                 <tr>

@@ -241,8 +241,6 @@ async function onMonthChange() {
     }
 }
 
-
-
 function clearFilter() {
     selectedZone.value = ''
     selectedArea.value = ''
