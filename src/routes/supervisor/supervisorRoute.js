@@ -103,6 +103,11 @@ const supervisorRoutes = [
         component: () => import('../../views/supervisor/PolylineRoute2.vue')
       },
       {
+        path: 'polylineroute2/:area/:startDate/:endDate',
+        name: 'lineCheckin',
+        component: () => import('../../views/supervisor/PolylineRouteLine.vue')
+      },
+      {
         path: 'storeinroute',
         component: () => import('../../views/supervisor/StoreInRoute.vue')
       },
@@ -175,6 +180,12 @@ const supervisorRoutes = [
       {
         path: 'targetvisit',
         component: () => import('../../views/supervisor/TargetVisitRoute.vue')
+      },
+      {
+        path: 'targetvisitstore/:area/:date',
+        name: 'targetvisitstore',
+        component: () =>
+          import('../../views/supervisor/TargetVisitRouteShowStore.vue')
       }
     ]
   }

@@ -4,6 +4,7 @@ import api from '../../utils/axios'
 export const useRouteStore = defineStore('checkin', {
   state: () => ({
     routes: [],
+    storeCheckIN: [],
     routesApproval: [],
     routeChanges: [],
     routeChangesNew: [],
@@ -302,6 +303,24 @@ export const useRouteStore = defineStore('checkin', {
         )
         console.log('routes', response.data)
         this.routes = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async getStoreCheckinByDayArea (area, date) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getStoreCheckinByDayArea`,
+          {
+            area: area,
+            date: date
+          }
+        )
+        console.log('storeCheckIN', response.data)
+        this.storeCheckIN = response.data.data
       } catch (error) {
         console.error(error)
       }

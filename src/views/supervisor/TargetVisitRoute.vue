@@ -5,7 +5,7 @@
         <!-- Header -->
         <header class="header">
             <h1>✅ เป้าหมายการเข้าเยี่ยม</h1>
-            <div class="ms-3" v-if="userRole != 'supervisor'">
+            <div class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
                     <option disabled value="">Select Zone</option>
                     <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
@@ -128,7 +128,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="r in visibleRows" :key="r.day">
+                    <tr v-for="r in visibleRows" :key="r.day" @click="goToTargetVisit(r)">
                         <td class="text-center border">{{ formatPeriod(r.day) }}</td>
 
                         <td class="text-right border">
@@ -183,6 +183,8 @@ import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตา�
 const filter = useFilter()
 const routeStore = useRouteStore()
 const monthRange = ref();
+
+
 
 
 const filteredDataRoute = computed(() => {
@@ -532,8 +534,24 @@ watch(selectedArea, async (newVal) => {
             await routeStore.getRouteEffective(period, '', selectedZone.value, selectedTeam.value, newVal,);
             await routeStore.getDayRoute(period, selectedZone.value, selectedTeam.value, newVal);
         }
+        isLoading.value = false
     }
 });
+
+const goToTargetVisit = (data) => {
+    if (!selectedArea.value || !data.day) {
+        console.warn('Missing route params', data, selectedArea.value)
+        return
+    }
+    router.push({
+        name: 'targetvisitstore',
+        params: {
+            area: selectedArea.value,
+            date: data.day
+        }
+    })
+}
+
 
 
 </script>
