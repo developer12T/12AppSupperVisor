@@ -186,6 +186,11 @@ const supervisorRoutes = [
         name: 'targetvisitstore',
         component: () =>
           import('../../views/supervisor/TargetVisitRouteShowStore.vue')
+      },
+      {
+        path: 'approveLockRoute',
+        name: 'approveLockRoute',
+        component: () => import('../../views/supervisor/ApproveLockRoute.vue')
       }
     ]
   }

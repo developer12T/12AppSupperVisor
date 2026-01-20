@@ -99,6 +99,7 @@ const menuItems = computed(() => [
         roles: ['admin', 'area_manager', 'sale_manager'],
         channel: ['CASH', 'PC', "ADMIN"],
         submenu: [
+            { icon: 'ic:baseline-route', name: 'อนุมัติขายนอกรูท/เช็คอิน', link: '/supervisor/approveLockRoute', channel: ['CASH', "PC", "ADMIN"] },
             { icon: 'mdi:store-clock', name: 'อนุมัติร้านค้า', link: '/supervisor/approve', channel: ['CASH', "PC", "ADMIN"] },
             { icon: 'mdi:box-clock-outline', name: 'อนุมัติใบเบิก', link: '/supervisor/withdraw', channel: ['CASH', "PC", "ADMIN"] },
             { icon: 'mdi:autorenew', name: 'อนุมัติขอคืน', link: '/supervisor/refund', channel: ['CASH', "PC", "ADMIN"] },
@@ -204,7 +205,7 @@ onMounted(refreshSidebarData);
                                             class="w-5 h-5 text-gray-500 group-hover:text-gray-900" />
                                         <span v-if="showText" class="flex-1 ms-3 text-left whitespace-nowrap">{{
                                             subItem.name
-                                        }}</span>
+                                            }}</span>
 
                                     </router-link>
                                 </li>

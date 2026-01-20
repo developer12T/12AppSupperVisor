@@ -32,12 +32,13 @@
             <table class=" table w-full min-w-[600px]">
                 <thead>
                     <tr class="bg-primary text-white sticky top-0 left-0 z-50">
-                        <th>#</th>
+                        <th>No</th>
                         <th>Store ID</th>
+                        <th>Store Name</th>
                         <th>Route</th>
                         <th>Date</th>
-                        <th>Lat</th>
-                        <th>Lng</th>
+                        <th>Status</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -45,12 +46,19 @@
                         v-for="(item, idx) in routeStore.polyline" :key="item.storeId">
                         <td>{{ idx + 1 }}</td>
                         <td>{{ item.storeId }}</td>
+                        <td>{{ item.storeName }}</td>
                         <td>{{ item.route }}</td>
                         <td>{{ item.date }}</td>
-                        <td>{{ item.location[1] }}</td>
-                        <td>{{ item.location[0] }}</td>
+                        <td>{{ item.statusText }}</td>
                     </tr>
                 </tbody>
+                <tfoot class="bg-gray-300" style="position: sticky; bottom: 0;  z-index: 2;">
+                    <tr class="bg-gray-300 font-bold ">
+                        <td colspan="2" class="border p-2 text-left">รวมซื้อ {{ totalSale }}</td>
+                        <td colspan="2" class="border p-2 text-left">รวมไม่ซื้อ {{ totalNotSale }}</td>
+                        <td colspan="2" class="border p-2 text-left">รวมทั้งหมด {{ total }}</td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -124,8 +132,14 @@ function renderMap() {
     // เติม marker ใหม่
     const latlngs = [];
     points.value.forEach((item, idx) => {
+        const color =
+            item.status === '3'
+                ? '#198754'
+                : item.status === '2'
+                    ? '#9B1C1C'
+                    : '#999999'
         const icon = L.icon({
-            iconUrl: makeSVGIcon(idx + 1),
+            iconUrl: makeSVGIcon(idx + 1, color),
             iconSize: [40, 40],
             iconAnchor: [21, 21],
             popupAnchor: [0, -16],
@@ -179,8 +193,12 @@ async function onMonthChange() {
             lat: item.location[1],
             lng: item.location[0],
             storeId: item.storeId,
+            storeName: item.storeName,
             route: item.route,
             date: item.date,
+            statusText: item.statusText,
+            status: item.status,
+            note: item.note,
         }));
 
         renderMap();
@@ -211,6 +229,24 @@ function gotoPoint(idx) {
         markers[idx].openPopup();
     }
 }
+
+const totalSale = computed(() => {
+    return points.value.reduce((sum, order) => {
+        return sum + (String(order.status) === '3' ? 1 : 0)
+    }, 0)
+})
+
+const total = computed(() => {
+    return points.value.reduce((sum, order) => {
+        return sum + (['2', '3', '1'].includes(String(order.status)) ? 1 : 0)
+    }, 0)
+})
+
+const totalNotSale = computed(() => {
+    return points.value.reduce((sum, order) => {
+        return sum + (String(order.status) === '2' ? 1 : 0)
+    }, 0)
+})
 
 // onMounted(async () => {
 //     await routeStore.getPolyLine(period, route.params.area, '', '');
@@ -280,8 +316,12 @@ onMounted(async () => {
         lat: item.location[1],
         lng: item.location[0],
         storeId: item.storeId,
+        storeName: item.storeName,
         route: item.route,
         date: item.date,
+        statusText: item.statusText,
+        status: item.status,
+        note: item.note,
     }));
 
     renderMap();

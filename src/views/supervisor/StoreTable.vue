@@ -169,7 +169,7 @@ let debounceTimer = null
 
 const filteredOrders = computed(() => {
     // let data = useOrderStore.order.data;
-    let data = store.storeAll.data
+    let data = store.storeAll
     // Search filter (text input)
     const query = searchQuery.value.trim().toLowerCase();
     if (query) {

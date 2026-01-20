@@ -12,6 +12,7 @@
                         <th class="p-2 border">No.</th>
                         <th class="p-2 border">ชื่อร้าน</th>
                         <th class="p-2 border">รหัสร้าน</th>
+                        <th class="p-2 border">ที่อยู่</th>
                         <th class="p-2 border">Route</th>
                         <th class="p-2 border">เบอร์ร้าน</th>
                         <th class="p-2 border">สถานะ</th>
@@ -26,6 +27,7 @@
                         <td class="p-2 border">{{ index + 1 }}</td>
                         <td class="p-2 border">{{ item.storeName }}</td>
                         <td class="p-2 border">{{ item.storeId }}</td>
+                        <td class="p-2 border">{{ item.storeAddress }}</td>
                         <td class="p-2 border">R{{ item.routeDay }}</td>
                         <td class="p-2 border">{{ item.phone }}</td>
                         <td class="p-2 border">{{ item.statusText }}</td>
@@ -105,7 +107,7 @@ const formatToYYYYMMDD = (ddmmyyyy) => {
 const goToLineCheckin = () => {
     const yyyymmdd = formatToYYYYMMDD(route.params.date)
 
-    router.push({
+    const routeData = router.resolve({
         name: 'lineCheckin',
         params: {
             area: route.params.area,
@@ -113,6 +115,7 @@ const goToLineCheckin = () => {
             endDate: yyyymmdd
         }
     })
+    window.open(routeData.href, '_blank')
 }
 
 onMounted(async () => {

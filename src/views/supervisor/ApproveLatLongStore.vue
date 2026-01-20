@@ -44,7 +44,6 @@
             <button class="btn btn-success text-white" @click="exportExcel">Export Excel</button>
 
         </div>
-
     </div>
     <div class="overflow-x-auto rounded-xl"
         style="min-width: 450px; max-height: 500px; max-width: 95vw; overflow-y: auto;">
@@ -170,6 +169,7 @@ const modalImageSrc = ref('');
 const storeId = ref('');
 const storeName = ref('');
 const isLoading = ref(false)
+
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
@@ -280,7 +280,7 @@ watch(selectedZone, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await filter.getArea(period, newVal, selectedTeam.value);
-        await filter.getTeam('cash',newVal);
+        await filter.getTeam('cash', newVal);
         customers.value = store.storeNew.data
         isLoading.value = false
     }

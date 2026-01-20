@@ -543,13 +543,16 @@ const goToTargetVisit = (data) => {
         console.warn('Missing route params', data, selectedArea.value)
         return
     }
-    router.push({
+    const routeData = router.resolve({
         name: 'targetvisitstore',
         params: {
             area: selectedArea.value,
             date: data.day
         }
     })
+
+    window.open(routeData.href, '_blank')
+
 }
 
 
