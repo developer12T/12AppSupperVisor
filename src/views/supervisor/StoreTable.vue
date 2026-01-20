@@ -171,6 +171,9 @@ const filteredOrders = computed(() => {
     // let data = useOrderStore.order.data;
     let data = store.storeAll
     // Search filter (text input)
+
+    // console.log('testsssssss',data)
+
     const query = searchQuery.value.trim().toLowerCase();
     if (query) {
         data = data.filter(order =>

@@ -32,7 +32,7 @@
                     เคลีย
                 </button>
             </div>
-            <div class="ms-auto" v-if="platformType == 'PC'">
+            <div class="ms-auto" v-if="platformType == 'PC' || platformType === 'ADMIN' ">
                 <button @click="SyncAddress"
                     class="flex items-center ms-3 gap-2 px-5 py-2 rounded-2xl shadow bg-white hover:bg-gray-100 transition duration-150 border border-gray-200 text-gray-700 font-medium text-base active:scale-95">
                     Sync Address
@@ -143,7 +143,6 @@ async function SyncAddress() {
 
     isSyncing = true;      // ล็อกการกดปุ่ม
 
-    if (platformType === 'PC') {
         try {
             await withdrawStore.CiaddrAddToWithdraw(channel);
             await withdrawStore.addAllPlace(channel);
@@ -154,7 +153,7 @@ async function SyncAddress() {
         } finally {
             isSyncing = false;  // ปลดล็อกเมื่อเสร็จ
         }
-    }
+    
 }
 
 
