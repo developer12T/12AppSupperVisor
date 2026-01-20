@@ -437,11 +437,22 @@ function toImageUrl(path) {
 // ข้อมูลสำหรับรายวัน
 const dailyList = computed(() => {
     let data = sendmoney.dailyData
+
     if (selectedZone.value && selectedZone.value !== 'all') {
-        data = data.filter(order =>
-            (order.area || '').startsWith(selectedZone.value)
-        )
+        if (selectedZone.value === 'PC') {
+            data = data.filter(order =>
+                ['PC', 'FT', 'EV'].some(prefix =>
+                    (order.area || '').startsWith(prefix)
+                )
+            )
+        } else {
+            data = data.filter(order =>
+                (order.area || '').startsWith(selectedZone.value)
+            )
+        }
     }
+
+
     if (selectedTeam.value && selectedTeam.value !== 'all') {
         console.log()
         data = data.filter(order =>
