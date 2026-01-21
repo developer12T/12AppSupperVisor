@@ -5,7 +5,9 @@ export const useRouteStore = defineStore('checkin', {
   state: () => ({
     routes: [],
     storeCheckIN: [],
+    storeLocks: [],
     routesApproval: [],
+    routeLocks: [],
     routeChanges: [],
     routeChangesNew: [],
     routeChangeStores: [],
@@ -41,6 +43,42 @@ export const useRouteStore = defineStore('checkin', {
         this.routesApproval = response.data.data
       } catch (error) {
         this.routesApproval = []
+        console.log(error)
+      }
+    },
+
+    async editLockRoute (period, area, id, storeId, editType, startDate, lock) {
+      try {
+        const user = localStorage.getItem('fullName')
+        const response = await api.post(
+          `${import.meta.env.VITE_API_URL}/api/cash/route/editLockRoute`,
+          {
+            period: period,
+            area: area,
+            id: id,
+            storeId: storeId,
+            editType: editType, //area , id, store, startDate , saleOutRoute
+            startDate: startDate,
+            lock: lock,
+            user: user
+          }
+        )
+        console.log('editLockRoute', response.data)
+        this.statusCode = response.data.status
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getStoreLock (period, area, id) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getRouteLock?routeId=${id}&area=${area}&period=${period}`
+        )
+        console.log('getStoreLock', response.data.data[0].listStore)
+        this.storeLocks = response.data.data[0].listStore
+      } catch (error) {
         console.log(error)
       }
     },
@@ -100,6 +138,21 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
+
+    async getRouteLock (period, zone, team, area) {
+      try {
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getRouteLock?area=${area}&period=${period}&zone=${zone}&team=${team}`
+        )
+        console.log('getRouteLock', response.data)
+        this.routeLocks = response.data.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
     async addStoreToRouteChange (routeId, storeId) {
       try {
         const response = await api.post(

@@ -281,7 +281,6 @@ async function onMonthChange() {
 }
 
 
-
 async function clearFilter() {
     isLoading.value = true;
     dateRange.value = ''
