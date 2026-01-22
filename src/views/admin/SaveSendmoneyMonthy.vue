@@ -137,7 +137,7 @@ watch(selectedChannel, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         await sendmoneyStore.sendmoneySumByArea(selectedChannel.value, selectedMonth.value);
-        isLoading.value = true
+        isLoading.value = false
     }
 });
 
