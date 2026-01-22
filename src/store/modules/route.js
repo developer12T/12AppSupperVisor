@@ -21,6 +21,7 @@ export const useRouteStore = defineStore('checkin', {
     routeAlltoal: {},
     target: {},
     compare: {},
+    saleOutRoute: false,
     visit: '',
     effective: '',
     totalStoreAll: 0,
@@ -147,7 +148,9 @@ export const useRouteStore = defineStore('checkin', {
           }/api/cash/route/getRouteLock?area=${area}&period=${period}&zone=${zone}&team=${team}`
         )
         console.log('getRouteLock', response.data)
+        console.log('saleOutRoute', response.data.saleOutRoute)
         this.routeLocks = response.data.data
+        this.saleOutRoute = response.data.saleOutRoute
       } catch (error) {
         console.log(error)
       }

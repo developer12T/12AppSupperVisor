@@ -39,94 +39,112 @@
             </div>
         </div>
     </div>
+    <div v-else>
+        <div class="flex justify-start">
+            <h1 class="text-xl font-bold">เปิดขายนอกรูท </h1>
+            <button @click="toggSaleOutRoute()" type="button"
+                class="relative inline-flex h-6 w-11 items-center rounded-full transition focus:outline-none"
+                :class="routeStores.saleOutRoute ? 'bg-green-500' : 'bg-gray-400'">
+                <span class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+                    :class="routeStores.saleOutRoute ? 'translate-x-6' : 'translate-x-1'" />
+            </button>
+        </div>
 
-    <!-- ✅ Grid cards : เมื่อเลือก Area แล้ว -->
-    <div v-else class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
-        <div @click="goToDetail(item)" v-for="item in cardData" :key="item.id" class="relative rounded-2xl border p-5 shadow-sm transition"
-            :class="item.lockRoute ? 'bg-white hover:shadow-md' : 'bg-gray-100'">
-            <!-- Header -->
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <div class="text-xl font-bold">
-                        R{{ item.day }}
-                    </div>
-                    <div class="text-xs text-gray-500">
-                        Route Summary
-                    </div>
-                </div>
+        <!-- ✅ Grid cards : เมื่อเลือก Area แล้ว -->
+        <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
 
-                <!-- ✅ Toggle Button -->
-                <button type="button" @click="toggleLock(item)"
-                    class="relative inline-flex h-6 w-11 items-center rounded-full transition focus:outline-none"
-                    :class="item.lockRoute ? 'bg-green-500' : 'bg-gray-400'">
-                    <span class="inline-block h-4 w-4 transform rounded-full bg-white transition"
-                        :class="item.lockRoute ? 'translate-x-6' : 'translate-x-1'" />
-                </button>
-            </div>
-
-            <!-- 🔒 Disabled Content Wrapper -->
-            <div :class="!item.lockRoute && 'pointer-events-none opacity-50'">
-                <!-- Progress -->
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="relative w-20 h-20">
-                        <svg viewBox="0 0 120 120" class="w-full h-full">
-                            <circle cx="60" cy="60" r="50" stroke="#eee" stroke-width="10" fill="none" />
-                            <circle cx="60" cy="60" r="50" :stroke="getProgressColor(item)" stroke-width="10"
-                                fill="none" stroke-linecap="round" :stroke-dasharray="circumference"
-                                :stroke-dashoffset="getDashOffset(item)" transform="rotate(-90 60 60)" />
-                        </svg>
-
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <div class="text-sm font-bold">
-                                {{ item.storeTotal }}/{{ item.storeAll }}
-                            </div>
-                            <div class="text-xs text-gray-400">visited</div>
-                        </div>
-                    </div>
-
-                    <!-- Percent -->
+            <div v-for="item in cardData" :key="item.id" class="relative rounded-2xl border p-5 shadow-sm transition"
+                :class="item.lockRoute ? 'bg-white hover:shadow-md' : 'bg-gray-100'">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-4">
                     <div>
-                        <div class="text-2xl font-bold">
-                            {{ Math.round((item.storeTotal / item.storeAll) * 100) }}%
+                        <div class="text-xl font-bold">
+                            R{{ item.day }}
                         </div>
-                        <div class="text-xs text-gray-500">Completion</div>
+                        <div class="text-xs text-gray-500">
+                            Route Summary
+                        </div>
+                    </div>
+
+                    <!-- ✅ Toggle Button -->
+                    <button type="button" @click="toggleLock(item)"
+                        class="relative inline-flex h-6 w-11 items-center rounded-full transition focus:outline-none"
+                        :class="item.lockRoute ? 'bg-green-500' : 'bg-gray-400'">
+                        <span class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+                            :class="item.lockRoute ? 'translate-x-6' : 'translate-x-1'" />
+                    </button>
+                </div>
+
+                <!-- 🔒 Disabled Content Wrapper -->
+                <div :class="!item.lockRoute && 'pointer-events-none opacity-50'">
+                    <!-- Progress -->
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="relative w-20 h-20">
+                            <svg viewBox="0 0 120 120" class="w-full h-full">
+                                <circle cx="60" cy="60" r="50" stroke="#eee" stroke-width="10" fill="none" />
+                                <circle cx="60" cy="60" r="50" :stroke="getProgressColor(item)" stroke-width="10"
+                                    fill="none" stroke-linecap="round" :stroke-dasharray="circumference"
+                                    :stroke-dashoffset="getDashOffset(item)" transform="rotate(-90 60 60)" />
+                            </svg>
+
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <div class="text-sm font-bold">
+                                    {{ item.storeTotal }}/{{ item.storeAll }}
+                                </div>
+                                <div class="text-xs text-gray-400">visited</div>
+                            </div>
+                        </div>
+
+                        <!-- Percent -->
+                        <div>
+                            <div class="text-2xl font-bold">
+                                {{ Math.round((item.storeTotal / item.storeAll) * 100) }}%
+                            </div>
+                            <div class="text-xs text-gray-500">Completion</div>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-2 gap-y-2 text-sm">
+                        <div class="flex justify-between me-2">
+                            <span>ทั้งหมด</span>
+                            <span class="font-semibold">{{ item.storeAll }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span> เยี่ยม</span>
+                            <span class="font-semibold text-blue-600">{{ item.storeTotal }}</span>
+                        </div>
+                        <div class="flex justify-between me-2">
+                            <span>ซื้อ</span>
+                            <span class="font-semibold text-green-600">{{ item.storeSell }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>ไม่ซื้อ</span>
+                            <span class="font-semibold text-red-500">{{ item.storeNotSell }}</span>
+                        </div>
+                        <div class="flex justify-between col-span-2">
+                            <span>เช็คอิน</span>
+                            <span class="font-semibold text-orange-500">
+                                {{ item.storeCheckInNotSell }}
+                            </span>
+                            <button @click="goToDetail(item)" style="border-radius: 12px; background-color: #00569D"
+                                class=" text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                                เปิด/ปิดร้านค้า
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Stats -->
-                <div class="grid grid-cols-2 gap-y-2 text-sm">
-                    <div class="flex justify-between me-2">
-                        <span>ทั้งหมด</span>
-                        <span class="font-semibold">{{ item.storeAll }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span> เยี่ยม</span>
-                        <span class="font-semibold text-blue-600">{{ item.storeTotal }}</span>
-                    </div>
-                    <div class="flex justify-between me-2">
-                        <span>ซื้อ</span>
-                        <span class="font-semibold text-green-600">{{ item.storeSell }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>ไม่ซื้อ</span>
-                        <span class="font-semibold text-red-500">{{ item.storeNotSell }}</span>
-                    </div>
-                    <div class="flex justify-between col-span-2">
-                        <span>เช็คอิน</span>
-                        <span class="font-semibold text-orange-500">
-                            {{ item.storeCheckInNotSell }}
-                        </span>
-                    </div>
+                <!-- Label เมื่อปิด -->
+                <div v-if="!item.lockRoute"
+                    class="absolute inset-x-0 bottom-3 text-center text-xs font-semibold text-gray-500">
+                    ถูกล็อคไว้
                 </div>
-            </div>
-
-            <!-- Label เมื่อปิด -->
-            <div v-if="!item.lockRoute"
-                class="absolute inset-x-0 bottom-3 text-center text-xs font-semibold text-gray-500">
-                ถูกล็อคไว้
             </div>
         </div>
     </div>
+
+
 </template>
 
 
@@ -137,10 +155,6 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { useRouteStore } from '../../store/modules/route'
 import { useRouter, useRoute } from 'vue-router'
 import { useFilter } from '../../store/modules/filter'
-
-
-
-
 
 const router = useRouter()
 const route = useRoute()
@@ -233,7 +247,6 @@ const getProgressColor = (item) => {
 
 const toggleLock = async (item) => {
     item.lockRoute = !item.lockRoute
-
     // 🔔 OPTIONAL: sync กับ backend
     try {
         await routeStores.editLockRoute(period, selectedArea.value, item.id, '', 'id', '', item.lockRoute)
@@ -247,6 +260,25 @@ const toggleLock = async (item) => {
     } catch (err) {
         // rollback ถ้า error
         item.lockRoute = !item.lockRoute
+        console.error(err)
+    }
+}
+
+const toggSaleOutRoute = async () => {
+    routeStores.saleOutRoute = !routeStores.saleOutRoute
+    // 🔔 OPTIONAL: sync กับ backend
+    try {
+        // await routeStores.editLockRoute(period, selectedArea.value, item.id, '', 'id', '', item.lockRoute)
+        // if (routeStores.statusCode === 200) {
+        //     toast('เปลี่ยนสถานะ Route สำเร็จ', {
+        //         theme: toast.THEME.COLORED,
+        //         type: toast.TYPE.SUCCESS,
+        //         dangerouslyHTMLString: true
+        //     })
+        // }
+    } catch (err) {
+        // rollback ถ้า error
+        routeStores.saleOutRoute = !routeStores.saleOutRoute
         console.error(err)
     }
 }

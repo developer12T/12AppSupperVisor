@@ -43,7 +43,7 @@
                             <!-- text -->
                             <span class="text-xs font-semibold"
                                 :class="prod.lockStore ? 'text-green-600' : 'text-gray-400'">
-                                {{ prod.lockStore ? 'ไม่ได้ล็อคอยู่' : 'ล็อค' }}
+                                {{ prod.lockStore ? 'เปิดขาย' : 'ล็อค' }}
                             </span>
                         
                             <!-- switch -->

@@ -3,7 +3,8 @@
     <div class="flex justify-between">
         <div class="mb-2 flex justify-start">
             <div class="ms-2">
-                <VueDatePicker v-model="selectedMonth" format="MM/yyyy" month-picker @update:model-value="onMonthChange" />
+                <VueDatePicker v-model="selectedMonth" format="MM/yyyy" month-picker
+                    @update:model-value="onMonthChange" />
             </div>
             <div class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedZone">
@@ -67,7 +68,7 @@
                         <div class="">{{ prod.areaName }}</div>
                     </td>
                     <td class="border p-2 text-center whitespace-pre">
-                        <div class="">{{ formatNumber(prod.sendmoney) }}</div>
+                        <div class="">{{ formatNumber(prod.sendmoneyAcc) }}</div>
                     </td>
                 </tr>
             </tbody>
@@ -108,6 +109,8 @@ const selectedMonth = ref('')
 const selectedChannel = ref('cash')
 
 
+
+
 async function saveSendmoney() {
     try {
         await sendmoneyStore.saveSendmoneyMonthy(monthlyList.value);
@@ -129,6 +132,14 @@ async function saveSendmoney() {
     }
 
 }
+
+watch(selectedChannel, async (newVal) => {
+    if (newVal) {
+        isLoading.value = true
+        await sendmoneyStore.sendmoneySumByArea(selectedChannel.value, selectedMonth.value);
+        isLoading.value = true
+    }
+});
 
 
 const monthlyList = computed(() => {
