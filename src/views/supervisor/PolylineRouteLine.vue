@@ -224,7 +224,7 @@ function getDistance(lat1, lng1, lat2, lng2) {
 function gotoPoint(idx) {
     const item = points.value[idx];
     if (!item) return;
-    map.setView([item.lat, item.lng], 16, { animate: true });
+    map.setView([item.lat, item.lng], 20, { animate: true });
     if (markers[idx]) {
         markers[idx].openPopup();
     }

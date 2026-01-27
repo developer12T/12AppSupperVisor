@@ -46,7 +46,7 @@ onMounted(async () => {
     await loader.load()
 
     const map = new window.google.maps.Map(document.getElementById("map"), {
-        zoom: 12,
+        zoom: 20,
         center: waypoints[0] ?? { lat: 13.7, lng: 100.6 },
         mapTypeId: "roadmap",
     })

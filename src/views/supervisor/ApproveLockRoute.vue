@@ -268,14 +268,14 @@ const toggSaleOutRoute = async () => {
     routeStores.saleOutRoute = !routeStores.saleOutRoute
     // 🔔 OPTIONAL: sync กับ backend
     try {
-        // await routeStores.editLockRoute(period, selectedArea.value, item.id, '', 'id', '', item.lockRoute)
-        // if (routeStores.statusCode === 200) {
-        //     toast('เปลี่ยนสถานะ Route สำเร็จ', {
-        //         theme: toast.THEME.COLORED,
-        //         type: toast.TYPE.SUCCESS,
-        //         dangerouslyHTMLString: true
-        //     })
-        // }
+        await routeStores.updateSaleOutRoute(period, selectedArea.value, routeStores.saleOutRoute)
+        if (routeStores.statusCode === 200) {
+            toast('เปลี่ยนสถานะขายนอกรูทสำเร็จ', {
+                theme: toast.THEME.COLORED,
+                type: toast.TYPE.SUCCESS,
+                dangerouslyHTMLString: true
+            })
+        }
     } catch (err) {
         // rollback ถ้า error
         routeStores.saleOutRoute = !routeStores.saleOutRoute

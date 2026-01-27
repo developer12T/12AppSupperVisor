@@ -70,6 +70,24 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
+
+    async updateSaleOutRoute (period, area, saleOutRoute) {
+      try {
+        const response = await api.post(
+          `${import.meta.env.VITE_API_URL}/api/cash/route/updateSaleOutRoute`,
+          {
+            period: period,
+            area: area,
+            saleOutRoute: saleOutRoute
+          }
+        )
+        console.log('saleOutRoute', response.data)
+        this.statusCode = response.data.status
+        this.saleOutRoute = response.data.saleOutRoute
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async getStoreLock (period, area, id) {
       try {
         const response = await api.get(

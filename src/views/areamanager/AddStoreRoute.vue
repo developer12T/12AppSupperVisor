@@ -319,8 +319,8 @@ async function approveStatus(statusBool) {
             })
         }
 
-        // window.location.reload();
-        // router.push('/areamanager/addstoreroute')
+        window.location.reload();
+        router.push('/areamanager/addstoreroute')
 
     } catch (error) {
         toast(`${error.message}!`, {
@@ -383,8 +383,6 @@ onMounted(async () => {
     }
     // console.log('route.query.team', route.query.team)
     await routeStores.getNewStoreToRoute(period, selectedZone.value, selectedTeam.value, selectedArea.value)
-    await routeStores.getRouteChangeSale(period, selectedZone.value, selectedTeam.value, selectedArea.value)
-    cardData.value = routeStores.routeChanges
     isLoading.value = false;
     // showExcel.value = 'true'
 })
@@ -433,6 +431,18 @@ watch(() => route.query.area, (val) => {
 watch(() => route.query.team, (val) => {
     selectedTeam.value = val || ''
 })
+watch(mode, async (newVal) => {
+    if (newVal === 'approve') {
+        isLoading.value = true;
+        await routeStores.getNewStoreToRoute(period, selectedZone.value, selectedTeam.value, selectedArea.value)
+        isLoading.value = false;
+    } else {
+        isLoading.value = true;
+        await routeStores.getRouteChangeSale(period, selectedZone.value, selectedTeam.value, selectedArea.value)
+        cardData.value = routeStores.routeChanges
+        isLoading.value = false;
+    }
+});
 
 watch(selectedZone, async (newVal) => {
     selectedArea.value = ''
