@@ -54,7 +54,7 @@
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
 
             <div v-for="item in cardData" :key="item.id" class="relative rounded-2xl border p-5 shadow-sm transition"
-                :class="item.lockRoute ? 'bg-white hover:shadow-md' : 'bg-gray-100'">
+                :class="item.lockRoute ? 'bg-gray-100' : 'bg-white hover:shadow-md'">
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-4">
                     <div>
@@ -69,14 +69,14 @@
                     <!-- ✅ Toggle Button -->
                     <button type="button" @click="toggleLock(item)"
                         class="relative inline-flex h-6 w-11 items-center rounded-full transition focus:outline-none"
-                        :class="item.lockRoute ? 'bg-green-500' : 'bg-gray-400'">
+                        :class="item.lockRoute ? 'bg-gray-400' : 'bg-green-500'">
                         <span class="inline-block h-4 w-4 transform rounded-full bg-white transition"
-                            :class="item.lockRoute ? 'translate-x-6' : 'translate-x-1'" />
+                            :class="item.lockRoute ? 'translate-x-1' : 'translate-x-6'" />
                     </button>
                 </div>
 
                 <!-- 🔒 Disabled Content Wrapper -->
-                <div :class="!item.lockRoute && 'pointer-events-none opacity-50'">
+                <div :class="item.lockRoute && 'opacity-50'">
                     <!-- Progress -->
                     <div class="flex items-center gap-4 mb-4">
                         <div class="relative w-20 h-20">
@@ -136,10 +136,10 @@
                 </div>
 
                 <!-- Label เมื่อปิด -->
-                <div v-if="!item.lockRoute"
+                <!-- <div v-if="item.lockRoute"
                     class="absolute inset-x-0 bottom-3 text-center text-xs font-semibold text-gray-500">
                     ถูกล็อคไว้
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

@@ -39,19 +39,20 @@
                     <!-- ✅ Status + Toggle -->
                     <td class="border p-2">
                         <div class="flex items-center justify-center gap-3">
-                            
+
                             <!-- text -->
                             <span class="text-xs font-semibold"
-                                :class="prod.lockStore ? 'text-green-600' : 'text-gray-400'">
-                                {{ prod.lockStore ? 'เปิดขาย' : 'ล็อค' }}
+                                :class="prod.lockStore ? 'text-gray-400' : 'text-green-600'">
+                                {{ prod.lockStore ? 'ล็อค' : 'เปิด'
+                                }}
                             </span>
-                        
+
                             <!-- switch -->
                             <button type="button" @click="toggleStoreLock(prod)"
                                 class="relative inline-flex h-5 w-9 items-center rounded-full transition"
-                                :class="prod.lockStore ? 'bg-green-500' : 'bg-gray-400'">
+                                :class="prod.lockStore ? 'bg-gray-400' : 'bg-green-500'">
                                 <span class="inline-block h-4 w-4 transform rounded-full bg-white transition"
-                                    :class="prod.lockStore ? 'translate-x-4' : 'translate-x-1'" />
+                                    :class="prod.lockStore ? 'translate-x-1' : 'translate-x-4'" />
                             </button>
                         </div>
                     </td>

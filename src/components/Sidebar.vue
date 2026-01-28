@@ -43,7 +43,7 @@ const menuItems = computed(() => [
         icon: 'mdi:routes',
         link: '#',
         submenu: [
-            { icon: 'ic:baseline-route', name: 'อนุมัติการปรับรูท', link: '/areamanager/changeroute', channel: ['CASH', "ADMIN"] },
+            // { icon: 'ic:baseline-route', name: 'อนุมัติการปรับรูท', link: '/areamanager/changeroute', channel: ['CASH', "ADMIN"] },
             { icon: 'mdi:store-marker', name: 'อนุมัติการเพิ่มร้านค้าใหม่', link: '/areamanager/addstoreroute', channel: ['CASH', "PC", "ADMIN"] },
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'dc'],
@@ -105,7 +105,7 @@ const menuItems = computed(() => [
             { icon: 'mdi:autorenew', name: 'อนุมัติขอคืน', link: '/supervisor/refund', channel: ['CASH', "PC", "ADMIN"] },
             { icon: 'mdi:archive-edit', name: 'อนุมัติขอปรับสต๊อก', link: '/supervisor/adjuststock', channel: ['CASH', "PC", "ADMIN"] },
             { icon: 'mdi:shop-location', name: 'อนุมัติร้านค้า Location', link: '/supervisor/storeapprovelatlong', channel: ['CASH', "PC", "ADMIN"] },
-            { icon: 'mdi:store-marker', name: 'อนุมัติร้านค้าเข้า Route', link: '/supervisor/addnewstoretoroute', channel: ['CASH', "PC", "ADMIN"] },
+            // { icon: 'mdi:store-marker', name: 'อนุมัติร้านค้าเข้า Route', link: '/supervisor/addnewstoretoroute', channel: ['CASH', "PC", "ADMIN"] },
         ],
     },
 
