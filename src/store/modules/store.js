@@ -168,7 +168,7 @@ export const useStoresStore = defineStore('stores', {
       try {
         // const area = localStorage.getItem('area')
         const user = localStorage.getItem('fullName')
-        const response = await api.post(`/api/cash/store/updateStoreStatus`, {
+        const response = await api.post(`/api/cash/store/updateStoreStatusV2`, {
           storeId: data.storeId,
           status: data.status,
           user: user
