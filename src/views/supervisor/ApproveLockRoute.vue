@@ -155,6 +155,9 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { useRouteStore } from '../../store/modules/route'
 import { useRouter, useRoute } from 'vue-router'
 import { useFilter } from '../../store/modules/filter'
+import { toast } from 'vue3-toastify';
+import "vue3-toastify/dist/index.css";
+
 
 const router = useRouter()
 const route = useRoute()
@@ -171,8 +174,7 @@ const selectedTeam = ref(route.query.team || '')
 const zone = localStorage.getItem('zone')
 const cardData = ref([]);
 const routeStores = useRouteStore()
-import { toast } from 'vue3-toastify';
-import "vue3-toastify/dist/index.css";
+
 
 
 const radius = 50
@@ -265,7 +267,13 @@ const toggleLock = async (item) => {
 }
 
 const toggSaleOutRoute = async () => {
+    if (!selectedArea.value) {
+        toast('กรุณาเลือก Area ก่อน', { type: 'warning' })
+        return
+    }
+
     routeStores.saleOutRoute = !routeStores.saleOutRoute
+
     // 🔔 OPTIONAL: sync กับ backend
     try {
         await routeStores.updateSaleOutRoute(period, selectedArea.value, routeStores.saleOutRoute)
