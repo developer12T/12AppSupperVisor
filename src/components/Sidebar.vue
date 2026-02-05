@@ -84,6 +84,7 @@ const menuItems = computed(() => [
             // { icon: 'mdi:chart-areaspline', name: 'รายงานยอดขาย', link: '/supervisor/report', channel: ['CASH', "PC"] },
             { icon: 'mdi:routes', name: 'รายงานการเข้าเยี่ยม', link: '/supervisor/checkin', channel: ['CASH', "ADMIN"] },
             { icon: 'mdi:target-arrow', name: 'เป้าการเข้าเยี่ยม', link: '/supervisor/targetvisit', channel: ['CASH', "ADMIN"] },
+            { icon: 'mdi:target-arrow', name: 'เป้าการเข้าเยี่ยม CR', link: '/supervisor/targetvisitCR', channel: ['CASH', "ADMIN"] },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product', channel: ['CASH', "PC", "ADMIN"] },
             // { icon: 'mdi:money-100', name: 'รายการส่งเงิน', link: '/supervisor/sendmoney', channel: ['CASH', "PC"] },
             { icon: 'mdi:box-clock-outline', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute', channel: ['CASH', "PC", "ADMIN"] },
