@@ -103,6 +103,11 @@ const supervisorRoutes = [
         component: () => import('../../views/supervisor/PolylineRoute2.vue')
       },
       {
+        path: 'polylinerouteCredit/:area/:startDate/:endDate',
+        name: 'lineCheckinCredit',
+        component: () => import('../../views/supervisor/PolylineRouteLineCredit.vue')
+      },
+      {
         path: 'polylineroute2/:area/:startDate/:endDate',
         name: 'lineCheckin',
         component: () => import('../../views/supervisor/PolylineRouteLine.vue')
@@ -186,6 +191,16 @@ const supervisorRoutes = [
         name: 'targetvisitstore',
         component: () =>
           import('../../views/supervisor/TargetVisitRouteShowStore.vue')
+      },
+      {
+        path: 'targetvisitCR',
+        component: () => import('../../views/supervisor/TargetVisitRouteCR.vue')
+      },
+      {
+        path: 'targetvisitstoreCredit/:area/:date',
+        name: 'targetvisitstoreCredit',
+        component: () =>
+          import('../../views/supervisor/TargetVisitRouteShowStoreCredit.vue')
       },
       {
         path: 'approveLockRoute',
