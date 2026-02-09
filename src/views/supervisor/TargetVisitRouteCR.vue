@@ -333,7 +333,7 @@ async function onMonthChange(value) {
     isLoading.value = true
     console.log(formatPeriodYYYYMM(value))
 
-    await routeStore.getRouteEffective(formatPeriodYYYYMM(value), '', selectedZone.value, selectedTeam.value, selectedArea.value,);
+    // await routeStore.getRouteEffective(formatPeriodYYYYMM(value), '', selectedZone.value, selectedTeam.value, selectedArea.value,);
     await routeStore.getDayRouteCredit(formatPeriodYYYYMM(value), selectedZone.value, selectedTeam.value, selectedArea.value);
 
 

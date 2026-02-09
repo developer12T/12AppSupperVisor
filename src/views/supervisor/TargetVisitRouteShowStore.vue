@@ -4,6 +4,13 @@
         <button class="btn btn-success" @click="goToLineCheckin">
             ดู Line การเช็คอินรวม
         </button>
+
+        <button class="ms-4 btn btn-primary" @click="goToSKUFocus">
+            ดู SKU Focus
+        </button>
+        <button class="ms-4 btn btn-primary" @click="goToSKUFocusTable">
+            ดู SKU Focus Tale
+        </button>
         <div class="overflow-x-auto rounded-xl mt-5"
             style="min-height: 450px; max-height: 450px; max-width: 90vw; overflow-y: auto;">
             <table class="min-w-full border text-center text-sm bg-white">
@@ -117,6 +124,35 @@ const goToLineCheckin = () => {
     })
     window.open(routeData.href, '_blank')
 }
+
+const goToSKUFocus = () => {
+    const yyyymmdd = formatToYYYYMMDD(route.params.date)
+
+    const routeData = router.resolve({
+        name: 'skuFocusReport',
+        params: {
+            area: route.params.area,
+            startDate: yyyymmdd,
+            endDate: yyyymmdd
+        }
+    })
+    window.open(routeData.href, '_blank')
+}
+
+const goToSKUFocusTable = () => {
+    const yyyymmdd = formatToYYYYMMDD(route.params.date)
+
+    const routeData = router.resolve({
+        name: 'skuFocusReportTable',
+        params: {
+            area: route.params.area,
+            startDate: yyyymmdd,
+            endDate: yyyymmdd
+        }
+    })
+    window.open(routeData.href, '_blank')
+}
+
 
 onMounted(async () => {
     isLoading.value = true

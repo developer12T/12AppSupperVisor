@@ -14,7 +14,7 @@ import { Icon } from '@iconify/vue'
 const router = useRouter()
 
 const goToCreate = () => {
-    router.push('/products/create')
+    router.push('/admin/sku-focus/create')
 }
 </script>
 

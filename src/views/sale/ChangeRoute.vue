@@ -110,9 +110,12 @@ const year = computed(() => selectedMonth.value.split('-')[0])
 const getSafe = v => (typeof v === 'string' ? v : '');
 
 const cardData = ref([]);
+
 const routeStores = useRouteStore()
+
 const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
+
 const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
 const periodnext = nextMonth.getFullYear().toString() + String(nextMonth.getMonth() + 1).padStart(2, '0');
 

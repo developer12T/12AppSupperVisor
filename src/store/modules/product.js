@@ -3,12 +3,27 @@ import api, { setChannel } from '../../utils/axios'
 
 export const useProductsStore = defineStore('products', {
   state: () => ({
+    productSKU: [],
     product: [],
     storeNew: [],
     message: '',
     statusCode: 0
   }),
   actions: {
+    async deleteSKUProduct (channel, productId) {
+      try {
+        setChannel(channel)
+        const response = await api.patch(`/api/cash/product/deleteSKUProduct`, {
+          productId: productId
+        })
+        this.message = response.data.message
+        this.statusCode = response.status
+        console.log('response', response.status)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
     async getProductionAll (channel) {
       try {
         setChannel(channel)
@@ -21,6 +36,39 @@ export const useProductsStore = defineStore('products', {
         console.error(error)
       }
     },
+
+    async addSKUFocus (channel, productList, target, period, zone) {
+      try {
+        setChannel(channel)
+        const response = await api.post(`/api/cash/product/addskufocus`, {
+          zone: zone,
+          listProduct: productList,
+          target: target,
+          period: period
+        })
+        this.message = response.data.message
+        this.statusCode = response.status
+        console.log('response', response.status)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async getSkuProduct (period, channel) {
+      try {
+        setChannel(channel)
+        const response = await api.get(
+          `/api/cash/product/getSkuProduct?period=${period}`
+        )
+        const result = response.data.listProduct
+        this.productSKU = result
+        this.statusCode = response.status
+        console.log('productSKU', this.productSKU)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
     async onOff (id, type, status, channel) {
       try {
         const user = localStorage.getItem('fullName')

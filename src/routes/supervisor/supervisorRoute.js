@@ -105,12 +105,23 @@ const supervisorRoutes = [
       {
         path: 'polylinerouteCredit/:area/:startDate/:endDate',
         name: 'lineCheckinCredit',
-        component: () => import('../../views/supervisor/PolylineRouteLineCredit.vue')
+        component: () =>
+          import('../../views/supervisor/PolylineRouteLineCredit.vue')
       },
       {
         path: 'polylineroute2/:area/:startDate/:endDate',
         name: 'lineCheckin',
         component: () => import('../../views/supervisor/PolylineRouteLine.vue')
+      },
+      {
+        path: 'skuFocusReport/:area/:date',
+        name: 'skuFocusReport',
+        component: () => import('../../views/supervisor/SKUFocusReport.vue')
+      },
+      {
+        path: 'skuFocusReportTable/:area/:date',
+        name: 'skuFocusReportTable',
+        component: () => import('../../views/supervisor/SKUFocusReportTable.vue')
       },
       {
         path: 'storeinroute',

@@ -86,6 +86,11 @@ const adminRoutes = [
         path: 'sku-focus',
         component: () => import('../../views/admin/SKUFocus.vue')
         // meta: { breadcrumb: 'ใบสั่งจอง' }
+      },
+      {
+        path: 'sku-focus/create',
+        component: () => import('../../views/admin/ADDSKUFocus.vue')
+        // meta: { breadcrumb: 'ใบสั่งจอง' }
       }
     ]
   }

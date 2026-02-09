@@ -7,25 +7,28 @@
 
         <!-- info -->
         <div class="content">
-            <h3 class="name">{{ product.name }}</h3>
-
+            <h3 class="name"> {{ product.name }}</h3>
+            <h3 class="name">รหัสสินค้า : {{ product.id }}</h3>
+            <h3 class="name">🎯 Target: {{ product.target }}</h3>
             <div class="meta">
-                <span class="badge zone">
-                    Zone: {{ product.zone }}
-                </span>
 
-                <!-- multiple areas -->
-                <span v-for="(a, index) in displayAreas" :key="index" class="badge area">
-                    Area: {{ a }}
+                <!-- multiple zones -->
+                <span v-for="(a, index) in displayZones" :key="index" class="badge zone">
+                    Zone: {{ a }}
                 </span>
+                <!-- multiple areas -->
+                <!-- <span v-for="(a, index) in displayAreas" :key="index" class="badge area">
+                    Area: {{ a }}
+                </span> -->
+
             </div>
         </div>
 
         <!-- actions -->
         <div class="actions">
-            <button class="edit-btn" @click="goToEdit">
-                <Icon icon="mdi:pencil-outline" />
-                Edit
+            <button class="edit-btn" @click="deleteProduct">
+                <Icon icon="mdi:trash" />
+                Delete
             </button>
         </div>
     </div>
@@ -35,8 +38,10 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
+import { useProductsStore } from '../store/modules/product'
 
 const router = useRouter()
+const productsStore = useProductsStore()
 
 const props = defineProps({
     product: {
@@ -57,15 +62,35 @@ const props = defineProps({
 /**
  * กรองค่า area ที่เป็น "" หรือ null ออก
  */
-const displayAreas = computed(() =>
-    Array.isArray(props.product.area)
-        ? props.product.area.filter(a => a)
+// const displayAreas = computed(() =>
+//     Array.isArray(props.product.area)
+//         ? props.product.area.filter(a => a)
+//         : []
+// )
+
+const displayZones = computed(() =>
+    Array.isArray(props.product.zone)
+        ? props.product.zone.filter(a => a)
         : []
 )
 
+
 const goToEdit = () => {
-    router.push(`/products/${props.product.id}/edit`)
+    router.push(`/admin/sku-focus/${props.product.id}/edit`)
 }
+
+const deleteProduct = () => {
+    try {
+        productsStore.deleteSKUProduct('cash', props.product.id)
+        alert('ลบสินค้าสำเร็จ')
+        // รีเฟรชหน้า
+        router.go(0)
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+
 </script>
 
 <style scoped>
@@ -87,6 +112,7 @@ const goToEdit = () => {
 
 .image-wrapper {
     height: 140px;
+    width: 100%;
     background: #f3f4f6;
     display: flex;
     align-items: center;
@@ -96,7 +122,7 @@ const goToEdit = () => {
 .product-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: scale-down;
 }
 
 .content {
@@ -143,7 +169,7 @@ const goToEdit = () => {
 .edit-btn {
     width: 100%;
     border: none;
-    background: #3b82f6;
+    background: #FF0000;
     color: white;
     padding: 8px;
     border-radius: 8px;
@@ -156,6 +182,6 @@ const goToEdit = () => {
 }
 
 .edit-btn:hover {
-    background: #2563eb;
+    background: #ff2828;
 }
 </style>
