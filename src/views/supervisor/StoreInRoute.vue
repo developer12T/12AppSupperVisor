@@ -29,6 +29,9 @@
                             {{ r }}</th>
                         <th
                             class=" border border-black px-3 py-2 text-left sticky top-0 left-0 z-50 bg-primary text-white">
+                            SUM</th>
+                        <th
+                            class=" border border-black px-3 py-2 text-left sticky top-0 left-0 z-50 bg-primary text-white">
                             R</th>
                         <th
                             class="border border-black px-3 py-2 text-left sticky top-0 left-0 z-50 bg-primary text-white">
@@ -40,6 +43,10 @@
                         <td class="border border-black px-3 py-2 font-semibold">{{ item.area }}</td>
                         <td v-for="r in rangeKeys" :key="r" class="border border-black px-3 py-2 text-center">{{ item[r]
                             ?? '-' }}</td>
+                        <td class="border border-black px-3 py-2 text-center font-bold bg-yellow-100">
+                            {{ calcSum(item) }}
+                        </td>
+
                         <td class="border border-black px-3 py-2 text-center font-bold">{{ item.R }}</td>
                         <td class="border border-black px-3 py-2 text-center">{{ item.del }}</td>
                     </tr>
@@ -69,9 +76,16 @@ const selectedZone = ref('')
 const selectedArea = ref('')
 const selectedTeam = ref('')
 
+const calcSum = (item: any) => {
+    return rangeKeys.value.reduce((sum, key) => {
+        const val = Number(item[key])
+        return sum + (isNaN(val) ? 0 : val)
+    }, 0)
+}
+
 onMounted(async () => {
     isLoading.value = true
-    await filter.getZone('cash',period);
+    await filter.getZone('cash', period);
     await routeStore.getStoreInRoute(period, '', '')
     data.value = routeStore.routeInStore
     isLoading.value = false
@@ -84,7 +98,7 @@ const rangeKeys = computed(() =>
 watch(selectedZone, async (newVal) => {
     if (newVal) {
         isLoading.value = true
-        await filter.getTeam('cash',newVal);
+        await filter.getTeam('cash', newVal);
         await routeStore.getStoreInRoute(period, newVal, selectedTeam.value)
         data.value = routeStore.routeInStore
         isLoading.value = false

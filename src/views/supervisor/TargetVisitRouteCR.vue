@@ -483,7 +483,7 @@ function exportCSV() {
 onMounted(async () => {
     isLoading.value = true
     await filter.getZoneCredit('cash', period);
-    await routeStore.getRouteEffective(period, '', selectedZone.value, selectedTeam.value, selectedArea.value,);
+    // await routeStore.getRouteEffective(period, '', selectedZone.value, selectedTeam.value, selectedArea.value,);
     await routeStore.getDayRouteCredit(period, '', '', '');
     isLoading.value = false
     // Reset to first page when filters change
@@ -495,10 +495,10 @@ watch(selectedZone, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         if (monthRange.value) {
-            await routeStore.getRouteEffective(formatPeriodYYYYMM(monthRange.value), '', newVal, selectedTeam.value, selectedArea.value,);
+            // await routeStore.getRouteEffective(formatPeriodYYYYMM(monthRange.value), '', newVal, selectedTeam.value, selectedArea.value,);
             await routeStore.getDayRouteCredit(formatPeriodYYYYMM(monthRange.value), newVal, selectedTeam.value, selectedArea.value);
         } else {
-            await routeStore.getRouteEffective(period, '', newVal, selectedTeam.value, selectedArea.value,);
+            // await routeStore.getRouteEffective(period, '', newVal, selectedTeam.value, selectedArea.value,);
             await routeStore.getDayRouteCredit(period, newVal, selectedTeam.value, selectedArea.value);
         }
 
@@ -513,10 +513,10 @@ watch(selectedTeam, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         if (monthRange.value) {
-            await routeStore.getRouteEffective(formatPeriodYYYYMM(monthRange.value), '', selectedZone.value, newVal, selectedArea.value,);
+            // await routeStore.getRouteEffective(formatPeriodYYYYMM(monthRange.value), '', selectedZone.value, newVal, selectedArea.value,);
             await routeStore.getDayRouteCredit(formatPeriodYYYYMM(monthRange.value), selectedZone.value, newVal, selectedArea.value);
         } else {
-            await routeStore.getRouteEffective(period, '', selectedZone.value, newVal, selectedArea.value,);
+            // await routeStore.getRouteEffective(period, '', selectedZone.value, newVal, selectedArea.value,);
             await routeStore.getDayRouteCredit(period, selectedZone.value, newVal, selectedArea.value);
         }
         filter.getAreaCredit(period, selectedZone.value, newVal);
@@ -528,10 +528,10 @@ watch(selectedArea, async (newVal) => {
     if (newVal) {
         isLoading.value = true
         if (monthRange.value) {
-            await routeStore.getRouteEffective(formatPeriodYYYYMM(monthRange.value), '', selectedZone.value, selectedTeam.value, newVal,);
+            // await routeStore.getRouteEffective(formatPeriodYYYYMM(monthRange.value), '', selectedZone.value, selectedTeam.value, newVal,);
             await routeStore.getDayRouteCredit(formatPeriodYYYYMM(monthRange.value), selectedZone.value, selectedTeam.value, newVal);
         } else {
-            await routeStore.getRouteEffective(period, '', selectedZone.value, selectedTeam.value, newVal,);
+            // await routeStore.getRouteEffective(period, '', selectedZone.value, selectedTeam.value, newVal,);
             await routeStore.getDayRouteCredit(period, selectedZone.value, selectedTeam.value, newVal);
         }
         isLoading.value = false
