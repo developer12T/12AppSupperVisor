@@ -81,6 +81,11 @@ const adminRoutes = [
         path: 'saveSendmoneyDaily',
         component: () => import('../../views/admin/SaveSendmoneyMonthy.vue')
         // meta: { breadcrumb: 'ใบสั่งจอง' }
+      },
+      {
+        path: 'sku-focus',
+        component: () => import('../../views/admin/SKUFocus.vue')
+        // meta: { breadcrumb: 'ใบสั่งจอง' }
       }
     ]
   }
