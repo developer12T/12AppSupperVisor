@@ -37,11 +37,12 @@ export const useProductsStore = defineStore('products', {
       }
     },
 
-    async addSKUFocus (channel, productList, target, period, zone) {
+    async addSKUFocus (channel, productList, target, period, zone, area) {
       try {
         setChannel(channel)
         const response = await api.post(`/api/cash/product/addskufocus`, {
           zone: zone,
+          area: area,
           listProduct: productList,
           target: target,
           period: period

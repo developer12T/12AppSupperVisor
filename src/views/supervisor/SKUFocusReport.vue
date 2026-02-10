@@ -96,6 +96,7 @@ const groupedProducts = computed(() => {
  * - CTN มาก่อน
  * - PCS หลังสุด
  */
+
 const formatUnits = (units) => {
     const priority = ['CTN', 'PCS', "BAG", "BOT", "PAC", "CRT", "SET"]
 

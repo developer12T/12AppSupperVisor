@@ -14,13 +14,17 @@
 
                 <!-- multiple zones -->
                 <span v-for="(a, index) in displayZones" :key="index" class="badge zone">
-                    Zone: {{ a }}
+                    {{ a }}
                 </span>
                 <!-- multiple areas -->
-                <!-- <span v-for="(a, index) in displayAreas" :key="index" class="badge area">
-                    Area: {{ a }}
-                </span> -->
+                <span v-for="(a, index) in visibleAreas" :key="index" class="badge area">
+                    {{ a }}
+                </span>
 
+                <!-- toggle button -->
+                <button v-if="hasMoreAreas" class="more-btn" @click="showAllAreas = !showAllAreas">
+                    {{ showAllAreas ? 'ซ่อน' : 'ดูทั้งหมด' }}
+                </button>
             </div>
         </div>
 
@@ -35,13 +39,14 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useProductsStore } from '../store/modules/product'
 
 const router = useRouter()
 const productsStore = useProductsStore()
+const showAllAreas = ref(false)
 
 const props = defineProps({
     product: {
@@ -62,11 +67,23 @@ const props = defineProps({
 /**
  * กรองค่า area ที่เป็น "" หรือ null ออก
  */
-// const displayAreas = computed(() =>
-//     Array.isArray(props.product.area)
-//         ? props.product.area.filter(a => a)
-//         : []
-// )
+
+const displayAreas = computed(() =>
+    Array.isArray(props.product.area)
+        ? props.product.area.filter(a => a)
+        : []
+)
+
+const visibleAreas = computed(() => {
+    if (!Array.isArray(props.product.area)) return []
+
+    const areas = props.product.area.filter(a => a)
+    return showAllAreas.value ? areas : areas.slice(0, 3)
+})
+
+const hasMoreAreas = computed(() => {
+    return Array.isArray(props.product.area) && props.product.area.filter(a => a).length > 10
+})
 
 const displayZones = computed(() =>
     Array.isArray(props.product.zone)

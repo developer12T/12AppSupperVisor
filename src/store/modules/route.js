@@ -6,6 +6,7 @@ export const useRouteStore = defineStore('checkin', {
     routes: [],
     storeCheckIN: [],
     productSKU: [],
+    productAll: [],
     storeLocks: [],
     routesApproval: [],
     routeLocks: [],
@@ -522,6 +523,22 @@ export const useRouteStore = defineStore('checkin', {
           `${
             import.meta.env.VITE_API_URL
           }/api/cash/route/getProductSoldByDayArea`,
+          {
+            area: area,
+            date: date
+          }
+        )
+        this.productAll = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getProductSoldByDayAreaSKU (area, date) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getProductSoldByDayAreaSKU`,
           {
             area: area,
             date: date

@@ -93,6 +93,10 @@
                 <VueMultiselect v-model="selectedZone" :options="zones" :multiple="true" track-by="zone" label="zone"
                     placeholder="เลือกโซน" class="w-full mb-2" />
 
+
+                <VueMultiselect v-model="selectedArea" :options="areas" :multiple="true" track-by="area" label="area"
+                    placeholder="เลือกพื้นที่" class="w-full mb-2" />
+
                 <label class="input input-bordered flex items-center gap-2 w-64">
                     🎯 Target:
                     <input min="0" v-model="target" type="number" class="grow" placeholder="Target" />
@@ -102,15 +106,10 @@
                     Add to Selected Zone
                 </button>
             </div>
-
-
-
             <div v-else class="text-gray-400 italic">
                 ยังไม่ได้เลือกสินค้า
             </div>
         </div>
-
-
     </div>
 
 
@@ -153,7 +152,9 @@ const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
 const zones = ref([])
+const areas = ref([])
 const selectedZone = ref([])
+const selectedArea = ref([])
 const selectedProducts = ref([])
 
 
@@ -184,15 +185,39 @@ const addtoProdcutZone = (product) => {
 }
 
 
+watch(selectedZone, async (newZones) => {
+    // ถ้ายังไม่เลือก zone
+    if (!newZones || !newZones.length) {
+        areas.value = []
+        selectedArea.value = []
+        return
+    }
+
+    // แปลง zone object → string[]
+    const zoneList = newZones.map(z => z.zone)
+
+    // 🔹 เรียก API / store เพื่อดึง area ตาม zone
+    await filter.getAreaArray(zoneList, '')
+
+    // สมมติ filter.area = [{ area: 'BK211' }, { area: 'BK212' }]
+    areas.value = filter.area
+
+    // รีเซ็ต area ที่เลือก (กันค่าเก่า)
+    selectedArea.value = []
+})
+
+
 const saveZone = () => {
     // ✅ แปลง zone object → string[]
     const zones = selectedZone.value.map(z => z.zone)
     const products = selectedProducts.value.map(z => z.id)
+    const areas = selectedArea.value.map(z => z.area)
 
     console.log('selectedProducts', products)
     console.log('selectedZone', zones)
+    console.log('selectedArea', areas)
 
-    productStore.addSKUFocus(selectedChannel.value, products, target.value, period, zones)
+    productStore.addSKUFocus(selectedChannel.value, products, target.value, period, zones, areas)
         .then(() => {
             toast.success('บันทึกข้อมูลเรียบร้อย')
             // เคลียร์ข้อมูล

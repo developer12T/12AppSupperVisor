@@ -14,7 +14,7 @@ export const useFilter = defineStore('filters', {
     message: ''
   }),
   actions: {
-    async getBrand(group, flavour, size, unit) {
+    async getBrand (group, flavour, size, unit) {
       try {
         const response = await api.post(`/api/cash/product/brandByFilter`, {
           flavour: flavour,
@@ -30,7 +30,7 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-    async getGroup(brand, flavour, size, unit) {
+    async getGroup (brand, flavour, size, unit) {
       try {
         const response = await api.post(`/api/cash/product/groupByFilter`, {
           flavour: flavour,
@@ -46,7 +46,7 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-    async getFlavour(brand, group, size, unit) {
+    async getFlavour (brand, group, size, unit) {
       try {
         const response = await api.post(`/api/cash/product/flavourByFilter`, {
           group: group,
@@ -62,7 +62,7 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-    async getSize(brand, group, flavour, unit) {
+    async getSize (brand, group, flavour, unit) {
       try {
         const response = await api.post(`/api/cash/product/sizeByFilter`, {
           group: group,
@@ -78,7 +78,7 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-    async getUnit(brand, group, flavour, size) {
+    async getUnit (brand, group, flavour, size) {
       try {
         const response = await api.post(`/api/cash/product/brandByFilter`, {
           group: group,
@@ -94,7 +94,7 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-    async getZone(channel, period) {
+    async getZone (channel, period) {
       try {
         const platformType = localStorage.getItem('platformType')
         setChannel(channel)
@@ -113,7 +113,7 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-    async getZoneCredit(channel, period) {
+    async getZoneCredit (channel, period) {
       try {
         const platformType = localStorage.getItem('platformType')
         setChannel(channel)
@@ -132,8 +132,7 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-
-    async getArea(period, zone, team) {
+    async getArea (period, zone, team) {
       try {
         const platformType = localStorage.getItem('platformType')
         const response = await api.post(`/api/cash/user/getArea`, {
@@ -156,7 +155,30 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-    async getAreaCredit(period, zone, team) {
+    async getAreaArray (zoneList, team) {
+      try {
+        const platformType = localStorage.getItem('platformType')
+        const response = await api.post(`/api/cash/user/getAreaByZone`, {
+          zone: zoneList,
+          team: team,
+          role: 'sale',
+          platformType: platformType
+        })
+        const result = response.data.data
+        this.area = result
+        console.log('Areas', {
+          zone: zoneList,
+          team: team,
+          role: 'sale',
+          platformType: platformType
+        })
+        console.log('Areas', this.area)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async getAreaCredit (period, zone, team) {
       try {
         const platformType = localStorage.getItem('platformType')
         const response = await api.post(`/api/cash/user/getAreaCredit`, {
@@ -178,7 +200,7 @@ export const useFilter = defineStore('filters', {
         console.error(error)
       }
     },
-    async getTeam(channel, zone) {
+    async getTeam (channel, zone) {
       try {
         let platformType = localStorage.getItem('platformType')
 
@@ -198,7 +220,7 @@ export const useFilter = defineStore('filters', {
         console.error(error)
       }
     },
-    async getTeamCredit(channel, zone) {
+    async getTeamCredit (channel, zone) {
       try {
         let platformType = localStorage.getItem('platformType')
 
@@ -219,9 +241,7 @@ export const useFilter = defineStore('filters', {
       }
     },
 
-
-
-    async getRoute() {
+    async getRoute () {
       try {
         const response = await api.get(`/api/cash/product/getProductSwitch`)
         const result = response.data

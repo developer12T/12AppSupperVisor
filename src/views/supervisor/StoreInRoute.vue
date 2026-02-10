@@ -51,6 +51,24 @@
                         <td class="border border-black px-3 py-2 text-center">{{ item.del }}</td>
                     </tr>
                 </tbody>
+                <tfoot class="bg-gray-200 font-bold">
+                    <tr>
+                        <td class="border border-black px-3 py-2 text-center sticky left-0 bg-gray-300">
+                            รวม
+                        </td>
+
+                        <td v-for="r in rangeKeys" :key="r" class="border border-black px-3 py-2 text-center">
+                            {{ columnSums[r] || 0 }}
+                        </td>
+
+                        <td class="border border-black px-3 py-2 text-center bg-yellow-200">
+                            {{ grandTotal }}
+                        </td>
+
+                        <td class="border border-black px-3 py-2 text-center">-</td>
+                        <td class="border border-black px-3 py-2 text-center">-</td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -82,6 +100,23 @@ const calcSum = (item: any) => {
         return sum + (isNaN(val) ? 0 : val)
     }, 0)
 }
+
+const columnSums = computed(() => {
+    const result: Record<string, number> = {}
+
+    rangeKeys.value.forEach(key => {
+        result[key] = data.value.reduce((sum, item: any) => {
+            const val = Number(item[key])
+            return sum + (isNaN(val) ? 0 : val)
+        }, 0)
+    })
+
+    return result
+})
+
+const grandTotal = computed(() => {
+    return Object.values(columnSums.value).reduce((a, b) => a + b, 0)
+})
 
 onMounted(async () => {
     isLoading.value = true
