@@ -131,11 +131,11 @@ const rangeKeys = computed(() =>
 )
 
 watch(selectedZone, async (newVal) => {
+    selectedTeam.value = ''
     if (newVal) {
         isLoading.value = true
         await filter.getTeam('cash', newVal);
         await routeStore.getStoreInRoute(period, newVal, selectedTeam.value)
-        selectedTeam.value = ''
         data.value = routeStore.routeInStore
         isLoading.value = false
     }
