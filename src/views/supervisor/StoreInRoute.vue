@@ -135,6 +135,7 @@ watch(selectedZone, async (newVal) => {
         isLoading.value = true
         await filter.getTeam('cash', newVal);
         await routeStore.getStoreInRoute(period, newVal, selectedTeam.value)
+        selectedTeam.value = ''
         data.value = routeStore.routeInStore
         isLoading.value = false
     }
