@@ -5,6 +5,8 @@ export const useRouteStore = defineStore('checkin', {
   state: () => ({
     routes: [],
     storeCheckIN: [],
+    orderSKU: [],
+    reportSKU: [],
     productSKU: [],
     productAll: [],
     storeLocks: [],
@@ -545,6 +547,36 @@ export const useRouteStore = defineStore('checkin', {
           }
         )
         this.productSKU = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getProductSKUReport (period) {
+      try {
+        const response = await api.post(
+          `${import.meta.env.VITE_API_URL}/api/cash/route/getProductSKUReport`,
+          {
+            period: period
+          }
+        )
+        this.reportSKU = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getOrderReport (area, itemCode, period) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getOrdersByAreaAndItem`,
+          {
+            area: area,
+            itemCode: itemCode,
+            period: period
+          }
+        )
+        this.orderSKU = response.data.data
       } catch (error) {
         console.error(error)
       }

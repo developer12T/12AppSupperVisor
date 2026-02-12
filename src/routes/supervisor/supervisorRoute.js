@@ -46,7 +46,7 @@ const supervisorRoutes = [
       },
       {
         path: 'order/:orderId',
-        // name: 'OrderDetail',
+        name: 'OrderDetailSup',
         component: () => import('../../views/supervisor/OrderDetail.vue'),
         props: true // allows useRoute().params.route OR `props: true` to bind as prop
       },
@@ -121,7 +121,8 @@ const supervisorRoutes = [
       {
         path: 'skuFocusReportTable/:area/:date',
         name: 'skuFocusReportTable',
-        component: () => import('../../views/supervisor/SKUFocusReportTable.vue')
+        component: () =>
+          import('../../views/supervisor/SKUFocusReportTable.vue')
       },
       {
         path: 'storeinroute',
@@ -222,6 +223,16 @@ const supervisorRoutes = [
         path: 'approveLockRoute/:id',
         name: 'approveLockRouteDetail',
         component: () => import('../../views/supervisor/LockRouteDetail.vue')
+      },
+      {
+        path: 'sku-report',
+        name: 'SKUReport',
+        component: () => import('../../views/supervisor/SKUReport.vue')
+      },
+      {
+        path: 'sku-report/:area/:id',
+        name: 'SkuReportDetail',
+        component: () => import('../../views/supervisor/SKUReportDetail.vue')
       }
     ]
   }
