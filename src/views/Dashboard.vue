@@ -371,7 +371,7 @@ export default {
         <Line :data="lineData" :options="options" />
     </div> -->
     <div class="card bg-base-100 shadow-xl p-4">
-        <h2 class="text-xl font-bold mb-2">Summary By Area</h2>
+        <h2 class="text-xl font-bold mb-2">Summary By Area TEST</h2>
         <div class="flex justify-end gap-6">
             <select class="select select-info ms-3" :disabled="isLoading" v-model="selectedType" @change="fetchData">
                 <option disabled selected>Select Type</option>
