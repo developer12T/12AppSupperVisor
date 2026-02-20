@@ -38,11 +38,10 @@ export const useRouteStore = defineStore('checkin', {
     statusCode: 0
   }),
   actions: {
-    async getAreaApproval (period) {
+    async getAreaApproval(period) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getAreaApproval?period=${period}`
         )
         console.log('routesApproval', response.data)
@@ -53,7 +52,7 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async editLockRoute (period, area, id, storeId, editType, startDate, lock) {
+    async editLockRoute(period, area, id, storeId, editType, startDate, lock) {
       try {
         const user = localStorage.getItem('fullName')
         const response = await api.post(
@@ -76,14 +75,16 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async updateSaleOutRoute (period, area, saleOutRoute) {
+    async updateSaleOutRoute(period, area, saleOutRoute) {
       try {
+        const user = localStorage.getItem('fullName')
         const response = await api.post(
           `${import.meta.env.VITE_API_URL}/api/cash/route/updateSaleOutRoute`,
           {
             period: period,
             area: area,
-            saleOutRoute: saleOutRoute
+            saleOutRoute: saleOutRoute,
+            user
           }
         )
         console.log('saleOutRoute', response.data)
@@ -93,11 +94,10 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
-    async getStoreLock (period, area, id) {
+    async getStoreLock(period, area, id) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getRouteLock?routeId=${id}&area=${area}&period=${period}`
         )
         console.log('getStoreLock', response.data.data[0].listStore)
@@ -107,11 +107,10 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async getChangeNew (id) {
+    async getChangeNew(id) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getRouteChange?id=${id}`
         )
         console.log('routeChangesNew', response.data)
@@ -122,11 +121,10 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async getPolyLine (period, area, startDate, endDate) {
+    async getPolyLine(period, area, startDate, endDate) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/polylineRoute?area=${area}&period=${period}&startDate=${startDate}&endDate=${endDate}`
         )
         console.log('polyline', response.data)
@@ -135,11 +133,10 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
-    async getPolyLineCredit (period, area, startDate, endDate) {
+    async getPolyLineCredit(period, area, startDate, endDate) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/polylineRouteCredit?area=${area}&period=${period}&startDate=${startDate}&endDate=${endDate}`
         )
         console.log('polyline', response.data)
@@ -149,11 +146,10 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async getRouteChangeStore (id) {
+    async getRouteChangeStore(id) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getRouteChange?id=${id}`
         )
         console.log('getRouteChangeStore', response.data)
@@ -162,11 +158,10 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
-    async getRouteChangeSale (period, zone, team, area) {
+    async getRouteChangeSale(period, zone, team, area) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getRoute?area=${area}&period=${period}&zone=${zone}&team=${team}`
         )
         console.log('getRouteChangeSale', response.data)
@@ -176,11 +171,10 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async getRouteLock (period, zone, team, area) {
+    async getRouteLock(period, zone, team, area) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getRouteLock?area=${area}&period=${period}&zone=${zone}&team=${team}`
         )
         console.log('getRouteLock', response.data)
@@ -192,11 +186,10 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async addStoreToRouteChange (routeId, storeId) {
+    async addStoreToRouteChange(routeId, storeId) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/addStoreToRouteChange`,
           {
             id: routeId,
@@ -226,11 +219,10 @@ export const useRouteStore = defineStore('checkin', {
         }
       }
     },
-    async deleteStoreToRouteChange (routeId, storeId) {
+    async deleteStoreToRouteChange(routeId, storeId) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/deleteStoreToRouteChange`,
           {
             id: routeId,
@@ -259,7 +251,7 @@ export const useRouteStore = defineStore('checkin', {
         }
       }
     },
-    async addNewStoreToRoute (routeId, storeId) {
+    async addNewStoreToRoute(routeId, storeId) {
       try {
         const response = await api.post(
           `${import.meta.env.VITE_API_URL}/api/cash/route/addNewStoreToRoute`,
@@ -290,11 +282,10 @@ export const useRouteStore = defineStore('checkin', {
         }
       }
     },
-    async getRouteChangeAreaManger (period, area, startDate, endDate) {
+    async getRouteChangeAreaManger(period, area, startDate, endDate) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/polylineRoute?area=${area}&period=${period}&startDate=${startDate}&endDate=${endDate}`
         )
         console.log('polyline', response.data)
@@ -304,11 +295,10 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async getNewStoreToRoute (period, zone, team, area) {
+    async getNewStoreToRoute(period, zone, team, area) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getNewStoreToRoute?period=${period}&area=${area}&zone=${zone}&team=${team}`
         )
         console.log('routeAddStores', response.data)
@@ -318,12 +308,11 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async approveNewStoreToRoute (id, status) {
+    async approveNewStoreToRoute(id, status) {
       try {
         const user = localStorage.getItem('fullName')
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/approveNewStoreToRoute`,
           {
             id: id,
@@ -338,11 +327,10 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
-    async getDayRoute (period, zone, team, area) {
+    async getDayRoute(period, zone, team, area) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getRouteEffectiveByDay`,
           {
             zone: zone,
@@ -358,11 +346,10 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
-    async getDayRouteCredit (period, zone, team, area) {
+    async getDayRouteCredit(period, zone, team, area) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getRouteEffectiveByDayCredit`,
           {
             zone: zone,
@@ -379,11 +366,10 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async getStoreInRoute (period, zone, team) {
+    async getStoreInRoute(period, zone, team) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/checkroutestore?period=${period}&zone=${zone}&team=${team}`
         )
         this.routeInStore = response.data.data
@@ -391,11 +377,10 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
-    async getRoutesStore (period, zone) {
+    async getRoutesStore(period, zone) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/CheckRouteStore?zone=${zone}&period=${period}`
         )
         console.log('routesStore', response.data)
@@ -404,11 +389,10 @@ export const useRouteStore = defineStore('checkin', {
         console.log(error)
       }
     },
-    async getRoutes (routeId) {
+    async getRoutes(routeId) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/order/getSaleSummaryByStore`,
           {
             routeId: routeId
@@ -421,11 +405,10 @@ export const useRouteStore = defineStore('checkin', {
       }
     },
 
-    async getStoreCheckinByDayArea (area, date) {
+    async getStoreCheckinByDayArea(area, date) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getStoreCheckinByDayArea`,
           {
             area: area,
@@ -438,11 +421,10 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getStoreCheckinByDayAreaCredit (area, date) {
+    async getStoreCheckinByDayAreaCredit(area, date) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getStoreCheckinByDayAreaCredit`,
           {
             area: area,
@@ -455,7 +437,7 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getCheckin (period, zone, team, area) {
+    async getCheckin(period, zone, team, area) {
       try {
         const response = await api.post(
           `${import.meta.env.VITE_API_URL}/api/cash/route/getRouteEffective`,
@@ -474,11 +456,10 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getRouteEffective (period, route, zone, team, area) {
+    async getRouteEffective(period, route, zone, team, area) {
       try {
         const response = await api.get(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getRouteEffectiveAll?area=${area}&period=${period}&day=${route}&zone=${zone}`
         )
         // console.log('response', response.data)
@@ -495,7 +476,7 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getExcelCheckin (area, period) {
+    async getExcelCheckin(area, period) {
       try {
         const response = await api.post(
           `${import.meta.env.VITE_API_URL}/api/cash/route/getRouteEffective`,
@@ -520,11 +501,10 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getProductSoldByDayArea (area, date) {
+    async getProductSoldByDayArea(area, date) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getProductSoldByDayArea`,
           {
             area: area,
@@ -536,11 +516,10 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getProductSoldByDayAreaSKU (area, date) {
+    async getProductSoldByDayAreaSKU(area, date) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getProductSoldByDayAreaSKU`,
           {
             area: area,
@@ -552,7 +531,7 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getProductSKUReport (period) {
+    async getProductSKUReport(period) {
       try {
         const response = await api.post(
           `${import.meta.env.VITE_API_URL}/api/cash/route/getProductSKUReport`,
@@ -565,11 +544,10 @@ export const useRouteStore = defineStore('checkin', {
         console.error(error)
       }
     },
-    async getOrderReport (area, itemCode, period) {
+    async getOrderReport(area, itemCode, period) {
       try {
         const response = await api.post(
-          `${
-            import.meta.env.VITE_API_URL
+          `${import.meta.env.VITE_API_URL
           }/api/cash/route/getOrdersByAreaAndItem`,
           {
             area: area,
