@@ -189,6 +189,7 @@ const page = ref(1)
 const pageSize = ref(25)
 const startIndex = computed(() => (page.value - 1) * pageSize.value)
 const endIndex = computed(() => page.value * pageSize.value)
+
 const filteredRowsStoreAll = computed(() => {
     const query = searchQuery.value.trim().toLowerCase()
 

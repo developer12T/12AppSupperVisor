@@ -25,6 +25,7 @@
                 <VueMultiselect v-model="selectedZone" :options="zone" :multiple="true" track-by="zone"
                     :preserve-search="true" :clear-on-select="true" :close-on-select="false" placeholder="เลือกโซน"
                     class="w-full mb-2" label="zone" />
+                    
                 <VueMultiselect v-model="selectedArea" :options="area" :multiple="true" track-by="area"
                     :preserve-search="true" :clear-on-select="true" :close-on-select="false" placeholder="เลือกเขต"
                     class="w-full mb-2" label="area" />

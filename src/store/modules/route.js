@@ -6,6 +6,7 @@ export const useRouteStore = defineStore('checkin', {
     routes: [],
     storeCheckIN: [],
     orderSKU: [],
+    orderSKUv2: {},
     reportSKU: [],
     productSKU: [],
     productAll: [],
@@ -577,6 +578,22 @@ export const useRouteStore = defineStore('checkin', {
           }
         )
         this.orderSKU = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getOrderReportSKU (area, period) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getProductSKUReportByOrder`,
+          {
+            area: area,
+            period: period
+          }
+        )
+        this.orderSKUv2 = response.data.data
       } catch (error) {
         console.error(error)
       }
