@@ -91,6 +91,11 @@ const adminRoutes = [
         path: 'sku-focus/create',
         component: () => import('../../views/admin/ADDSKUFocus.vue')
         // meta: { breadcrumb: 'ใบสั่งจอง' }
+      },
+      {
+        path: 'powerbi',
+        name: 'PowerBI',
+        component: () => import('../../views/admin/PowerBI.vue')
       }
     ]
   }

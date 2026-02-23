@@ -10,10 +10,14 @@
                 <option v-for="team in filter.team" :key="team.saleTeam" :value="team.saleTeam">{{ team.saleTeam }}
                 </option>
             </select>
-            <select class="select select-info ms-3 text-center" v-model="selectedArea">
+
+            <select class="select select-info ms-3 text-center  mb-2" v-model="selectedArea">
                 <option disabled value="">Select Area</option>
                 <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
             </select>
+            <div class="ms-3 text-center mb-2 w-50">
+                <VueDatePicker v-model="monthRange" format="MM/yyyy" month-picker @update:model-value="onMonthChange" />
+            </div>
             <button class="btn btn-primary ms-3 mt-3 text-center" @click="clearFilter">ล้างตัวเลือก</button>
         </div>
 
@@ -186,7 +190,7 @@
                         <td class="text-center p-2 border-r border-black">{{ item.storeSell }}</td>
                         <td class="text-center p-2 border-r border-black">{{
                             item.storeNotSell + item.storeCheckInNotSell
-                        }}</td>
+                            }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeAll - item.storeTotal }}</td>
                         <td class="text-right p-2  border-r border-black">{{ formatCurrency(item.summary) }}</td>
                         <td class="text-right p-2 border-r border-black">
@@ -229,10 +233,12 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { useRouteStore } from '../../store/modules/route'
 import { useFilter } from '../../store/modules/filter'
 import { getTeam3 } from '../../utils/format'
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 
 const today = new Date();
-const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
+const period = ref(today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0'));
 
 const router = useRouter()
 const route = useRoute()
@@ -245,6 +251,51 @@ const totalRow = ref('')
 const selectedZone = ref(route.query.zone || '')
 const selectedArea = ref(route.query.area || '')
 const selectedTeam = ref(route.query.team || '')
+const monthRange = ref();
+
+
+async function onMonthChange(value) {
+    let dateObj = null;
+    console.log('Selected month:', value)
+
+    if (value instanceof Date) {
+        dateObj = value;
+    } else if (value?.year && value?.month) {
+        dateObj = new Date(value.year, value.month, 1);
+    } else if (value?.value instanceof Date) {
+        dateObj = value.value;
+    }
+
+    if (!dateObj) return;
+
+    const yyyy = dateObj.getFullYear();
+    const mm = dateObj.getMonth() + 1;
+
+    const firstDate = new Date(yyyy, mm - 1, 1);
+    const lastDate = new Date(yyyy, mm, 0);
+
+    period.value = `${yyyy}${String(mm).padStart(2, '0')}`;
+    console.log('Selected month:', period.value)
+
+    // dateRange.value = [firstDate, lastDate];
+    isLoading.value = true
+    await filter.getZone('cash', period.value);
+    filter.getTeam('cash', selectedZone.value);
+    console.log('selectedArea.value', selectedArea.value)
+    if (selectedZone.value) {
+        await filter.getArea(period.value, selectedZone.value, selectedTeam.value);
+        // showExcel.value = 'true'
+        //     await filter.getTeam(selectedZone.value);
+    }
+    // console.log('route.query.team', route.query.team)
+    await routeStore.getRouteEffective(period.value, '', selectedZone.value, selectedTeam.value, selectedArea.value);
+    await routeStore.getCheckin(period.value, selectedZone.value, selectedTeam.value, selectedArea.value);
+
+
+    isLoading.value = false
+}
+
+
 
 
 const filteredData = computed(() => {
@@ -405,24 +456,24 @@ function formatCurrency(value) {
 
 onMounted(async () => {
     isLoading.value = true;
-    await filter.getZone('cash', period);
+    await filter.getZone('cash', period.value);
     filter.getTeam('cash', selectedZone.value);
     console.log('selectedArea.value', selectedArea.value)
     if (selectedZone.value) {
-        await filter.getArea(period, selectedZone.value, selectedTeam.value);
+        await filter.getArea(period.value, selectedZone.value, selectedTeam.value);
         // showExcel.value = 'true'
         //     await filter.getTeam(selectedZone.value);
     }
     // console.log('route.query.team', route.query.team)
-    await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
-    await routeStore.getCheckin(period, selectedZone.value, selectedTeam.value, selectedArea.value);
+    await routeStore.getRouteEffective(period.value, '', selectedZone.value, selectedTeam.value, selectedArea.value);
+    await routeStore.getCheckin(period.value, selectedZone.value, selectedTeam.value, selectedArea.value);
     isLoading.value = false;
     // showExcel.value = 'true'
 })
 
 async function exportExcel() {
     try {
-        await routeStore.getExcelCheckin(selectedArea.value, period, '', selectedZone.value)
+        await routeStore.getExcelCheckin(selectedArea.value, period.value, '', selectedZone.value)
         console.log('✅ Export success')
     } catch (err) {
         console.error('❌ Export failed:', err)
@@ -439,7 +490,7 @@ watch(selectedTeam, async (newVal) => {
         }
     });
     if (newVal) {
-        filter.getArea(period, selectedZone.value, newVal);
+        filter.getArea(period.value, selectedZone.value, newVal);
     }
 });
 
@@ -468,7 +519,7 @@ watch(selectedZone, async (newVal) => {
     if (newVal) {
         // await routeStore.getCheckin(period, selectedZone.value, selectedTeam.value, selectedArea.value);
 
-        filter.getArea(period, newVal, selectedTeam.value);
+        filter.getArea(period.value, newVal, selectedTeam.value);
         filter.getTeam('cash', newVal);
     }
 });
@@ -482,18 +533,18 @@ watch(selectedArea, async (newVal) => {
     });
     if (newVal) {
         isLoading.value = true;
-        await filter.getZone('cash', period);
+        await filter.getZone('cash', period.value);
         // if (selectedZone.value) {
         //     await filter.getArea(period, selectedZone.value, selectedArea.value);
 
         // }
         if (selectedArea.value) {
-            await routeStore.getCheckin(period, selectedArea.value);
+            await routeStore.getCheckin(period.value, selectedArea.value);
             showExcel.value = 'true'
         }
 
-        await routeStore.getRouteEffective(selectedArea.value, period, '', selectedZone.value);
-        await routeStore.getCheckin(period, newVal);
+        await routeStore.getRouteEffective(period.value, '', selectedZone.value, selectedTeam.value, selectedArea.value);
+        await routeStore.getCheckin(period.value, newVal);
         await new Promise(resolve => setTimeout(resolve, 2000))
         isLoading.value = false;
     }
