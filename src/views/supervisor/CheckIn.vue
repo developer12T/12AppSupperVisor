@@ -190,7 +190,7 @@
                         <td class="text-center p-2 border-r border-black">{{ item.storeSell }}</td>
                         <td class="text-center p-2 border-r border-black">{{
                             item.storeNotSell + item.storeCheckInNotSell
-                            }}</td>
+                        }}</td>
                         <td class="text-center p-2 border-r border-black">{{ item.storeAll - item.storeTotal }}</td>
                         <td class="text-right p-2  border-r border-black">{{ formatCurrency(item.summary) }}</td>
                         <td class="text-right p-2 border-r border-black">
@@ -258,15 +258,18 @@ async function onMonthChange(value) {
     let dateObj = null;
     console.log('Selected month:', value)
 
-    if (value instanceof Date) {
-        dateObj = value;
-    } else if (value?.year && value?.month) {
-        dateObj = new Date(value.year, value.month, 1);
-    } else if (value?.value instanceof Date) {
-        dateObj = value.value;
-    }
+    // if (value instanceof Date) {
+    //     dateObj = value;
+    // } else if (value?.year && value?.month) {
+    //     dateObj = new Date(value.year, value.month, 1);
+    // } else if (value?.value instanceof Date) {
+    //     dateObj = value.value;
+    // }
+    dateObj = new Date(value.year, value.month, 1);
+    console.log('Parsed date object:', dateObj)
 
     if (!dateObj) return;
+
 
     const yyyy = dateObj.getFullYear();
     const mm = dateObj.getMonth() + 1;

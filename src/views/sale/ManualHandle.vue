@@ -1,7 +1,7 @@
 <template>
-    <div class="max-w-3xl mx-auto p-6">
+    <div class="w-full mx-auto p-6">
         <h1 class="text-2xl font-bold mb-4">{{ header }}</h1>
-        <div v-if="isAdmin">
+        <!-- <div v-if="isAdmin">
             <form @submit.prevent="uploadFile" class="mb-6 flex items-center gap-4">
 
                 <input style="cursor: pointer;" class="border rounded" type="file" @change="onFileChange"
@@ -10,13 +10,12 @@
                     {{ uploading ? 'Uploading...' : 'Upload & Show' }}
                 </button>
             </form>
-        </div>
-        <div v-if="pptUrl" class="border rounded p-4 bg-white shadow">
-            <h2 class="font-semibold mb-2">{{ header }}</h2>
-            <!-- Microsoft Office Online Viewer -->
+        </div> -->
+        <div class="flex justify-between ">
+            <iframe :src="officeViewerUrl" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
             <iframe :src="officeViewerUrl" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
         </div>
-        <div v-else class="text-gray-400">No file uploaded.</div>
+
     </div>
 </template>
 
@@ -53,6 +52,11 @@ onMounted(() => {
             FILE_URL = 'https://apps.onetwotrading.co.th/manual/Manual.pptx'
             break;
 
+        case 'ADMIN':
+            header = '12Cash Manual'
+            FILE_URL = 'https://apps.onetwotrading.co.th/manual/Manual.pptx'
+            break;
+
         default:
             break;
     }
@@ -62,7 +66,7 @@ onMounted(() => {
 // Compose Office viewer URL for given pptUrl
 const officeViewerUrl = computed(() =>
     pptUrl.value
-        ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(pptUrl.value)}`
+        ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent("https://apps.onetwotrading.co.th/manual/Manual.pptx")}`
         : ''
 )
 

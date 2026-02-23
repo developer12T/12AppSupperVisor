@@ -28,10 +28,10 @@ export const usePowerBi = defineStore('powerBiUpdate', {
       }
     },
 
-    async updateOrderDistribution (period, area, team, zone) {
+    async updateOrderDistribution (period) {
       try {
         const response = await api.post(
-          `/api/cash/route/getProductSKUReportByOrder`,
+          `/api/cash/order/updateOrderDistribution`,
           {
             period: period
           }
