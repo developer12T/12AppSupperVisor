@@ -121,7 +121,7 @@
                 :value="percentageUsed" max="100"></progress> -->
         </div>
     </div>
-    <div v-if="showExcel === 'true'" class="w-full text-right">
+    <div class="w-full text-right">
         <button class="btn btn-success text-white mb-3" @click="exportExcel()">
             Export Excel
         </button>
