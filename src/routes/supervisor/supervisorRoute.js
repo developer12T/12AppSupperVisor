@@ -233,7 +233,8 @@ const supervisorRoutes = [
         path: 'sku-report/:area/:id',
         name: 'SkuReportDetail',
         component: () => import('../../views/supervisor/SKUReportDetail.vue')
-      }
+      },
+      
     ]
   }
 ]

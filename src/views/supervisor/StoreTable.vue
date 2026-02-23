@@ -247,14 +247,17 @@ async function exportExcel() {
 
 async function onMonthChange(value) {
     let dateObj = null;
-    if (value instanceof Date) {
-        dateObj = value;
-    } else if (value?.year && value?.month) {
-        dateObj = new Date(value.year, value.month, 1);
-    } else if (value?.value instanceof Date) {
-        dateObj = value.value;
-    }
+    // if (value instanceof Date) {
+    //     dateObj = value;
+    // } else if (value?.year && value?.month) {
+    //     dateObj = new Date(value.year, value.month, 1);
+    // } else if (value?.value instanceof Date) {
+    //     dateObj = value.value;
+    // }
+    dateObj = new Date(value.year, value.month, 1);
 
+
+    // dateObj = new Date(value.year, value.month, 1);
     if (!dateObj) return;
 
     const yyyy = dateObj.getFullYear();

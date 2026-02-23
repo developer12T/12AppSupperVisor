@@ -222,6 +222,9 @@ watch(selectedChannel, async (newVal) => {
 });
 
 watch(selectedBrand, async (newVal) => {
+    selectedGroup.value = ''
+    selectedFlavour.value = ''
+    selectedSize.value = ''
     if (newVal) {
         await filter.getGroup(newVal, selectedFlavour.value, selectedSize.value, '')
     }
@@ -229,12 +232,15 @@ watch(selectedBrand, async (newVal) => {
 
 
 watch(selectedGroup, async (newVal) => {
+    selectedFlavour.value = ''
+    selectedSize.value = ''
     if (newVal) {
         await filter.getFlavour(selectedBrand.value, newVal, selectedSize.value, '')
     }
 });
 
 watch(selectedFlavour, async (newVal) => {
+    selectedSize.value = ''
     if (newVal) {
         await filter.getSize(selectedBrand.value, selectedGroup.value, newVal, '')
     }

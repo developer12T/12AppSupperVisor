@@ -136,6 +136,7 @@ const menuItems = computed(() => [
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'], channel: ['CASH', 'PC', "ADMIN"] },
     { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveawayall', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'], channel: ['CASH', 'PC', "ADMIN"] },
     { name: 'สต๊อกสินค้า', icon: 'mdi:warehouse', link: '/supervisor/stock', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'], channel: ['CASH', 'PC', "ADMIN"] },
+    { name: 'ข้อมูล PowerBI', icon: 'mdi:database-arrow-up', link: '/admin/powerbi', submenu: null, roles: ['admin', 'supervisor','area_manager', 'sale_manager'], channel: ['CASH', 'PC', "ADMIN"] },
 ])
 
 const openSubmenus = ref(new Set())
