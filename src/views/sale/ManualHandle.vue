@@ -13,7 +13,7 @@
         </div> -->
         <div class="flex justify-between ">
             <iframe :src="officeViewerUrl" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
-            <iframe :src="officeViewerUrl" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
+            <iframe :src="officeViewerUrlApp" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
         </div>
 
     </div>
@@ -66,9 +66,16 @@ onMounted(() => {
 // Compose Office viewer URL for given pptUrl
 const officeViewerUrl = computed(() =>
     pptUrl.value
-        ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent("https://apps.onetwotrading.co.th/manual/Manual.pptx")}`
+        ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent("https://apps.onetwotrading.co.th/manual/ManualWeb.pptx")}`
         : ''
 )
+
+const officeViewerUrlApp = computed(() =>
+    pptUrl.value
+        ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent("https://apps.onetwotrading.co.th/manual/ManualApp.pptx")}`
+        : ''
+)
+
 
 async function uploadFile() {
     if (!selectedFile.value) return
