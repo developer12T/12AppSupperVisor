@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import api, { setChannel } from '../../utils/axios'
-import { defineStore } from 'pinia'
-import api from '../../utils/axios'
+
 
 export const usePowerBi = defineStore('powerBiUpdate', {
   state: () => ({
