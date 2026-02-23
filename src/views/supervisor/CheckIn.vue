@@ -539,12 +539,12 @@ watch(selectedArea, async (newVal) => {
 
         // }
         if (selectedArea.value) {
-            await routeStore.getCheckin(period.value, selectedArea.value);
+            await routeStore.getCheckin(period.value, selectedZone.value, selectedTeam.value, selectedArea.value);
             showExcel.value = 'true'
         }
 
         await routeStore.getRouteEffective(period.value, '', selectedZone.value, selectedTeam.value, selectedArea.value);
-        await routeStore.getCheckin(period.value, newVal);
+        await routeStore.getCheckin(period.value, selectedZone.value, selectedTeam.value, newVal);
         await new Promise(resolve => setTimeout(resolve, 2000))
         isLoading.value = false;
     }
