@@ -98,7 +98,7 @@ export const useFilter = defineStore('filters', {
       try {
         const platformType = localStorage.getItem('platformType')
         setChannel(channel)
-        const response = await api.post(`/api/cash/user/getArea`, {
+        const response = await api.post(`/api/cash/user/getZone`, {
           zone: '',
           team: '',
           role: 'sale',
