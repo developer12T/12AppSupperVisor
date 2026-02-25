@@ -1,7 +1,10 @@
 <template>
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold"> </h2>
+        <button class="btn btn-sm" @click="exportDetail()">Export 📑</button>
+    </div>
     <div class="overflow-x-auto" style="max-height:560px; max-width:90vw;">
         <table class="table table-zebra w-full">
-
             <!-- HEADER -->
             <thead>
                 <tr>
@@ -74,6 +77,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useRouteStore } from '../../store/modules/route'
+import * as XLSX from 'xlsx'
 
 const routeStore = useRouteStore()
 const route = useRoute()
@@ -95,6 +99,74 @@ const goToOrder = (orderId) => {
     })
     window.open(r.href, '_blank')
 }
+
+const exportToExcel = (exportRows, exportColumns) => {
+    // Prepare header row
+    const headerRow = ['Date', 'Order', 'Store', 'Store ID', ...exportColumns.map(col => col.skuName)]
+    
+    // Prepare data rows
+    const dataRows = exportRows.map(row => [
+        formatDate(row.date),
+        row.orderId,
+        row.storeName,
+        row.storeId,
+        ...exportColumns.map(col => row.items?.[col.skuId]?.pcs || 0)
+    ])
+    
+    // Combine header and data
+    const worksheetData = [headerRow, ...dataRows]
+    
+    // Create worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData)
+    
+    // Create workbook and add worksheet
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'SKU Report')
+    
+    // Set column widths
+    const columnWidths = [
+        { wch: 15 }, // Date
+        { wch: 15 }, // Order
+        { wch: 20 }, // Store
+        { wch: 12 }, // Store ID
+        ...exportColumns.map(() => ({ wch: 12 })) // SKU columns
+    ]
+    worksheet['!cols'] = columnWidths
+    
+    // Generate filename with current date
+    const today = new Date()
+    const dateStr = today.toISOString().split('T')[0]
+    const filename = `SKU_Report_${dateStr}.xlsx`
+    
+    // Write file
+    XLSX.writeFile(workbook, filename)
+}
+
+const exportDetail = async () => {
+    isLoading.value = true
+    try {
+        // Get period
+        const today = new Date()
+        const period =
+            today.getFullYear().toString() +
+            String(today.getMonth() + 1).padStart(2, '0')
+
+        // Fetch all data (without area filter)
+        await routeStore.getOrderReportSKU('', period)
+
+        const payload = routeStore.orderSKUv2 || {}
+        const exportRows = payload.rows || []
+        const exportColumns = payload.columns || []
+
+        // Export to Excel
+        exportToExcel(exportRows, exportColumns)
+    } catch (error) {
+        console.error('Error exporting data:', error)
+    } finally {
+        isLoading.value = false
+    }
+}
+
 
 onMounted(async () => {
     isLoading.value = true
@@ -124,4 +196,16 @@ onMounted(async () => {
     background: #00569d;
     color: white;
 }
+
+.btn {
+    border: 2px solid #00ff00;
+    background: #fff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-right: 5%;
+    font-weight: 600;
+    cursor: pointer;
+    float: right;
+}
+
 </style>
