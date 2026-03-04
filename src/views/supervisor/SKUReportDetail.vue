@@ -100,6 +100,7 @@ const goToOrder = (orderId) => {
     window.open(r.href, '_blank')
 }
 
+// Export to Excel function
 const exportToExcel = (exportRows, exportColumns) => {
     // Prepare header row
     const headerRow = ['Date', 'Order', 'Store', 'Store ID', ...exportColumns.map(col => col.skuName)]
