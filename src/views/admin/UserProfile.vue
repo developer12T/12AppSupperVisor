@@ -99,18 +99,18 @@ const password = ref()
 const defaultAvatar = `https://ui-avatars.com/api/?name=${route.params.username}&background=random`
 
 
-const fullName = localStorage.getItem('fullName')
-const area = localStorage.getItem('area')
-const zone = localStorage.getItem('zone')
-const saleCode = localStorage.getItem('saleCode')
-const role = localStorage.getItem('role')
+const fullName = localStorage.getItem('fullName') || ''
+const area = localStorage.getItem('area') || ''
+const zone = localStorage.getItem('zone') || ''
+const saleCode = localStorage.getItem('saleCode') || ''
+const role = localStorage.getItem('role') || ''
 // mock user data
 const user = ref({
-    name: `${fullName}`,
-    email: `${area}`,
-    zone: `${zone}`,
-    role: `${role}`,
-    employeeId: `${saleCode}`,
+    name: fullName,
+    email: area,
+    zone: zone,
+    role: role,
+    employeeId: saleCode,
     avatar: '',
 })
 
