@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
+import LoadingOverlay from '../LoadingOverlay.vue' 
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'

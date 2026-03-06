@@ -370,9 +370,11 @@ function startEdit(r: TargetRow) {
     editBuffer.actual = r.actual
     editBuffer.unit = r.unit
 }
+
 function cancelEdit() {
     editingId.value = ''
 }
+
 function saveEdit(id: string) {
     if (editBuffer.target < 0 || editBuffer.actual < 0) return alert('Target/Actual must be >= 0')
     const idx = rows.value.findIndex(r => r.id === id)

@@ -85,8 +85,8 @@ const menuItems = computed(() => [
             { icon: 'mdi:routes', name: 'รายงานการเข้าเยี่ยม', link: '/supervisor/checkin', channel: ['CASH', "ADMIN"] },
             { icon: 'mdi:target-arrow', name: 'เป้าการเข้าเยี่ยม', link: '/supervisor/targetvisit', channel: ['CASH', "ADMIN"] },
             { icon: 'mdi:target-arrow', name: 'เป้าการเข้าเยี่ยม CR', link: '/supervisor/targetvisitCR', channel: ['CASH', "ADMIN"] },
+            { icon: 'mdi:progress-star', name: 'รายงาน SKU Focus', link: '/supervisor/sku-report', channel: ['CASH', "ADMIN"] },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product', channel: ['CASH', "PC", "ADMIN"] },
-            // { icon: 'mdi:money-100', name: 'รายการส่งเงิน', link: '/supervisor/sendmoney', channel: ['CASH', "PC"] },
             { icon: 'mdi:box-clock-outline', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute', channel: ['CASH', "PC", "ADMIN"] },
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'dc'],
@@ -136,6 +136,7 @@ const menuItems = computed(() => [
     { name: 'จัดการโปรโมทชั่น', icon: 'mdi:tag-approve-outline', link: '/admin/promotion', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'], channel: ['CASH', 'PC', "ADMIN"] },
     { name: 'แจกสินค้า', icon: 'mdi:gift', link: '/admin/giveawayall', submenu: null, roles: ['admin', 'area_manager', 'sale_manager'], channel: ['CASH', 'PC', "ADMIN"] },
     { name: 'สต๊อกสินค้า', icon: 'mdi:warehouse', link: '/supervisor/stock', submenu: null, roles: ['admin', 'supervisor', 'dc', 'area_manager', 'sale_manager'], channel: ['CASH', 'PC', "ADMIN"] },
+    { name: 'ข้อมูล PowerBI', icon: 'mdi:database-arrow-up', link: '/admin/powerbi', submenu: null, roles: ['admin', 'supervisor','area_manager', 'sale_manager'], channel: ['CASH', 'PC', "ADMIN"] },
 ])
 
 const openSubmenus = ref(new Set())

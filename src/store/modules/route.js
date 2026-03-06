@@ -5,6 +5,9 @@ export const useRouteStore = defineStore('checkin', {
   state: () => ({
     routes: [],
     storeCheckIN: [],
+    orderSKU: [],
+    orderSKUv2: {},
+    reportSKU: [],
     productSKU: [],
     productAll: [],
     storeLocks: [],
@@ -75,12 +78,14 @@ export const useRouteStore = defineStore('checkin', {
 
     async updateSaleOutRoute (period, area, saleOutRoute) {
       try {
+        const user = localStorage.getItem('fullName')
         const response = await api.post(
           `${import.meta.env.VITE_API_URL}/api/cash/route/updateSaleOutRoute`,
           {
             period: period,
             area: area,
-            saleOutRoute: saleOutRoute
+            saleOutRoute: saleOutRoute,
+            user
           }
         )
         console.log('saleOutRoute', response.data)
@@ -548,6 +553,53 @@ export const useRouteStore = defineStore('checkin', {
       } catch (error) {
         console.error(error)
       }
-    }
+    },
+    async getProductSKUReport (period) {
+      try {
+        const response = await api.post(
+          `${import.meta.env.VITE_API_URL}/api/cash/route/getProductSKUReport`,
+          {
+            period: period
+          }
+        )
+        this.reportSKU = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getOrderReport (area, itemCode, period) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getOrdersByAreaAndItem`,
+          {
+            area: area,
+            itemCode: itemCode,
+            period: period
+          }
+        )
+        this.orderSKU = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getOrderReportSKU (area, period) {
+      try {
+        const response = await api.post(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/route/getProductSKUReportByOrder`,
+          {
+            area: area,
+            period: period
+          }
+        )
+        this.orderSKUv2 = response.data.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
   }
 })

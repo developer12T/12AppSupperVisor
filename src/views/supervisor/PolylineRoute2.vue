@@ -132,7 +132,8 @@ function renderMap() {
         });
         const ll = [item.lat, item.lng];
         const m = L.marker(ll, { icon })
-            .bindPopup(`<b>StoreID:</b> ${item.storeId}<br><b>Route:</b> ${item.route}<br><b>Date:</b> ${item.date}`);
+            .bindPopup(`<b>StoreID:</b> ${item.storeId}<br>
+            <b>StoreName:</b> ${item.storeName}<br><b>Route:</b> ${item.route}<br><b>Date:</b> ${item.date}`);
         markersLayer.addLayer(m);
         markers.push(m);
         latlngs.push(ll);
@@ -280,6 +281,7 @@ onMounted(async () => {
         lat: item.location[1],
         lng: item.location[0],
         storeId: item.storeId,
+        storeName: item.storeName,
         route: item.route,
         date: item.date,
     }));

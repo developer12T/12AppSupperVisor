@@ -201,12 +201,27 @@ const filteredOrders = computed(() => {
         );
     }
 
-    if (selectedZone.value) {
-        data = data.filter(order =>
-            (order.area || '').startsWith(selectedZone.value)
-        )
-    }
+    // if (selectedZone.value) {
+    //     data = data.filter(order =>
+    //         (order.area || '').startsWith(selectedZone.value)
+    //     )
+    // }
 
+
+    if (selectedZone.value && selectedZone.value !== 'all') {
+        if (selectedZone.value === 'PC') {
+            data = data.filter(order =>
+                ['PC', 'FT', 'EV'].some(prefix =>
+                    (order.area || '').startsWith(prefix)
+                )
+            )
+        } else {
+            data = data.filter(order =>
+                (order.area || '').startsWith(selectedZone.value)
+            )
+        }
+    }
+    
     if (selectedArea.value) {
         data = data.filter(order => order.area === selectedArea.value);
     }
@@ -300,7 +315,7 @@ watch(selectedZone, async (newVal) => {
         selectedTeam.value = ''
         selectedArea.value = ''
         filter.getArea(period, newVal, selectedTeam.value);
-        filter.getTeam(selectedChannel.value,newVal);
+        filter.getTeam(selectedChannel.value, newVal);
     }
 });
 
