@@ -107,7 +107,10 @@ export const useOrder = defineStore('order', {
           start = `${y}${m}${d}` // YYYYMMDD
           end = `${y}${m}${d}` // YYYYMMDD
         }
-
+        if (zone === 'FT') {
+          zone = ''
+          area = 'FT101'
+        }
         const response = await api.get(
           `/api/cash/order/ordertoexcel?channel=${channel}&startDate=${start}&endDate=${end}&status=pending,approved,completed&area=${area}&team=${team}&zone=${zone}`,
           { responseType: 'blob' } // สำคัญมาก!
