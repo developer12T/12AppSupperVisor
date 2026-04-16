@@ -49,6 +49,12 @@ export const useOrder = defineStore('order', {
           area = localStorage.getItem('area')
         }
 
+        // แปลง FT zone เป็น area = FT101
+        if (zone === 'FT') {
+          zone = ''
+          area = 'FT101'
+        }
+
         // let area = localStorage.getItem('area')
         if (!/^\d{8}$/.test(start)) {
           const nowTH = new Date(
