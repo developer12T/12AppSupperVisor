@@ -152,6 +152,7 @@ function formatDate(dateStr) {
     return `${day}-${month}-${year}`
 }
 
+
 function renderMap() {
     // เคลียร์เลเยอร์เก่า
     markersLayer?.clearLayers();
