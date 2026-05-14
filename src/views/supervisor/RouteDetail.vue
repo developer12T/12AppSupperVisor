@@ -147,7 +147,7 @@
                         <td v-else class="text-center p-2 text-gray-400">
                             ไม่มีภาพ
                         </td>
-                        <td class="text-center p-2">{{ store.datetime }}</td>
+                        <td class="text-center p-2">{{ formatDateTime(store.datetime) }}</td>
                     </tr>
                 </template>
             </tbody>
@@ -193,5 +193,23 @@ function formatCurrency(value) {
         style: 'currency',
         currency: 'THB'
     }).format(value)
+}
+
+function formatDateTime(value) {
+    if (!value) return '-'
+    
+    // เอาช่องว่างออกและเพิ่ม T เพื่อให้ได้รูปแบบ ISO 8601
+    const d = new Date(value.replace(' ', 'T'))
+    
+    // หักเวลา 7 ชั่วโมงออกเพราะว่า JavaScript จะบวกเวลา timezone ของเบราว์เซอร์
+    d.setHours(d.getHours() - 7)
+    
+    return new Intl.DateTimeFormat('th-TH', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }).format(d)
 }
 </script>
