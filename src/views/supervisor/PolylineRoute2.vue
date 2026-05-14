@@ -34,6 +34,7 @@
                     <tr class="bg-primary text-white sticky top-0 left-0 z-50">
                         <th>#</th>
                         <th>Store ID</th>
+                        <th>Store Name</th>
                         <th>Route</th>
                         <th>Date</th>
                         <th>Lat</th>
@@ -45,6 +46,7 @@
                         v-for="(item, idx) in uniquePolylineData" :key="idx">
                         <td class="text-center font-semibold">{{ idx + 1 }}</td>
                         <td class="font-bold text-blue-600">{{ item.storeId }}</td>
+                        <td class="text-center">{{ item.storeName || '-' }}</td>
                         <td class="text-center">{{ item.route || '-' }}</td>
                         <td class="text-center text-sm">{{ item.date || '-' }}</td>
                         <td class="text-right text-xs">{{ item.location[1]?.toFixed(4) }}</td>
