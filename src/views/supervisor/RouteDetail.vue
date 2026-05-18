@@ -9,29 +9,29 @@
                 <h2 class="font-bold text-lg"> Visit</h2>
                 <div v-if="isLoading" class="skeleton h-8 w-24 rounded"></div>
                 <span v-else :class="[
-                    routeStore.visit <= 90 ? 'text-red-500' :
-                        routeStore.visit <= 70 ? 'text-yellow-500' :
+                    displayVisitPercent <= 90 ? 'text-red-500' :
+                        displayVisitPercent <= 70 ? 'text-yellow-500' :
                             'text-green-600',
                     'font-semibold'
                 ]">
-                    {{ routeStore.visit }}%
+                    {{ displayVisitPercent }}%
                 </span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 ร้านทั้งหมด:
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
+                <span v-else class="text-gray-700 font-medium">{{ displayTotalStoreAll }}</span>
             </div>
 
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 เยี่ยมแล้ว:
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreCheckInNotSell }}</span>
+                <span v-else class="text-gray-700 font-medium">{{ displayVisitedStores }}</span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 รอเยี่ยม:
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStorePending }}</span>
+                <span v-else class="text-gray-700 font-medium">{{ displayPendingStores }}</span>
             </div>
 
             <!-- <progress class="progress w-full"
@@ -44,29 +44,29 @@
                 <h2 class="font-bold text-lg"> Effective</h2>
                 <div v-if="isLoading" class="skeleton h-8 w-24 rounded"></div>
                 <span v-else :class="[
-                    routeStore.effective <= 80 ? 'text-red-500' :
-                        routeStore.effective > 80 ? 'text-green-600' :
+                    displayEffectivePercent <= 80 ? 'text-red-500' :
+                        displayEffectivePercent > 80 ? 'text-green-600' :
                             'text-yellow-600',
                     'font-semibold'
                 ]">
-                    {{ routeStore.effective }}%
+                    {{ displayEffectivePercent }}%
                 </span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 ร้านทั้งหมด:
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreAll }}</span>
+                <span v-else class="text-gray-700 font-medium">{{ displayTotalStoreAll }}</span>
             </div>
 
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 ซื้อ:
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreSell }}</span>
+                <span v-else class="text-gray-700 font-medium">{{ displayBoughtStores }}</span>
             </div>
             <div class="text-sm text-gray-500 mb-1 flex justify-between">
                 ไม่ซื้อ:
                 <span v-if="isLoading" class="skeleton h-8 w-24 rounded"></span>
-                <span v-else class="text-gray-700 font-medium">{{ routeStore.totalStoreNotSell }}</span>
+                <span v-else class="text-gray-700 font-medium">{{ displayNotBoughtStores }}</span>
             </div>
 
             <!-- <progress class="progress w-full"
@@ -173,12 +173,32 @@ const routeCode = computed(() => route.params.route)
 // Safely extract parts of routeId
 const area = computed(() => routeId.value.slice(6, 11))
 const period = computed(() => routeId.value.slice(0, 6))
-const day = computed(() => routeId.value.slice(12, 14))
+
+const routeStores = computed(() => routeStore.routes || [])
+const displayTotalStoreAll = computed(() => routeStores.value.length || routeStore.totalStoreAll)
+const displayVisitedStores = computed(() => routeStores.value.length
+    ? routeStores.value.filter(store => store.status !== 'รอเยี่ยม').length
+    : routeStore.totalStoreCheckInNotSell)
+const displayPendingStores = computed(() => routeStores.value.length
+    ? displayTotalStoreAll.value - displayVisitedStores.value
+    : routeStore.totalStorePending)
+const displayBoughtStores = computed(() => routeStores.value.length
+    ? routeStores.value.filter(store => store.status === 'ซื้อ').length
+    : routeStore.totalStoreSell)
+const displayNotBoughtStores = computed(() => routeStores.value.length
+    ? routeStores.value.filter(store => store.status !== 'ซื้อ' && store.status !== 'รอเยี่ยม').length
+    : routeStore.totalStoreNotSell)
+const displayVisitPercent = computed(() => routeStores.value.length
+    ? +(displayVisitedStores.value / displayTotalStoreAll.value * 100).toFixed(2)
+    : Number(routeStore.visit || 0))
+const displayEffectivePercent = computed(() => routeStores.value.length
+    ? +(displayBoughtStores.value / displayTotalStoreAll.value * 100).toFixed(2)
+    : Number(routeStore.effective || 0))
 
 onMounted(async () => {
     isLoading.value = true
     await routeStore.getRoutes(routeId.value)
-    await routeStore.getRouteEffective(area.value, period.value, day.value, '')
+    await routeStore.getRouteEffective(period.value, routeCode.value, '', '', area.value)
     await new Promise(resolve => setTimeout(resolve, 2000))
     isLoading.value = false
 })
