@@ -132,9 +132,10 @@ export const useRouteStore = defineStore('checkin', {
           }/api/cash/route/polylineRoute?area=${area}&period=${period}&startDate=${startDate}&endDate=${endDate}`
         )
         console.log('polyline', response.data)
-        this.polyline = response.data.data
+        this.polyline = response.data.data || []
       } catch (error) {
         console.log(error)
+        this.polyline = []
       }
     },
     async getPolyLineCredit (period, area, startDate, endDate) {
@@ -145,9 +146,10 @@ export const useRouteStore = defineStore('checkin', {
           }/api/cash/route/polylineRouteCredit?area=${area}&period=${period}&startDate=${startDate}&endDate=${endDate}`
         )
         console.log('polyline', response.data)
-        this.polyline = response.data.data
+        this.polyline = response.data.data || []
       } catch (error) {
         console.log(error)
+        this.polyline = []
       }
     },
 

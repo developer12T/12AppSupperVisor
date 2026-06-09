@@ -42,6 +42,9 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-if="uniquePolylineData.length === 0" class="text-center">
+                        <td colspan="7" class="text-gray-500 py-16 text-lg">ไม่มีข้อมูลการเข้าเยี่ยม</td>
+                    </tr>
                     <tr @click="gotoPoint(idx)" class="hover:bg-blue-50 cursor-pointer"
                         v-for="(item, idx) in uniquePolylineData" :key="idx">
                         <td class="text-center font-semibold">{{ idx + 1 }}</td>
@@ -214,6 +217,9 @@ async function onMonthChange() {
     try {
         const startStr = formatDateToYMD(startDate.value); // 'YYYYMMDD'
         const endStr = formatDateToYMD(endDate.value);   // 'YYYYMMDD'
+
+        // เคลียร์ข้อมูลเก่าก่อนเรียก API ใหม่
+        routeStore.polyline = [];
 
         // ส่งไป backend (ซึ่งจะตีความเป็นวันไทย +07:00 อยู่แล้ว)
         await routeStore.getPolyLine(period, route.params.area, startStr, endStr);
