@@ -37,13 +37,14 @@
                         <th>Store Name</th>
                         <th>Route</th>
                         <th>Date</th>
+                        <th>ยอดขาย</th>
                         <th>Lat</th>
                         <th>Lng</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-if="uniquePolylineData.length === 0" class="text-center">
-                        <td colspan="7" class="text-gray-500 py-16 text-lg">ไม่มีข้อมูลการเข้าเยี่ยม</td>
+                        <td colspan="8" class="text-gray-500 py-16 text-lg">ไม่มีข้อมูลการเข้าเยี่ยม</td>
                     </tr>
                     <tr @click="gotoPoint(idx)" class="hover:bg-blue-50 cursor-pointer"
                         v-for="(item, idx) in uniquePolylineData" :key="idx">
@@ -52,6 +53,7 @@
                         <td class="text-center">{{ item.storeName || '-' }}</td>
                         <td class="text-center">{{ item.route || '-' }}</td>
                         <td class="text-center text-sm">{{ item.date || '-' }}</td>
+                        <td class="text-right">{{ item.saleAmount ? formatCurrency(item.saleAmount) : '-' }}</td>
                         <td class="text-right text-xs">{{ item.location[1]?.toFixed(4) }}</td>
                         <td class="text-right text-xs">{{ item.location[0]?.toFixed(4) }}</td>
                     </tr>
@@ -68,10 +70,13 @@ import { useRouter, useRoute } from 'vue-router'
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useRouteStore } from "../../store/modules/route";
+import { useOrder } from "../../store/modules/order";
 import LoadingOverlay from '../LoadingOverlay.vue' // ปรับ path ตามโปรเจกต์
+import { formatCurrency } from '../../utils/format';
 
 
 const routeStore = useRouteStore();
+const orderStore = useOrder();
 const totalKm = ref("—");
 const router = useRouter()
 const route = useRoute()
@@ -79,6 +84,7 @@ const today = new Date();
 const period = today.getFullYear().toString() + String(today.getMonth() + 1).padStart(2, '0');
 
 const points = ref([]);      // <-- อันนี้ไว้ใช้ v-for, markers, gotoPoint
+const orderData = ref([]);   // เก็บข้อมูล order
 let map;
 let tileLayer;
 let markersLayer;   // กลุ่ม marker ไว้เคลียร์ง่ายๆ
@@ -103,10 +109,32 @@ const parseYMDDate = (ymdStr) => {
     return new Date(year, month - 1, day);
 }
 
-// คำนวณ computed property สำหรับ unique store ID และวันที่ที่ถูกต้อง
+// รวม order data เข้ากับ polyline data
 const uniquePolylineData = computed(() => {
     const seen = new Map();
     const result = [];
+    
+    // สร้าง map สำหรับ order data โดยใช้ storeId เป็น key
+    const orderMap = new Map();
+    let orders = [];
+    
+    if (Array.isArray(orderData.value)) {
+        orders = orderData.value;
+    } else if (orderData.value && typeof orderData.value === 'object' && !Array.isArray(orderData.value)) {
+        orders = [orderData.value];
+    }
+    
+    console.log('Processing order data - count:', orders.length, 'data:', orders);
+    
+    orders.forEach(order => {
+        if (order.storeId) {
+            if (!orderMap.has(order.storeId)) {
+                orderMap.set(order.storeId, []);
+            }
+            orderMap.get(order.storeId).push(order);
+        }
+    });
+    console.log('Order map created - size:', orderMap.size);
     
     // ถ้าเลือกช่วงวันที่ ให้กรองตามช่วงวันที่
     const filterByDate = startDate.value && endDate.value;
@@ -129,7 +157,15 @@ const uniquePolylineData = computed(() => {
         // เลือกเฉพาะ store ID ที่ไม่ซ้ำ (ตัวแรกที่เจอ)
         if (!seen.has(item.storeId)) {
             seen.set(item.storeId, true);
-            result.push(item);
+            
+            // หา order data สำหรับ store นี้
+            const orders = orderMap.get(item.storeId) || [];
+            const totalSale = orders.reduce((sum, order) => sum + (Number(order.total) || 0), 0);
+            
+            result.push({
+                ...item,
+                saleAmount: totalSale
+            });
         }
     });
     
@@ -220,9 +256,16 @@ async function onMonthChange() {
 
         // เคลียร์ข้อมูลเก่าก่อนเรียก API ใหม่
         routeStore.polyline = [];
+        orderData.value = [];
 
         // ส่งไป backend (ซึ่งจะตีความเป็นวันไทย +07:00 อยู่แล้ว)
         await routeStore.getPolyLine(period, route.params.area, startStr, endStr);
+        
+        // ดึงข้อมูล order
+        await orderStore.fetchOrder('cash', period, startStr, endStr, route.params.area, '');
+        console.log('Raw orderStore.order:', orderStore.order);
+        orderData.value = Array.isArray(orderStore.order) ? orderStore.order : (orderStore.order?.data || orderStore.order || []);
+        console.log('Processed orderData.value:', orderData.value);
 
         // renderMap จะใช้ uniquePolylineData ที่มี filter ตามวันที่แล้ว
         renderMap();
@@ -320,6 +363,10 @@ onMounted(async () => {
 
     // โหลดรอบแรก (ไม่มีช่วงวัน)
     await routeStore.getPolyLine(period, route.params.area, '', '');
+    await orderStore.fetchOrder('cash', period, '', '', route.params.area, '');
+    console.log('Initial Raw orderStore.order:', orderStore.order);
+    orderData.value = Array.isArray(orderStore.order) ? orderStore.order : (orderStore.order?.data || orderStore.order || []);
+    console.log('Initial Processed orderData.value:', orderData.value);
     
     renderMap();
 });
