@@ -23,6 +23,11 @@
                 <p>เลือกวันที่: {{ formatDate(endDate) }}</p>
             </div>
         </div>
+        <div class="ms-auto me-2 pt-2" v-if="totalSaleAmount > 0">
+            <div class="bg-info text-white px-6 py-2 rounded-lg font-semibold">
+                รวมยอดขาย: {{ formatCurrency(totalSaleAmount) }}
+            </div>
+        </div>
     </div>
 
     <div class="flex justify-between">
@@ -170,6 +175,10 @@ const uniquePolylineData = computed(() => {
     });
     
     return result;
+});
+
+const totalSaleAmount = computed(() => {
+    return uniquePolylineData.value.reduce((sum, item) => sum + (Number(item.saleAmount) || 0), 0);
 });
 
 const isLoading = ref(false)
