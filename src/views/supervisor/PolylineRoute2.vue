@@ -57,7 +57,7 @@
                         <td class="font-bold text-blue-600">{{ item.storeId }}</td>
                         <td class="text-center">{{ item.storeName || '-' }}</td>
                         <td class="text-center">{{ item.route || '-' }}</td>
-                        <td class="text-center text-sm">{{ item.date || '-' }}</td>
+                        <td class="text-center text-sm">{{ formatDateMinus7Hours(item.date) }}</td>
                         <td class="text-right">{{ item.saleAmount ? formatCurrency(item.saleAmount) : '-' }}</td>
                         <td class="text-right text-xs">{{ item.location[1]?.toFixed(4) }}</td>
                         <td class="text-right text-xs">{{ item.location[0]?.toFixed(4) }}</td>
@@ -200,6 +200,46 @@ function formatDate(dateStr) {
     const month = String(d.getMonth() + 1).padStart(2, '0')
     const year = d.getFullYear()
     return `${day}-${month}-${year}`
+}
+
+function formatDateMinus7Hours(dateStr) {
+    if (!dateStr) return '-'
+    
+    let d = new Date(dateStr)
+    
+    // If parsing failed, try DD/MM/YYYY or DD/MM/YYYY HH:MM:SS format
+    if (isNaN(d.getTime())) {
+        // Try splitting by space to separate date and time
+        const [datePart, timePart] = dateStr.split(' ')
+        const parts = datePart.split('/')
+        
+        if (parts.length === 3) {
+            const [day, month, year] = parts
+            let hour = 0, minute = 0, second = 0
+            
+            if (timePart) {
+                const timeParts = timePart.split(':')
+                hour = parseInt(timeParts[0]) || 0
+                minute = parseInt(timeParts[1]) || 0
+                second = parseInt(timeParts[2]) || 0
+            }
+            
+            d = new Date(year, month - 1, day, hour, minute, second)
+        }
+    }
+    
+    // If still invalid, return original
+    if (isNaN(d.getTime())) return dateStr
+    
+    d.setHours(d.getHours() - 7)
+    const resultDay = String(d.getDate()).padStart(2, '0')
+    const resultMonth = String(d.getMonth() + 1).padStart(2, '0')
+    const resultYear = d.getFullYear()
+    const resultHour = String(d.getHours()).padStart(2, '0')
+    const resultMinute = String(d.getMinutes()).padStart(2, '0')
+    const resultSecond = String(d.getSeconds()).padStart(2, '0')
+    
+    return `${resultDay}/${resultMonth}/${resultYear} ${resultHour}:${resultMinute}:${resultSecond}`
 }
 
 
