@@ -150,14 +150,13 @@ const totalSales = computed(() => {
 const percent = computed(() => {
     if (TARGET_SALES === 0) return 0
     const result = (totalSales.value / TARGET_SALES) * 100
-    return Number(result.toFixed(2))
+    return Math.round(result)
 })
 const percentText = computed(() => {
-    const formatted = percent.value.toFixed(2).replace(/\.00$/, '')
-    return `${formatted}%`
+    return `${percent.value}%`
 })
 const diff = computed(() => {
-    return totalSales.value - TARGET_SALES
+    return Math.round(totalSales.value - TARGET_SALES)
 })
 
 // ---- Utils ----
@@ -171,11 +170,12 @@ function formatDate(dateStr: string) {
 }
 
 function formatCurrency(n: number) {
-    return new Intl.NumberFormat('th-TH', { 
-        style: 'currency', 
-        currency: 'THB', 
-        maximumFractionDigits: 2 
-    }).format(n)
+    return new Intl.NumberFormat('th-TH', {
+        style: 'currency',
+        currency: 'THB',
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+    }).format(Math.round(n))
 }
 
 function formatPigeonQuantity(item: any, fallbackQty: number, fallbackUnit: string) {
@@ -261,8 +261,8 @@ async function onDateRangeChange() {
             const rawIsNumeric = /^-?\d+(?:\.\d+)?$/.test(rawStr)
 
             if (rawIsNumeric) {
-                quantity = Number(rawStr)
-                quantityText = rawStr
+                quantity = Math.round(Number(rawStr))
+                quantityText = String(quantity)
             } else {
                 quantity = Number(item.ctn ?? item.pack ?? item.quantity ?? item.qty ?? 0)
                 quantityText = formatPigeonQuantity(item, quantity, unit)
@@ -342,19 +342,26 @@ onMounted(async () => {
 
 .summary-cards {
     display: flex;
+    flex-wrap: wrap;
     gap: 16px;
     margin: 12px 0 16px 0;
 }
 .summary-cards .card {
-    flex: 1;
+    flex: 1 1 220px;
+    min-width: 180px;
     background: #fff;
     border-radius: 10px;
     padding: 16px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
+.summary-cards .card.diff {
+    flex: 1 1 260px;
+    min-width: 220px;
+}
 .summary-cards .card .label {
     color: #666;
     font-size: 13px;
+    white-space: normal;
 }
 .summary-cards .card .value {
     font-size: 20px;
@@ -469,15 +476,6 @@ onMounted(async () => {
 
     .table td {
         padding: 8px;
-    }
-
-    .table td[data-label]::before {
-        content: attr(data-label);
-        font-weight: 600;
-        display: block;
-        font-size: 11px;
-        color: #666;
-        margin-bottom: 4px;
     }
 }
 </style>
