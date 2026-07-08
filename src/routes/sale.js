@@ -59,6 +59,10 @@ const saleRoutes = [
         path: 'target',
         component: () => import('../views/sale/TargetSale.vue')
       },
+      {
+        path: 'targetpigeon',
+        component: () => import('../views/sale/TargetPigeon.vue')
+      },
 
       {
         path: 'changeRoute',

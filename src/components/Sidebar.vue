@@ -75,6 +75,7 @@ const menuItems = computed(() => [
     { name: 'รายการคืนสินค้า', icon: 'mdi:autorenew', link: '/sale/refundtable', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
     { name: 'รายการใบเบิก', icon: 'mdi:box-clock-outline', link: '/sale/withdrawtable', submenu: null, roles: ['sale'], channel: ['CASH', "PC"] },
     { name: 'เป้าหมาย', icon: 'mdi:target-arrow', link: '/sale/target', submenu: null, roles: ['sale', 'sale_manager', 'area_manager'], channel: ['CASH', "PC"] },
+    { name: 'เป้าหมายนกพิราบ', icon: 'mdi:target-arrow', link: '/sale/targetpigeon', submenu: null, roles: ['sale', 'sale_manager', 'area_manager'], channel: ['CASH', "PC"] },
 
     {
         name: 'รายงานต่างๆ',

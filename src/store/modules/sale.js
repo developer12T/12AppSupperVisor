@@ -5,6 +5,7 @@ export const useSale = defineStore('targetSale', {
   state: () => ({
     target: {},
     targetProduct: [],
+    productPigeon: [],
     message: ''
   }),
   actions: {
@@ -32,6 +33,20 @@ export const useSale = defineStore('targetSale', {
         console.log('targetProduct', this.targetProduct)
       } catch (error) {
         this.targetProduct = []
+        console.error(error)
+      }
+    },
+
+    async getProductPigeon (startDate, endDate, area) {
+      try {
+        const response = await api.get(
+          `/api/cash/order/getProductPigeon?area=${area}&startDate=${startDate}&endDate=${endDate}`
+        )
+        const result = response.data.data
+        this.productPigeon = result
+        console.log('productPigeon', this.productPigeon)
+      } catch (error) {
+        this.productPigeon = []
         console.error(error)
       }
     }
