@@ -235,7 +235,7 @@ function formatDateMinus7Hours(dateStr) {
     const resultDay = String(d.getDate()).padStart(2, '0')
     const resultMonth = String(d.getMonth() + 1).padStart(2, '0')
     const resultYear = d.getFullYear()
-    const resultHour = String(d.getHours()).padStart(2, '0')
+    const resultHour = String(d.getHours()+7).padStart(2, '0')
     const resultMinute = String(d.getMinutes()).padStart(2, '0')
     const resultSecond = String(d.getSeconds()).padStart(2, '0')
     
