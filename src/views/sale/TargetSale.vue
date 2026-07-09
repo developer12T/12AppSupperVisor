@@ -3,7 +3,7 @@
         <LoadingOverlay :show="isLoading" text="กำลังโหลดข้อมูล..." />
         <!-- Header -->
         <header class="header">
-            <h1>🎯 Target / เป้าหมายยอดขาย เขต: {{ area }}</h1>
+            <h1>🎯 Target / เป้าหมายยอดขาย เขต: {{ area.value }}</h1>
             <!-- <div class="header-actions">
                 <button class="btn primary" @click="onAddRow">+ New Target</button>
                 <button class="btn" @click="exportCSV">Export CSV</button>
@@ -224,7 +224,7 @@
 
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useSale } from '../../store/modules/sale'
 import 'chart.js/auto'
 import { formatToYYYYMM, normalizeMonth, pad2 } from '../../utils/format'
@@ -258,12 +258,12 @@ const period = today.getFullYear().toString() + String(today.getMonth() + 1).pad
 const zone = ref('')
 const unit = ref('')
 const onlyBelow = ref(false)
-const monthPick = ref();
+const monthPick = ref(new Date(2026, 6, 1)); // Initialize with July 2026
 const startDate = ref('') // e.g. "20250801"
 const endDate = ref('') // e.g. "20250831"
 const isLoading = ref(false)
 
-let area = localStorage.getItem('area')
+const area = ref(localStorage.getItem('area') || '')
 const selectedStatus = ref('vat')
 
 const unitOptions = ['THB', 'PCS', 'CTN'] as const
@@ -460,27 +460,38 @@ function formatShort(n: number) {
 
 async function onMonthChange() {
     isLoading.value = true
-    console.log(monthPick.value)
-    console.log(formatToYYYYMM(monthPick.value))
+    try {
+        // Handle different date formats from DatePicker
+        let year, month
+        
+        if (monthPick.value instanceof Date) {
+            year = monthPick.value.getFullYear()
+            month = monthPick.value.getMonth() + 1
+        } else if (monthPick.value && typeof monthPick.value === 'object') {
+            // Handle { year, month } format
+            year = monthPick.value.year
+            month = monthPick.value.month + 1
+        } else {
+            console.warn('Invalid month format:', monthPick.value)
+            return
+        }
 
-    const { year, month } = normalizeMonth(monthPick.value)
-    const firstDay = 1
-    const lastDay = new Date(year, month, 0).getDate() // handles 28/29/30/31 correctly
+        const firstDay = 1
+        const lastDay = new Date(year, month, 0).getDate() // handles 28/29/30/31 correctly
 
-    // console.log(year)
-    // console.log(month)
-    // console.log(firstDay)
-    // console.log(lastDay)
+        startDate.value = `${year}${pad2(month)}${pad2(firstDay)}`
+        endDate.value = `${year}${pad2(month)}${pad2(lastDay)}`
 
-    startDate.value = `${year}${pad2(month)}${pad2(firstDay)}`
-    endDate.value = `${year}${pad2(month)}${pad2(lastDay)}`
-
-    await saleStore.getTarget(startDate.value, endDate.value, area)
-    await saleStore.getTargetProduct(formatToYYYYMM(monthPick.value), area, '', '')
-    rows.value = saleStore.targetProduct
-
-    // await useOrderStore.fetchOrder('', `${startDate.value}`, `${endDate.value}`)
-    isLoading.value = false
+        console.log('Loading data for:', startDate.value, 'to', endDate.value)
+        
+        await saleStore.getTarget(startDate.value, endDate.value, area.value)
+        await saleStore.getTargetProduct(`${year}${pad2(month)}`, area.value, '', '')
+        rows.value = saleStore.targetProduct
+    } catch (error) {
+        console.error('Error loading month data:', error)
+    } finally {
+        isLoading.value = false
+    }
 }
 
 
@@ -502,12 +513,14 @@ function exportCSV() {
 
 onMounted(async () => {
     isLoading.value = true
-    await saleStore.getTarget('', '', area)
-    await saleStore.getTargetProduct(period, area, '', '')
-    rows.value = saleStore.targetProduct
-    console.log(rows.value);
+    await onMonthChange()
     isLoading.value = false
 })
+
+// Watch monthPick changes to reload data
+watch(() => monthPick.value, () => {
+    onMonthChange()
+}, { deep: true })
 </script>
 
 <style scoped>
