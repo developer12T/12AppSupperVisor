@@ -16,7 +16,7 @@
                     <option v-for="zone in filter.zone" :key="zone" :value="zone.zone">{{ zone.zone }}</option>
                 </select>
             </div>
-            <div class="ms-3">
+            <div v-if="selectedZone !== 'FT'" class="ms-3">
                 <select class="select select-info ms-3 text-center" v-model="selectedTeam">
                     <option disabled value="">Select Team</option>
                     <option value="all">ทั้งหมด</option>
@@ -30,6 +30,9 @@
                     <option value="all">ทั้งหมด</option>
                     <option v-for="area in filter.area" :key="area" :value="area.area">{{ area.area }}</option>
                 </select>
+            </div>
+            <div v-if="selectedZone === 'FT'" class="ms-10">
+                <button class="btn btn-primary" @click="openProductDetailMonthly">รายการสินค้ารายเดือน</button>
             </div>
         </div>
         <div>
@@ -67,7 +70,8 @@
                     <td class="border p-2 text-center whitespace-pre">
                         <div class="">{{ prod.date }}</div>
                     </td>
-                    <td class="text-right border p-2 text-center whitespace-pre">
+                    <td @click="openProductDetail(prod.area, prod.date)"
+                        class="text-right border p-2 text-center whitespace-pre cursor-pointer text-blue-700 underline">
                         <div class="">{{ formatNumber(prod.sale) }}</div>
                     </td>
                     <td class="text-right border p-2 text-center whitespace-pre">
@@ -194,6 +198,53 @@
             </div>
         </div>
     </div>
+
+    <div v-if="showProductDetail" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-[800px] max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-lg">รายการสินค้า
+                    <br>เขต: {{ productDetailArea }} {{ productDetailPeriodText }}
+                </h2>
+                <button class="btn btn-sm" @click="showProductDetail = false">ปิด</button>
+            </div>
+
+            <div v-if="!productDetailList.length" class="text-center text-gray-400 py-6">ไม่มีข้อมูลสินค้า</div>
+
+            <table v-else class="min-w-full border text-center text-sm bg-white">
+                <thead class="bg-blue-800 text-white">
+                    <tr>
+                        <th class="p-2 border" rowspan="2">รายการ</th>
+                        <th class="p-2 border" colspan="2">ยอดขาย</th>
+                        <th class="p-2 border" colspan="2">ยกเลิก</th>
+                    </tr>
+                    <tr>
+                        <th class="p-2 border">จำนวน</th>
+                        <th class="p-2 border">ยอดขาย</th>
+                        <th class="p-2 border">จำนวน</th>
+                        <th class="p-2 border">ยอดขาย</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="p in productDetailList" :key="p.id">
+                        <td class="border p-2 text-left">{{ p.name }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(p.qty) }} {{ p.unitName }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(p.amount) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(p.cancelQty) }} {{ p.unitName }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(p.cancelAmount) }}</td>
+                    </tr>
+                </tbody>
+                <tfoot class="bg-gray-200 font-bold">
+                    <tr>
+                        <td class="border p-2">รวม</td>
+                        <td class="border p-2 text-right">{{ formatNumber(productDetailTotalQty) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(productDetailTotalAmount) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(productDetailTotalCancelQty) }}</td>
+                        <td class="border p-2 text-right">{{ formatNumber(productDetailTotalCancelAmount) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -283,6 +334,9 @@ const selectedArea = ref('')
 const selectedAreaImage = ref('')
 const showModal = ref(false);
 const showAlert = ref(false);
+const showProductDetail = ref(false);
+const productDetailArea = ref('');
+const productDetailPeriodText = ref('');
 
 function rotateAndOpen(path) {
     // const fullUrl = 'https://apps.onetwotrading.co.th' + relativePath(path);
@@ -407,6 +461,52 @@ function openAlert(area, date, sale, diff, totalSale, sendmoney, sendmoneyAcc, i
     // modalImageSrc.value = 'https://apps.onetwotrading.co.th/' + relativePath(imagePath);
     showAlert.value = true;
 }
+
+
+async function openProductDetail(area, date) {
+    productDetailArea.value = area;
+    productDetailPeriodText.value = `วันที่ ${date}`;
+
+    const [d, m, y] = date.split('-');
+    isLoading.value = true;
+    await sendmoney.getProductDetail(selectedChannel.value, area, `${y}${m}${d}`);
+    isLoading.value = false;
+    showProductDetail.value = true;
+}
+
+async function openProductDetailMonthly() {
+    if (!monthRange.value) {
+        alert('กรุณาเลือกเดือนก่อน');
+        return;
+    }
+
+    const useAllFtAreas = !selectedArea.value || selectedArea.value === 'all';
+    const areaParam = useAllFtAreas ? FT_AREAS.map(a => a.area).join(',') : selectedArea.value;
+
+    productDetailArea.value = useAllFtAreas ? 'ทั้งหมด (FT)' : selectedArea.value;
+    const mm = String(monthRange.value.month + 1).padStart(2, '0');
+    productDetailPeriodText.value = `เดือน ${mm}/${monthRange.value.year}`;
+
+    isLoading.value = true;
+    await sendmoney.getProductDetail(selectedChannel.value, areaParam, '', formatYyyyMm(monthRange.value));
+    isLoading.value = false;
+    showProductDetail.value = true;
+}
+
+const productDetailList = computed(() => sendmoney.productDetail || [])
+
+const productDetailTotalQty = computed(() =>
+    productDetailList.value.reduce((sum, p) => sum + (Number(p.qty) || 0), 0)
+)
+const productDetailTotalAmount = computed(() =>
+    productDetailList.value.reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
+)
+const productDetailTotalCancelQty = computed(() =>
+    productDetailList.value.reduce((sum, p) => sum + (Number(p.cancelQty) || 0), 0)
+)
+const productDetailTotalCancelAmount = computed(() =>
+    productDetailList.value.reduce((sum, p) => sum + (Number(p.cancelAmount) || 0), 0)
+)
 
 
 function relativePath(imagePath) {
@@ -535,13 +635,21 @@ onMounted(async () => {
     isLoading.value = false
 })
 
+// Zone "FT" ไม่มี user จริงผูก zone นี้ใน DB (backend ยัดเข้ามาแค่ให้เลือกในดรอปดาวน์)
+// เลย hardcode เขตของ FT ไว้ตรงนี้ ไม่พึ่ง getTeam/getArea API และไม่ต้องเลือก Team
+const FT_AREAS = [{ area: 'FT101' }, { area: 'FT102' }]
+
 watch(selectedZone, async (newVal) => {
     selectedArea.value = '' // Reset area when zone changes
     if (newVal) {
         selectedTeam.value = ''
         selectedArea.value = ''
-        filter.getArea(period, newVal, selectedTeam.value);
-        filter.getTeam(selectedChannel.value, newVal);
+        if (newVal === 'FT') {
+            filter.area = FT_AREAS
+        } else {
+            filter.getArea(period, newVal, selectedTeam.value);
+            filter.getTeam(selectedChannel.value, newVal);
+        }
     }
 });
 

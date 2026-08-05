@@ -7,6 +7,7 @@ export const useSendmoney = defineStore('sendmoney', {
     monthlyData: [],
     sendmoneyMonthyData: [],
     dailyData: [],
+    productDetail: [],
     statusCode: 0,
     message: ''
   }),
@@ -145,6 +146,22 @@ export const useSendmoney = defineStore('sendmoney', {
         // }
       } catch (error) {
         this.dailyData = []
+        console.error(error)
+      }
+    },
+
+    async getProductDetail (channel, area, date, period) {
+      try {
+        this.productDetail = []
+        const rangeParam = period ? `period=${period}` : `date=${date}`
+        const response = await api.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/cash/sendmoney/sendmoneyProductDetail?channel=${channel}&area=${area}&${rangeParam}`
+        )
+        this.productDetail = response.data.data
+      } catch (error) {
+        this.productDetail = []
         console.error(error)
       }
     },
