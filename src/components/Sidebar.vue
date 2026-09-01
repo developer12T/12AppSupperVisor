@@ -89,6 +89,7 @@ const menuItems = computed(() => [
             { icon: 'mdi:progress-star', name: 'รายงาน SKU Focus', link: '/supervisor/sku-report', channel: ['CASH', "ADMIN"] },
             { icon: 'mdi:chart-bar', name: 'รายงานสินค้า', link: '/supervisor/product', channel: ['CASH', "PC", "ADMIN"] },
             { icon: 'mdi:box-clock-outline', name: 'จำนวนร้านค้าแต่ละรูท', link: '/supervisor/storeinroute', channel: ['CASH', "PC", "ADMIN"] },
+            { icon: 'mdi:bird', name: 'รายงานยอดเบิกนกพิราบ', link: '/supervisor/pigeon-sales-report', channel: ['CASH', "PC", "ADMIN"] },
         ],
         roles: ['admin', 'supervisor', 'area_manager', 'sale_manager', 'dc'],
         channel: ['CASH', "PC", "ADMIN"]

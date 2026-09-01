@@ -234,7 +234,12 @@ const supervisorRoutes = [
         name: 'SkuReportDetail',
         component: () => import('../../views/supervisor/SKUReportDetail.vue')
       },
-      
+      {
+        path: 'pigeon-sales-report',
+        name: 'PigeonSalesReport',
+        component: () => import('../../views/supervisor/PigeonSalesReport.vue')
+      },
+
     ]
   }
 ]
