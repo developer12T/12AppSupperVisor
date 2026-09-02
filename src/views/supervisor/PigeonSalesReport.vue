@@ -199,6 +199,18 @@ function formatPeriod(p: string) {
     return `${p.slice(0, 4)}-${p.slice(4, 6)}`
 }
 
+function parsePcsPerCtnFromName(name: string): number {
+    // ชื่อสินค้ามักลงท้ายด้วยขนาดบรรจุ เช่น "145g x4x12" หมายถึง 4x12 = 48 ชิ้น/ลัง
+    if (!name) return 0
+    const matches = [...name.matchAll(/x\s*(\d+)\s*x\s*(\d+)/gi)]
+    if (!matches.length) return 0
+    const last = matches[matches.length - 1]
+    const a = Number(last[1])
+    const b = Number(last[2])
+    if (!a || !b) return 0
+    return a * b
+}
+
 function formatStockBalance(row: PigeonWithdrawRow) {
     if (row.stockBalance == null) return '-'
     if (row.stockBalanceCtn == null) {
@@ -286,8 +298,10 @@ async function fetchPigeonRowsForArea(area: string): Promise<PigeonWithdrawRow[]
     Object.values(map).forEach((row) => {
         const balancePcs = stockBalanceById[row.productId]
         if (balancePcs == null) return
-        // แปลง PCS -> CTN โดยใช้อัตราส่วน pcs ต่อ CTN จากยอดเบิกของสินค้าตัวเดียวกัน
-        const pcsPerCtn = row.qty && row.qty > 0 ? row.qtyPcs / row.qty : 0
+        // แปลง PCS -> CTN: ใช้ขนาดบรรจุจากชื่อสินค้า (เช่น "x4x12" = 48 ชิ้น/ลัง) ก่อน
+        // เพราะแม่นยำกว่าและมีให้ใช้แม้สินค้าตัวนั้นไม่มียอดเบิกในเดือนนี้เลย
+        // ถ้าหาจากชื่อไม่ได้ ค่อย fallback ไปใช้อัตราส่วนจากยอดเบิกจริงของสินค้าตัวเดียวกันแทน
+        const pcsPerCtn = parsePcsPerCtnFromName(row.productName) || (row.qty && row.qty > 0 ? row.qtyPcs / row.qty : 0)
         if (pcsPerCtn > 0) {
             row.stockBalance = balancePcs / pcsPerCtn
             row.stockBalanceCtn = Math.floor(balancePcs / pcsPerCtn)
