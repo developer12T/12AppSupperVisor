@@ -24,9 +24,21 @@ export const useStoresStore = defineStore('stores', {
     },
     count: 0,
     countLat: 0,
-    latLongOrderDetail: {}
+    latLongOrderDetail: {},
+    areaAll: []
   }),
   actions: {
+    async getAreaAllFromStore () {
+      try {
+        const response = await api.get(`/api/cash/store/getAreaAllFromStore`)
+        const result = response.data.data
+        this.areaAll = result
+        return result
+      } catch (error) {
+        console.error(error)
+        return []
+      }
+    },
     async getStoreMap (zone) {
       try {
         const response = await api.get(
